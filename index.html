@@ -605,7 +605,7 @@
   /* ---------- game mode picker ---------- */
   const MODES = [
     { id:'ai', emoji:'🤖', name:'هوش مصنوعی', sub:'۱۰ ربات حریف', enabled:true },
-    { id:'classic', emoji:'🌍', name:'کلاسیک', sub:'به زودی', enabled:false },
+    { id:'classic', emoji:'🌍', name:'کلاسیک', sub:'بازیکن‌های واقعی', enabled:true },
   ];
   let modeIdx = 0;
   function renderMode(){
@@ -990,6 +990,7 @@
 
   let pieces, bots, pellets, camScale, running, lastT, splitCooldownLeft, maxMassReached;
   let smoothCamX = null, smoothCamY = null;
+  let currentMode = 'ai', otherPlayers = {}, worldPlayersRef = null, myWorldRef = null, lastSyncTime = 0;
 
   function radiusFromMass(m){ return 8 + Math.sqrt(m)*3.1; }
   function baseSpeedFromRadius(r){ return Math.max(46, 320/(1+r/34)); }
@@ -1006,10 +1007,56 @@
       wanderDir:{x:0,y:0}, wanderT:0, dispR:12 };
   }
 
+  function joinWorld(){
+    if (!db) { notify('اتصال به سرور برقرار نیست، حالت کلاسیک نیاز به اینترنت داره.'); return false; }
+    myWorldRef = db.ref('world/players/' + uid);
+    myWorldRef.onDisconnect().remove();
+    worldPlayersRef = db.ref('world/players');
+    otherPlayers = {};
+    worldPlayersRef.on('value', snap => {
+      const all = snap.val() || {};
+      otherPlayers = {};
+      Object.keys(all).forEach(key=>{
+        if (key === uid) return;
+        const p = all[key];
+        otherPlayers[key] = {
+          x: p.x, y: p.y, mass: p.mass,
+          dispR: radiusFromMass(p.mass),
+          name: p.name || 'بازیکن',
+          color: p.color || '#7ee787'
+        };
+      });
+    });
+    return true;
+  }
+  function leaveWorld(){
+    if (worldPlayersRef) { worldPlayersRef.off(); worldPlayersRef=null; }
+    if (myWorldRef) { myWorldRef.remove(); myWorldRef=null; }
+    otherPlayers = {};
+  }
+  function syncOwnPosition(now){
+    if (!myWorldRef) return;
+    if (now - lastSyncTime < 150) return;
+    lastSyncTime = now;
+    const lead = pieces[0] || {x:WORLD/2,y:WORLD/2};
+    myWorldRef.set({
+      x: Math.round(lead.x), y: Math.round(lead.y),
+      mass: Math.round(totalMass()),
+      name: profile.name || displayName,
+      color: (SKIN_DB[profile.equippedSkin]||SKIN_DB.dead_star).color
+    });
+  }
+
   function startGame(){
     fitCanvas();
+    currentMode = MODES[modeIdx].id;
     pieces = [ { x:WORLD/2, y:WORLD/2, mass:22, dispR:radiusFromMass(22), vx:0, vy:0, mergeAt:0 } ];
-    bots = []; for (let i=1;i<=BOT_COUNT;i++) bots.push(makeBot(i, pieces[0]));
+    if (currentMode === 'classic') {
+      bots = [];
+      if (!joinWorld()) return;
+    } else {
+      bots = []; for (let i=1;i<=BOT_COUNT;i++) bots.push(makeBot(i, pieces[0]));
+    }
     pellets = []; for (let i=0;i<PELLET_COUNT;i++) pellets.push(makePellet());
     camScale = 1; running = true; lastT = null; splitCooldownLeft = 0; maxMassReached = 22;
     smoothCamX = null; smoothCamY = null;
@@ -1236,6 +1283,7 @@
 
   function endGame(){
     running = false;
+    if (currentMode === 'classic') leaveWorld();
     const finalMass = Math.round(maxMassReached);
     const earnedTokens = Math.floor(finalMass/5);
     profile.tokens = (profile.tokens||0) + earnedTokens;
@@ -1253,6 +1301,7 @@
   document.getElementById('back-btn').addEventListener('click', ()=>{
     if (!running) return;
     running = false;
+    if (currentMode === 'classic') leaveWorld();
     const finalMass = Math.round(maxMassReached);
     const earnedTokens = Math.floor(finalMass/5);
     profile.tokens = (profile.tokens||0) + earnedTokens;
@@ -1320,6 +1369,7 @@
     }
 
     bots.forEach(b=>drawCircle(b, b.color, false, b.name));
+    if (currentMode === 'classic') Object.values(otherPlayers).forEach(p=>drawCircle(p, p.color, false, p.name));
     const equippedColor = (SKIN_DB[profile.equippedSkin]||SKIN_DB.dead_star).color;
     pieces.forEach(p=>drawCircle(p, equippedColor, true, null));
 
@@ -1341,7 +1391,9 @@
     if (!running) return;
     try {
       if (!lastT) lastT=t; const dt=Math.min(0.05,(t-lastT)/1000); lastT=t;
-      updatePieces(dt); bots.forEach(b=>updateBot(b,dt,bots)); checkCollisions();
+      updatePieces(dt);
+      if (currentMode === 'ai') { bots.forEach(b=>updateBot(b,dt,bots)); checkCollisions(); }
+      else { syncOwnPosition(t); }
       if (!running) return;
       if (splitCooldownLeft>0) splitCooldownLeft=Math.max(0,splitCooldownLeft-dt);
       const tm = totalMass(); if (tm>maxMassReached) maxMassReached=tm;
