@@ -51,9 +51,7 @@
   .skin-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; width:100%; max-width:420px; }
   .skin-card { background:#0e131b; border:2px solid #22303f; border-radius:14px; padding:10px; text-align:center; position:relative; }
   .skin-card.equipped { border-color:#7ee787; }
-  .skin-avatar { width:64px; height:64px; border-radius:50%; margin:0 auto 6px; position:relative;
-    display:flex; align-items:center; justify-content:center; }
-  .skin-avatar .skin-glyph { font-size:30px; line-height:1; filter:drop-shadow(0 1px 2px rgba(0,0,0,.4)); }
+  .skin-avatar { width:64px; height:64px; border-radius:50%; margin:0 auto 6px; }
   .skin-tag { font-size:9px; font-weight:800; padding:2px 6px; border-radius:999px; display:inline-block; margin-top:4px; }
   .skin-name { font-size:11px; font-weight:700; margin-top:2px; }
   .skin-serial { font-size:9px; color:#5c6b7d; font-family:monospace; margin-top:3px; letter-spacing:.3px; }
@@ -303,15 +301,15 @@
   }
 
   const SKIN_DB = {
-    dead_star:      { name:'Dead Star',        rarity:'starter', color:'#dfeaf2', glyph:'💀' },
-    no_mouse:       { name:'No Mouse',         rarity:'common',  color:'#7a4fd9', glyph:'😤' },
-    golden_bowl:    { name:'Golden Bowl',      rarity:'common',  color:'#caa23a', glyph:'🥣' },
-    slime_resist:   { name:'Slime Resistance', rarity:'rare',    color:'#4a2f8a', glyph:'🧫' },
-    when_lambo:     { name:'When Lambo',       rarity:'rare',    color:'#f0d020', glyph:'😄' },
-    higher:         { name:'Higher',           rarity:'rare',    color:'#5a4fc9', glyph:'📈' },
-    reputation:     { name:'Reputation',       rarity:'epic',    color:'#e8d060', glyph:'🏅' },
-    collector_cap:  { name:'Collector',        rarity:'legend',  color:'#a86fff', glyph:'🧸' },
-    triangle_nine:  { name:'Triangle 9',       rarity:'legend',  color:'#3dd6ff', glyph:'🔺' },
+    dead_star:      { name:'Dead Star',        rarity:'starter', color:'#dfeaf2' },
+    no_mouse:       { name:'No Mouse',         rarity:'common',  color:'#7a4fd9' },
+    golden_bowl:    { name:'Golden Bowl',      rarity:'common',  color:'#caa23a' },
+    slime_resist:   { name:'Slime Resistance', rarity:'rare',    color:'#4a2f8a' },
+    when_lambo:     { name:'When Lambo',       rarity:'rare',    color:'#f0d020' },
+    higher:         { name:'Higher',           rarity:'rare',    color:'#5a4fc9' },
+    reputation:     { name:'Reputation',       rarity:'epic',    color:'#e8d060' },
+    collector_cap:  { name:'Collector',        rarity:'legend',  color:'#a86fff' },
+    triangle_nine:  { name:'Triangle 9',       rarity:'legend',  color:'#3dd6ff' },
   };
   const LOOTBOX_POOL = {
     common: ['no_mouse','golden_bowl'],
@@ -496,7 +494,7 @@
       const card = document.createElement('div');
       card.className = 'skin-card' + (profile.equippedSkin===id ? ' equipped':'');
       card.innerHTML = `
-        <div class="skin-avatar" style="background:radial-gradient(circle at 35% 30%, #fff6, ${skin.color})"><span class="skin-glyph">${skin.glyph||''}</span></div>
+        <div class="skin-avatar" style="background:radial-gradient(circle at 35% 30%, #fff6, ${skin.color})"></div>
         ${copies>1 ? '<div class="skin-owned-badge">×'+copies+'</div>' : ''}
         <div class="skin-name">${skin.name}</div>
         <div class="skin-tag ${TAG_CLASS[tag]||'tag-common'}">${TAG_LABEL[tag]||tag}</div>
@@ -608,23 +606,10 @@
     // the item is written straight to users/<targetUid>/... the same way
     // every other write in this app is client-trusted. If the id is wrong,
     // the item lands on a node nobody controls and is unrecoverable.
-    //
-    // FIX (item-loss / item-duplication bug): this used to be TWO separate
-    // sequential writes — push the item onto the receiver, THEN (in a
-    // later round-trip) remove it from the sender. If the app closed
-    // between those two writes, the sender could end up keeping the item
-    // while the receiver ALSO got a copy (duplication), or in other
-    // failure orders the item could vanish from both. A multi-path
-    // update() sent as a single request writes to both locations
-    // atomically — either both the add and the remove land together, or
-    // neither does, so there's no in-between state to get interrupted in.
     if (pendingTransfer.kind === 'skin') {
       const { skinId, key, serial } = pendingTransfer;
-      const newKey = db.ref('users/'+targetUid+'/inventory/skins/'+skinId).push().key;
-      const updates = {};
-      updates['users/'+targetUid+'/inventory/skins/'+skinId+'/'+newKey] = serial;
-      updates['users/'+uid+'/inventory/skins/'+skinId+'/'+key] = null; // null deletes this path
-      db.ref().update(updates)
+      db.ref('users/'+targetUid+'/inventory/skins/'+skinId).push(serial)
+        .then(()=> userRef.child('inventory/skins/'+skinId+'/'+key).remove())
         .then(()=>{
           delete profile.inventory.skins[skinId][key];
           notify('اسکین با تگ #'+String(serial).padStart(4,'0')+' منتقل شد.');
@@ -633,11 +618,8 @@
         .catch(e=>{ console.error('skin transfer failed', e); notify('انتقال ناموفق بود، دوباره امتحان کن.'); });
     } else if (pendingTransfer.kind === 'lootbox') {
       const { key, box } = pendingTransfer;
-      const newKey = db.ref('users/'+targetUid+'/inventory/lootboxes').push().key;
-      const updates = {};
-      updates['users/'+targetUid+'/inventory/lootboxes/'+newKey] = box;
-      updates['users/'+uid+'/inventory/lootboxes/'+key] = null; // null deletes this path
-      db.ref().update(updates)
+      db.ref('users/'+targetUid+'/inventory/lootboxes').push(box)
+        .then(()=> userRef.child('inventory/lootboxes/'+key).remove())
         .then(()=>{
           delete profile.inventory.lootboxes[key];
           notify('لوت‌باکس منتقل شد.');
@@ -648,12 +630,6 @@
   });
 
   const LOOTBOX_PRICE = 50;
-  // FIX: prevents the buy button from being triggered twice for one tap
-  // (e.g. touchstart + click firing together on some mobile webviews —
-  // the same class of double-fire issue already worked around on the
-  // split button, just not here) which used to let a player buy more
-  // than one lootbox off a single balance check.
-  let lootboxPurchasePending = false;
 
   function pickRandomSkin(){
     const roll = Math.random()*100;
@@ -672,16 +648,7 @@
   // as the reference inventory screen. Opening happens separately below.
   document.getElementById('lootbox-buy-btn').addEventListener('click', ()=>{
     if (!db) { notify('اتصال به سرور برقرار نیست.'); return; }
-    if (lootboxPurchasePending) return; // a purchase is already in flight, ignore extra taps
     if ((profile.tokens||0) < LOOTBOX_PRICE) { notify('توکن کافی نداری! به '+LOOTBOX_PRICE+' توکن نیاز داری.'); return; }
-
-    const buyBtn = document.getElementById('lootbox-buy-btn');
-    lootboxPurchasePending = true;
-    buyBtn.disabled = true;
-    function finishPurchaseFlow(){
-      lootboxPurchasePending = false;
-      buyBtn.disabled = false;
-    }
 
     const supplyRef = db.ref('lootboxSupply/newer');
     // FIX (kept from before): abort the transaction once supply is full
@@ -693,52 +660,20 @@
       current.claimed += 1;
       return current;
     }, (err, committed, snap)=>{
-      if (err) { notify('خطا در بررسی موجودی، دوباره امتحان کن.'); finishPurchaseFlow(); return; }
-      if (!committed) { notify('لوت‌باکس Newer تموم شده! 😔'); renderItems(); finishPurchaseFlow(); return; }
+      if (err) { notify('خطا در بررسی موجودی، دوباره امتحان کن.'); return; }
+      if (!committed) { notify('لوت‌باکس Newer تموم شده! 😔'); renderItems(); return; }
 
-      // FIX (item-loss bug): previously token deduction and granting the
-      // lootbox were TWO separate sequential writes (a transaction on
-      // 'tokens', then a separate push().set() for the box). Those are two
-      // independent network round-trips. If the player closed the Telegram
-      // mini app in the gap between them (very common right after a
-      // purchase — they see the reward and close the app), the token
-      // deduction could reach the server while the box push never did:
-      // tokens gone, no box in inventory.
-      //
-      // Fix: run BOTH the token deduction and the box grant inside a single
-      // transaction on the whole user node (userRef, not userRef.child
-      // ('tokens')). A Firebase transaction on a node is atomic — either
-      // the entire returned object commits as one write, or none of it
-      // does. This closes the gap entirely: there is no longer a moment
-      // where tokens are spent but the box doesn't exist yet.
-      const newBoxKey = userRef.child('inventory/lootboxes').push().key; // client-generated key, no network round-trip needed to obtain it
+      profile.tokens -= LOOTBOX_PRICE;
+      saveField('tokens', profile.tokens);
+      document.getElementById('home-tokens').textContent = profile.tokens;
+
       const boxData = { type:'newer', acquiredAt: Date.now() };
-
-      userRef.transaction(currentUser => {
-        if (currentUser === null) return; // profile should always exist by now; abort defensively
-        if ((currentUser.tokens||0) < LOOTBOX_PRICE) return; // abort: not enough funds
-        currentUser.tokens = (currentUser.tokens||0) - LOOTBOX_PRICE;
-        if (!currentUser.inventory) currentUser.inventory = {};
-        if (!currentUser.inventory.lootboxes) currentUser.inventory.lootboxes = {};
-        currentUser.inventory.lootboxes[newBoxKey] = boxData;
-        return currentUser;
-      }, (tErr, tCommitted, tSnap) => {
-        if (tErr || !tCommitted) {
-          // release the supply slot we reserved above since the purchase didn't go through
-          supplyRef.transaction(c => { c = c || {claimed:0,max:1000}; c.claimed = Math.max(0, c.claimed-1); return c; });
-          notify(tErr ? 'خطا در پرداخت، دوباره امتحان کن.' : 'توکن کافی نداری! به '+LOOTBOX_PRICE+' توکن نیاز داری.');
-          finishPurchaseFlow();
-          return;
-        }
-
-        const newData = tSnap.val() || {};
-        profile.tokens = newData.tokens || 0;
-        profile.inventory.lootboxes[newBoxKey] = boxData;
-        document.getElementById('home-tokens').textContent = profile.tokens;
+      const pushRef = userRef.child('inventory/lootboxes').push();
+      pushRef.set(boxData).then(()=>{
+        profile.inventory.lootboxes[pushRef.key] = boxData;
         notify('لوت‌باکس Newer به اینونتوریت اضافه شد! برو بازش کن 📦');
         renderItems();
-        finishPurchaseFlow();
-      });
+      }).catch(e=>{ console.error('lootbox push failed', e); notify('خطا در ذخیره‌سازی، دوباره امتحان کن.'); });
     });
   });
 
@@ -751,61 +686,25 @@
     const box = profile.inventory.lootboxes[key];
     if (!box) return;
 
-    const { skinId, rarity } = pickRandomSkin();
-    // Claim number is assigned via an atomic counter on its own node — this
-    // is what makes it a true "who got this copy Nth" tag, even across
-    // duplicates from the same or different players. Losing this increment
-    // in isolation is harmless (falls back to a local count below), so it
-    // doesn't need to be part of the atomic grant below.
-    db.ref('skinClaims/'+skinId).transaction(current => (current||0) + 1, (err, committed, snap) => {
-      // FIX: if the global claim-counter transaction doesn't commit
-      // (network hiccup, slow connection, etc.) `serial` used to fall
-      // back to `null` and get saved as-is — that's why players were
-      // seeing "تگ #null". Now it always falls back to a real number:
-      // one higher than however many copies of this skin the player
-      // already owns locally, so it's never null.
-      let serial = (!err && committed) ? snap.val() : null;
-      if (serial === null || serial === undefined) {
-        serial = skinCopies(skinId) + 1;
-      }
+    userRef.child('inventory/lootboxes/'+key).remove().then(()=>{
+      delete profile.inventory.lootboxes[key];
 
-      // FIX (item-loss bug): opening a box used to be TWO separate
-      // sequential writes — remove the lootbox, THEN (in a later network
-      // round-trip) push the new skin instance. If the player closed the
-      // Telegram mini app between those two writes (extremely common,
-      // since people close the app right after seeing what they got), the
-      // box-removal could reach the server while the skin-grant never did:
-      // box gone, no skin in inventory, reward lost entirely.
-      //
-      // Fix: run the removal AND the grant inside a single transaction on
-      // the whole user node. Either both happen together in one atomic
-      // write, or neither does (the box stays put and the player can just
-      // try opening it again) — there is no more in-between state.
-      const newInstKey = userRef.child('inventory/skins/'+skinId).push().key; // client-generated key, no network round-trip needed
-
-      userRef.transaction(currentUser => {
-        if (currentUser === null) return; // abort defensively
-        if (!currentUser.inventory || !currentUser.inventory.lootboxes || !currentUser.inventory.lootboxes[key]) {
-          return; // box already gone (opened elsewhere / already processed) — abort, nothing to do
-        }
-        delete currentUser.inventory.lootboxes[key];
-        if (!currentUser.inventory.skins) currentUser.inventory.skins = {};
-        if (!currentUser.inventory.skins[skinId]) currentUser.inventory.skins[skinId] = {};
-        currentUser.inventory.skins[skinId][newInstKey] = serial;
-        return currentUser;
-      }, (uErr, uCommitted) => {
-        if (uErr || !uCommitted) {
-          notify('خطا در باز کردن، دوباره امتحان کن.');
+      const { skinId, rarity } = pickRandomSkin();
+      // Claim number is always assigned fresh via an atomic counter — this
+      // is what makes it a true "who got this copy Nth" tag, even across
+      // duplicates from the same or different players.
+      db.ref('skinClaims/'+skinId).transaction(current => (current||0) + 1, (err, committed, snap) => {
+        const serial = (!err && committed) ? snap.val() : null;
+        const instRef = userRef.child('inventory/skins/'+skinId).push();
+        instRef.set(serial).then(()=>{
+          profile.inventory.skins[skinId] = profile.inventory.skins[skinId] || {};
+          profile.inventory.skins[skinId][instRef.key] = serial;
+          const serialTxt = serial ? (' — تگ #'+String(serial).padStart(4,'0')) : '';
+          notify('اسکین «'+SKIN_DB[skinId].name+'» ('+TAG_LABEL[rarity]+')'+serialTxt+' گرفتی 🎉');
           renderItems();
-          return;
-        }
-        delete profile.inventory.lootboxes[key];
-        profile.inventory.skins[skinId] = profile.inventory.skins[skinId] || {};
-        profile.inventory.skins[skinId][newInstKey] = serial;
-        notify('اسکین «'+SKIN_DB[skinId].name+'» ('+TAG_LABEL[rarity]+')'+' — تگ #'+String(serial).padStart(4,'0')+' گرفتی 🎉');
-        renderItems();
+        }).catch(e=>{ console.error('skin instance save failed', e); notify('خطا در ذخیره‌سازی اسکین.'); renderItems(); });
       });
-    });
+    }).catch(e=>{ console.error('lootbox remove failed', e); notify('خطا در باز کردن، دوباره امتحان کن.'); });
   }
 
   /* ---------- perks rendering ---------- */
@@ -1192,25 +1091,18 @@
       ctx.fillStyle=p.color; ctx.beginPath(); ctx.arc(s.x,s.y,p.r*camScale,0,Math.PI*2); ctx.fill();
     });
 
-    function drawCircle(e, color, isPlayer, name, glyph){
+    function drawCircle(e, color, isPlayer, name){
       const s=worldToScreen(e.x,e.y,camX,camY,camScale); const rr=e.dispR*camScale;
       const grad = ctx.createRadialGradient(s.x-rr*0.3,s.y-rr*0.3,rr*0.1,s.x,s.y,rr);
       grad.addColorStop(0, isPlayer?'#8fd0ff':'#ffffff55'); grad.addColorStop(1, color);
       ctx.fillStyle=grad; ctx.beginPath(); ctx.arc(s.x,s.y,rr,0,Math.PI*2); ctx.fill();
       ctx.strokeStyle='rgba(255,255,255,0.25)'; ctx.lineWidth=2; ctx.stroke();
-      if (glyph) {
-        ctx.font = `${Math.max(12, rr*1.1)}px serif`;
-        ctx.textAlign='center'; ctx.textBaseline='middle';
-        ctx.fillText(glyph, s.x, s.y);
-      }
-      if (name) { ctx.fillStyle='#fff'; ctx.font=`${Math.max(11,12*camScale)}px sans-serif`; ctx.textAlign='center'; ctx.textBaseline='alphabetic'; ctx.fillText(name, s.x, s.y+4); }
+      if (name) { ctx.fillStyle='#fff'; ctx.font=`${Math.max(11,12*camScale)}px sans-serif`; ctx.textAlign='center'; ctx.fillText(name, s.x, s.y+4); }
     }
 
     bots.forEach(b=>drawCircle(b, b.color, false, b.name));
-    const equippedSkin = SKIN_DB[profile.equippedSkin]||SKIN_DB.dead_star;
-    const equippedColor = equippedSkin.color;
-    const equippedGlyph = equippedSkin.glyph;
-    pieces.forEach(p=>drawCircle(p, equippedColor, true, null, equippedGlyph));
+    const equippedColor = (SKIN_DB[profile.equippedSkin]||SKIN_DB.dead_star).color;
+    pieces.forEach(p=>drawCircle(p, equippedColor, true, null));
 
     // single name label under the whole player cluster (not per-piece),
     // matching the reference screenshot's name row under the blobs
