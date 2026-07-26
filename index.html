@@ -703,22 +703,20 @@
         }
       }
     }
-    // soft push-apart for own pieces that ARE touching but not yet merge-ready —
-    // only resists heavy overlap, doesn't fight the player trying to steer
-    // split pieces close together (that's how agar.io feels: you CAN cluster
-    // your blobs tightly, they just can't fully merge until the timer's up)
+    // solid collision for own pieces that aren't merge-ready yet: they can be
+    // steered right up against each other (edges touching) but never overlap/
+    // clip into each other — full positional correction, not a soft nudge
     for (let i=0;i<pieces.length;i++){
       for (let j=i+1;j<pieces.length;j++){
         const a=pieces[i], b=pieces[j];
         if (now >= a.mergeAt && now >= b.mergeAt) continue; // eligible to merge instead, skip pushing
         const dx=b.x-a.x, dy=b.y-a.y; const d=Math.hypot(dx,dy) || 0.001;
-        const minDist = (a.dispR+b.dispR)*0.45;
+        const minDist = a.dispR+b.dispR;
         if (d < minDist) {
           const overlap = (minDist-d)/2;
           const nx=dx/d, ny=dy/d;
-          const push = overlap*0.4; // gentle correction, not a hard wall
-          a.x -= nx*push; a.y -= ny*push;
-          b.x += nx*push; b.y += ny*push;
+          a.x -= nx*overlap; a.y -= ny*overlap;
+          b.x += nx*overlap; b.y += ny*overlap;
           clampWorld(a); clampWorld(b);
         }
       }
@@ -786,7 +784,21 @@
     bottomnav.style.display='flex';
     showScreen('screen-over');
   }
-  document.getElementById('back-btn').addEventListener('click', ()=>{ running=false; bottomnav.style.display='flex'; showScreen('screen-home'); });
+  document.getElementById('back-btn').addEventListener('click', ()=>{
+    if (!running) return;
+    running = false;
+    const finalMass = Math.round(maxMassReached);
+    const earnedTokens = Math.floor(finalMass/5);
+    profile.tokens = (profile.tokens||0) + earnedTokens;
+    profile.bestMass = Math.max(profile.bestMass||0, finalMass);
+    saveField('tokens', profile.tokens);
+    saveField('bestMass', profile.bestMass);
+    document.getElementById('home-tokens').textContent = profile.tokens;
+    document.getElementById('home-rank').textContent = Math.max(1, Math.floor(profile.bestMass/50)+1);
+    bottomnav.style.display='flex';
+    showScreen('screen-home');
+    notify('+'+earnedTokens+' توکن گرفتی 🪙');
+  });
   document.getElementById('retry-btn').addEventListener('click', startGame);
   document.getElementById('menu-btn').addEventListener('click', ()=>showScreen('screen-home'));
 
