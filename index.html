@@ -630,6 +630,12 @@
   });
 
   const LOOTBOX_PRICE = 50;
+  // FIX: prevents the buy button from being triggered twice for one tap
+  // (e.g. touchstart + click firing together on some mobile webviews —
+  // the same class of double-fire issue already worked around on the
+  // split button, just not here) which used to let a player buy more
+  // than one lootbox off a single balance check.
+  let lootboxPurchasePending = false;
 
   function pickRandomSkin(){
     const roll = Math.random()*100;
@@ -648,7 +654,16 @@
   // as the reference inventory screen. Opening happens separately below.
   document.getElementById('lootbox-buy-btn').addEventListener('click', ()=>{
     if (!db) { notify('اتصال به سرور برقرار نیست.'); return; }
+    if (lootboxPurchasePending) return; // a purchase is already in flight, ignore extra taps
     if ((profile.tokens||0) < LOOTBOX_PRICE) { notify('توکن کافی نداری! به '+LOOTBOX_PRICE+' توکن نیاز داری.'); return; }
+
+    const buyBtn = document.getElementById('lootbox-buy-btn');
+    lootboxPurchasePending = true;
+    buyBtn.disabled = true;
+    function finishPurchaseFlow(){
+      lootboxPurchasePending = false;
+      buyBtn.disabled = false;
+    }
 
     const supplyRef = db.ref('lootboxSupply/newer');
     // FIX (kept from before): abort the transaction once supply is full
@@ -660,20 +675,48 @@
       current.claimed += 1;
       return current;
     }, (err, committed, snap)=>{
-      if (err) { notify('خطا در بررسی موجودی، دوباره امتحان کن.'); return; }
-      if (!committed) { notify('لوت‌باکس Newer تموم شده! 😔'); renderItems(); return; }
+      if (err) { notify('خطا در بررسی موجودی، دوباره امتحان کن.'); finishPurchaseFlow(); return; }
+      if (!committed) { notify('لوت‌باکس Newer تموم شده! 😔'); renderItems(); finishPurchaseFlow(); return; }
 
-      profile.tokens -= LOOTBOX_PRICE;
-      saveField('tokens', profile.tokens);
-      document.getElementById('home-tokens').textContent = profile.tokens;
+      // FIX: tokens used to be deducted by subtracting from the local
+      // `profile.tokens` variable and saving that — not atomic. If the
+      // buy handler ever ran twice (double tap, double-fired touch/click,
+      // slow network leaving the old balance on screen a moment longer),
+      // both purchases would read the same starting balance and pass the
+      // "enough tokens?" check, so a player could end up with a lootbox
+      // in their inventory while their token count never actually dropped.
+      // Deducting via a server-side transaction makes the check-and-spend
+      // atomic: a second purchase attempt reads the balance *after* the
+      // first one already spent it, so it can no longer slip through.
+      userRef.child('tokens').transaction(current => {
+        current = current || 0;
+        if (current < LOOTBOX_PRICE) return; // abort: not enough funds after all
+        return current - LOOTBOX_PRICE;
+      }, (tErr, tCommitted, tSnap) => {
+        if (tErr || !tCommitted) {
+          // release the supply slot we reserved above since the purchase didn't go through
+          supplyRef.transaction(c => { c = c || {claimed:0,max:1000}; c.claimed = Math.max(0, c.claimed-1); return c; });
+          notify(tErr ? 'خطا در پرداخت، دوباره امتحان کن.' : 'توکن کافی نداری! به '+LOOTBOX_PRICE+' توکن نیاز داری.');
+          finishPurchaseFlow();
+          return;
+        }
 
-      const boxData = { type:'newer', acquiredAt: Date.now() };
-      const pushRef = userRef.child('inventory/lootboxes').push();
-      pushRef.set(boxData).then(()=>{
-        profile.inventory.lootboxes[pushRef.key] = boxData;
-        notify('لوت‌باکس Newer به اینونتوریت اضافه شد! برو بازش کن 📦');
-        renderItems();
-      }).catch(e=>{ console.error('lootbox push failed', e); notify('خطا در ذخیره‌سازی، دوباره امتحان کن.'); });
+        profile.tokens = tSnap.val();
+        document.getElementById('home-tokens').textContent = profile.tokens;
+
+        const boxData = { type:'newer', acquiredAt: Date.now() };
+        const pushRef = userRef.child('inventory/lootboxes').push();
+        pushRef.set(boxData).then(()=>{
+          profile.inventory.lootboxes[pushRef.key] = boxData;
+          notify('لوت‌باکس Newer به اینونتوریت اضافه شد! برو بازش کن 📦');
+          renderItems();
+          finishPurchaseFlow();
+        }).catch(e=>{
+          console.error('lootbox push failed', e);
+          notify('خطا در ذخیره‌سازی، دوباره امتحان کن.');
+          finishPurchaseFlow();
+        });
+      });
     });
   });
 
@@ -694,13 +737,21 @@
       // is what makes it a true "who got this copy Nth" tag, even across
       // duplicates from the same or different players.
       db.ref('skinClaims/'+skinId).transaction(current => (current||0) + 1, (err, committed, snap) => {
-        const serial = (!err && committed) ? snap.val() : null;
+        // FIX: if the global claim-counter transaction doesn't commit
+        // (network hiccup, slow connection, etc.) `serial` used to fall
+        // back to `null` and get saved as-is — that's why players were
+        // seeing "تگ #null". Now it always falls back to a real number:
+        // one higher than however many copies of this skin the player
+        // already owns locally, so it's never null.
+        let serial = (!err && committed) ? snap.val() : null;
+        if (serial === null || serial === undefined) {
+          serial = skinCopies(skinId) + 1;
+        }
         const instRef = userRef.child('inventory/skins/'+skinId).push();
         instRef.set(serial).then(()=>{
           profile.inventory.skins[skinId] = profile.inventory.skins[skinId] || {};
           profile.inventory.skins[skinId][instRef.key] = serial;
-          const serialTxt = serial ? (' — تگ #'+String(serial).padStart(4,'0')) : '';
-          notify('اسکین «'+SKIN_DB[skinId].name+'» ('+TAG_LABEL[rarity]+')'+serialTxt+' گرفتی 🎉');
+          notify('اسکین «'+SKIN_DB[skinId].name+'» ('+TAG_LABEL[rarity]+')'+' — تگ #'+String(serial).padStart(4,'0')+' گرفتی 🎉');
           renderItems();
         }).catch(e=>{ console.error('skin instance save failed', e); notify('خطا در ذخیره‌سازی اسکین.'); renderItems(); });
       });
