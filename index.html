@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>سیاره‌خور - دوئل</title>
+<title>سیاره‌خور</title>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
@@ -42,6 +42,191 @@
   button.btn:active { transform:scale(.97); }
   button.btn.secondary { background:#161f2b; box-shadow:none; border:1px solid #2c3d52; color:#cfe0f2; margin-top:10px; }
   button.btn:disabled { opacity:.4; }
+
+  /* ===== Inventory screen ===== */
+  #screen-items { padding:0; align-items:stretch; }
+  .inv-topbar { display:flex; align-items:center; justify-content:space-between; padding:14px 16px; width:100%; }
+  .inv-close { display:flex; align-items:center; gap:6px; background:none; border:none; color:#fff; font-size:15px; font-weight:700; }
+  .inv-title { font-size:17px; font-weight:800; }
+  .inv-topbar-right { display:flex; align-items:center; gap:14px; color:#fff; font-size:18px; }
+
+  .inv-summary { display:flex; align-items:center; justify-content:space-between; width:100%; max-width:460px;
+    margin:6px auto 18px; padding:0 20px; }
+  .inv-coin-pill { display:flex; align-items:center; gap:8px; background:#12161f; border:1px solid #24303f;
+    border-radius:999px; padding:9px 16px; font-weight:800; font-size:15px; }
+  .inv-avatar-ring { width:78px; height:78px; border-radius:50%; border:2.5px solid #fff; display:flex;
+    align-items:center; justify-content:center; font-size:34px; flex-shrink:0; }
+  .inv-avatar-wrap { display:flex; flex-direction:column; align-items:center; gap:6px; }
+  .inv-avatar-label { font-size:13px; color:#8a99ad; font-weight:700; }
+  .inv-icon-btn { width:46px; height:46px; border-radius:50%; background:#12161f; border:1px solid #24303f;
+    display:flex; align-items:center; justify-content:center; font-size:19px; color:#cfe0f2; }
+  .inv-icon-group { display:flex; align-items:center; gap:10px; }
+
+  .inv-body { width:100%; max-width:460px; margin:0 auto; padding:0 16px 16px; }
+
+  .daily-card { background:#0e131b; border:1px solid #22303f; border-radius:18px; padding:16px; margin-bottom:14px; }
+  .daily-head { display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; }
+  .daily-head .daily-title { font-size:17px; font-weight:800; }
+  .daily-claimed-badge { background:#1b2330; color:#5c6b7d; font-size:11px; font-weight:800; padding:6px 12px; border-radius:999px; }
+  .daily-claim-btn { background:linear-gradient(135deg,#4fa8ff,#3d7fc9); color:#fff; font-size:11px; font-weight:800;
+    padding:6px 14px; border-radius:999px; border:none; }
+  .daily-row { display:flex; gap:8px; overflow-x:auto; }
+  .daily-day { flex-shrink:0; width:60px; height:60px; border-radius:14px; background:#141a24; border:1px solid #22303f;
+    display:flex; flex-direction:column; align-items:center; justify-content:center; font-size:20px; position:relative; }
+  .daily-day.done { background:#123023; border-color:#1f5c33; }
+  .daily-day.today { border-color:#4fa8ff; box-shadow:0 0 0 1px #4fa8ff inset; }
+  .daily-day .daily-reward { font-size:9px; color:#ffd766; font-weight:800; margin-top:2px; }
+  .daily-day .daily-check { position:absolute; top:3px; left:3px; width:16px; height:16px; border-radius:50%;
+    background:#2fbf6e; display:flex; align-items:center; justify-content:center; font-size:10px; }
+
+  .acc-card { background:#0e131b; border:1px solid #22303f; border-radius:18px; margin-bottom:14px; overflow:hidden; }
+  .acc-head { display:flex; align-items:center; justify-content:space-between; padding:16px; cursor:pointer; }
+  .acc-head-left { display:flex; flex-direction:column; gap:6px; }
+  .acc-head-title { font-size:18px; font-weight:800; }
+  .acc-head-count { font-size:12px; color:#8a99ad; background:#161f2b; border-radius:999px; padding:4px 10px; width:fit-content; }
+  .acc-head-preview { display:flex; align-items:center; }
+  .acc-preview-avatar { width:52px; height:52px; border-radius:50%; margin-right:-14px; border:2px solid #0e131b; }
+  .acc-chevron { font-size:16px; color:#8a99ad; margin-right:10px; transition:transform .2s; flex-shrink:0; }
+  .acc-chevron.open { transform:rotate(180deg); }
+  .acc-body { max-height:0; overflow:hidden; transition:max-height .25s ease; padding:0 16px; }
+  .acc-body.open { max-height:640px; padding:0 16px 16px; overflow-y:auto; }
+
+  .section-title { align-self:flex-start; font-weight:800; font-size:15px; margin:14px 2px 8px; width:100%; max-width:420px; }
+  .skin-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; width:100%; max-width:420px; }
+  .skin-card { background:#0e131b; border:2px solid #22303f; border-radius:14px; padding:10px; text-align:center; position:relative; }
+  .skin-card.equipped { border-color:#7ee787; }
+  .skin-avatar { width:64px; height:64px; border-radius:50%; margin:0 auto 6px; }
+  .skin-tag { font-size:9px; font-weight:800; padding:2px 6px; border-radius:999px; display:inline-block; margin-top:4px; }
+  .skin-name { font-size:11px; font-weight:700; margin-top:2px; }
+  .tag-starter { background:#2a3a4d; color:#9fc7ff; }
+  .tag-common { background:#1f5c33; color:#7ee787; }
+  .tag-rare { background:#1a4a7a; color:#7fd0ff; }
+  .tag-epic { background:#5a1f7a; color:#e0a8ff; }
+  .tag-legend { background:#7a5a10; color:#ffd766; }
+  .lock-overlay { position:absolute; inset:0; background:rgba(0,0,0,.55); border-radius:14px; display:flex;
+    align-items:center; justify-content:center; font-size:22px; }
+  .skin-owned-badge { position:absolute; top:6px; left:6px; background:rgba(79,168,255,.9); color:#fff;
+    font-size:10px; font-weight:800; padding:2px 7px; border-radius:999px; }
+
+  .lootbox-card { background:linear-gradient(160deg,#141a24,#0d1218); border:1px solid #26364a; border-radius:18px;
+    padding:16px; width:100%; max-width:420px; display:flex; align-items:center; gap:14px; margin-bottom:10px; }
+  .lootbox-icon { width:64px; height:64px; border-radius:14px; background:linear-gradient(135deg,#3dd6ff,#4fa8ff);
+    display:flex; align-items:center; justify-content:center; font-size:30px; flex-shrink:0; }
+  .lootbox-info { flex:1; }
+  .lootbox-name { font-weight:800; font-size:15px; }
+  .lootbox-supply { font-size:11px; color:#8a99ad; margin-top:2px; }
+  .lootbox-buy { background:linear-gradient(135deg,#ffd700,#ff9d00); color:#3a2400; font-weight:800;
+    border:none; border-radius:10px; padding:8px 14px; font-size:13px; white-space:nowrap; }
+  .lootbox-buy:disabled, .lootbox-open-btn:disabled { opacity:.4; }
+
+  #lootbox-owned-list { width:100%; display:flex; flex-direction:column; gap:8px; }
+  .lootbox-owned-row { display:flex; align-items:center; gap:12px; background:#131a24; border:1px solid #22303f;
+    border-radius:14px; padding:10px 12px; }
+  .lootbox-owned-row .lootbox-icon { width:40px; height:40px; font-size:20px; border-radius:10px; }
+  .lootbox-owned-row .lootbox-owned-name { flex:1; font-size:13px; font-weight:700; }
+  .lootbox-open-btn { background:linear-gradient(135deg,#4fa8ff,#3d7fc9); border:none; border-radius:10px; color:#fff;
+    font-weight:700; padding:7px 14px; font-size:12px; }
+  .lootbox-transfer-btn { background:#161f2b; border:1px solid #2c3d52; border-radius:10px; color:#cfe0f2;
+    font-weight:700; padding:7px 10px; font-size:12px; }
+  .empty-hint { color:#5c6b7d; font-size:12px; padding:10px 2px; }
+
+  .modal-overlay { position:absolute; inset:0; z-index:30; background:rgba(0,0,0,.65); display:flex;
+    align-items:flex-end; justify-content:center; }
+  .modal-overlay.hidden { display:none; }
+  .modal-card { width:100%; max-width:460px; max-height:78vh; overflow-y:auto; background:#0c1017;
+    border:1px solid #24303f; border-radius:20px 20px 0 0; padding:18px; }
+  .modal-head { display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; font-weight:800; font-size:16px; }
+  .modal-head button { background:rgba(255,255,255,.08); border:none; color:#fff; border-radius:10px;
+    padding:6px 10px; font-size:13px; }
+  .skin-instance-row { display:flex; align-items:center; gap:10px; background:#131a24; border:1px solid #22303f;
+    border-radius:12px; padding:9px 12px; margin-bottom:8px; }
+  .skin-instance-row .instance-serial { flex:1; font-family:monospace; font-size:13px; font-weight:700; color:#ffd766; }
+  #transfer-target-input { width:100%; max-width:420px; background:#131a24; border:1px solid #2c3d52; border-radius:10px;
+    color:#fff; padding:12px 14px; font-size:14px; margin:10px 0; direction:ltr; text-align:left; }
+
+  .perk-card { background:#0e131b; border:1px solid #22303f; border-radius:16px; padding:14px; width:100%; max-width:420px; margin-bottom:12px; }
+  .perk-head { display:flex; justify-content:space-between; align-items:center; margin-bottom:6px; }
+  .perk-name { font-weight:800; font-size:15px; }
+  .perk-level { font-size:12px; color:#8a99ad; }
+  .perk-bar-bg { height:8px; border-radius:999px; background:#1c2634; overflow:hidden; margin-bottom:10px; }
+  .perk-bar-fill { height:100%; background:linear-gradient(90deg,#4fa8ff,#7ee787); }
+  .perk-upgrade { display:flex; justify-content:space-between; align-items:center; }
+  .perk-cost { font-size:13px; color:#ffd766; font-weight:700; }
+  .perk-btn { background:linear-gradient(135deg,#4fa8ff,#3d7fc9); border:none; border-radius:10px; color:#fff;
+    font-weight:700; padding:8px 16px; font-size:13px; }
+  .perk-btn:disabled { opacity:.35; }
+
+  /* ===== Convert styles ===== */
+  .convert-container {
+    width: 100%;
+    max-width: 420px;
+    padding: 16px;
+  }
+  .convert-box {
+    background: #0e131b;
+    border: 2px solid #ffd766;
+    border-radius: 18px;
+    padding: 24px;
+    text-align: center;
+    margin-top: 10px;
+  }
+  .convert-rate {
+    font-size: 18px;
+    color: #8a99ad;
+    margin: 16px 0;
+  }
+  .convert-rate b {
+    color: #ffd766;
+    font-size: 22px;
+  }
+  .convert-input {
+    width: 100%;
+    max-width: 200px;
+    background: #1a1f2a;
+    border: 2px solid #2a3a4d;
+    border-radius: 12px;
+    color: #fff;
+    padding: 12px 16px;
+    font-size: 20px;
+    font-weight: 700;
+    text-align: center;
+    margin: 10px auto;
+    display: block;
+    direction: ltr;
+  }
+  .convert-input:focus {
+    border-color: #4fa8ff;
+    outline: none;
+  }
+  .convert-result {
+    font-size: 24px;
+    font-weight: 800;
+    color: #7ee787;
+    margin: 12px 0;
+  }
+  .convert-btn {
+    background: linear-gradient(135deg, #ffd700, #ff9d00);
+    color: #3a2400;
+    border: none;
+    border-radius: 14px;
+    padding: 14px 32px;
+    font-size: 18px;
+    font-weight: 800;
+    cursor: pointer;
+    width: 100%;
+    max-width: 280px;
+    transition: all 0.2s;
+    margin-top: 10px;
+  }
+  .convert-btn:active { transform: scale(0.95); }
+  .convert-btn:disabled { opacity: 0.4; }
+  .convert-info {
+    color: #5c6b7d;
+    font-size: 13px;
+    margin-top: 14px;
+    line-height: 1.8;
+  }
+  .convert-info b { color: #ffd766; }
 
   /* ===== Duel styles ===== */
   .duel-container {
@@ -195,6 +380,43 @@
     <button class="btn secondary" id="duel-btn" style="margin-top:10px;">⚔️ دوئل آنلاین</button>
   </div>
 
+  <!-- CONVERT -->
+  <div class="screen hidden" id="screen-convert">
+    <div class="convert-container">
+      <h1 class="title">🔄 تبدیل توکن</h1>
+      <p class="subtitle">توکن‌های خود را به پلنت کوین تبدیل کن!</p>
+
+      <div class="convert-box">
+        <div style="display:flex; justify-content:space-around; margin-bottom:16px;">
+          <div>
+            <div style="color:#8a99ad; font-size:13px;">توکن</div>
+            <div style="font-size:28px; font-weight:800; color:#ffd766;" id="convert-tokens">0</div>
+          </div>
+          <div style="display:flex; align-items:center; font-size:30px;">➜</div>
+          <div>
+            <div style="color:#8a99ad; font-size:13px;">پلنت کوین</div>
+            <div style="font-size:28px; font-weight:800; color:#7ee787;" id="convert-coins">0</div>
+          </div>
+        </div>
+
+        <div class="convert-rate">
+          نرخ تبدیل: <b>۵۰۰ توکن</b> = <b>۱۰ پلنت کوین</b>
+        </div>
+
+        <input type="number" class="convert-input" id="convert-input" placeholder="تعداد توکن" min="500" step="500" value="500">
+
+        <div class="convert-result" id="convert-result">۱۰ پلنت کوین</div>
+
+        <button class="convert-btn" id="convert-btn">🔄 تبدیل کن</button>
+
+        <div class="convert-info">
+          💡 حداقل تبدیل: <b>۵۰۰ توکن</b><br>
+          🪐 پلنت کوین برای خرید <b>لوت‌باکس</b> استفاده میشه
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- DUEL -->
   <div class="screen hidden" id="screen-duel">
     <div class="duel-container">
@@ -234,6 +456,128 @@
     </div>
   </div>
 
+  <!-- ITEMS -->
+  <div class="screen hidden" id="screen-items">
+    <div class="inv-topbar">
+      <button class="inv-close" id="inv-close-btn">✕ بستن</button>
+      <div class="inv-title">اینونتوری</div>
+      <div class="inv-topbar-right"><span>⌄</span><span>⋮</span></div>
+    </div>
+
+    <div class="inv-summary">
+      <div class="inv-coin-pill">🪙 <span id="inv-tokens">0</span></div>
+      <div class="inv-avatar-wrap">
+        <div class="inv-avatar-ring" id="inv-avatar-ring">🪐</div>
+        <div class="inv-avatar-label"><span id="inv-bestmass">0</span> رکورد</div>
+      </div>
+      <div class="inv-icon-group">
+        <div class="inv-icon-btn" id="inv-add-btn">👤+</div>
+        <div class="inv-icon-btn" id="inv-settings-btn">⚙️</div>
+      </div>
+    </div>
+
+    <div class="inv-body">
+      <div class="daily-card">
+        <div class="daily-head">
+          <span class="daily-title">جایزه روزانه</span>
+          <button class="daily-claim-btn" id="daily-claim-btn">دریافت</button>
+        </div>
+        <div class="daily-row" id="daily-row"></div>
+      </div>
+
+      <div class="acc-card">
+        <div class="acc-head" id="skins-acc-head">
+          <div class="acc-head-left">
+            <span class="acc-head-title">اسکین‌ها</span>
+            <span class="acc-head-count" id="skins-count">0 items</span>
+          </div>
+          <div style="display:flex; align-items:center;">
+            <div class="acc-head-preview" id="skins-preview"></div>
+            <span class="acc-chevron" id="skins-chevron">⌄</span>
+          </div>
+        </div>
+        <div class="acc-body" id="skins-acc-body">
+          <div class="skin-grid" id="skin-grid"></div>
+        </div>
+      </div>
+
+      <div class="acc-card">
+        <div class="acc-head" id="lootbox-acc-head">
+          <div class="acc-head-left">
+            <span class="acc-head-title">لوت‌باکس‌ها</span>
+            <span class="acc-head-count" id="lootbox-count">0 items</span>
+          </div>
+          <div style="display:flex; align-items:center;">
+            <div class="acc-head-preview" id="lootbox-preview"></div>
+            <span class="acc-chevron" id="lootbox-chevron">⌄</span>
+          </div>
+        </div>
+        <div class="acc-body" id="lootbox-acc-body">
+          <div class="lootbox-card">
+            <div class="lootbox-icon">📦</div>
+            <div class="lootbox-info">
+              <div class="lootbox-name">Newer</div>
+              <div class="lootbox-supply" id="lootbox-supply">در حال بارگذاری...</div>
+            </div>
+            <button class="lootbox-buy" id="lootbox-buy-btn">🪐 ۵</button>
+          </div>
+          <div id="lootbox-owned-list"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SKIN DETAIL MODAL -->
+  <div class="modal-overlay hidden" id="skin-modal">
+    <div class="modal-card">
+      <div class="modal-head"><span id="skin-modal-title"></span><button id="skin-modal-close">✕</button></div>
+      <button class="btn" id="skin-modal-equip">استفاده از این اسکین</button>
+      <div class="section-title" style="margin-top:14px;">نسخه‌های من</div>
+      <div id="skin-modal-instances"></div>
+    </div>
+  </div>
+
+  <!-- TRANSFER MODAL -->
+  <div class="modal-overlay hidden" id="transfer-modal">
+    <div class="modal-card">
+      <div class="modal-head"><span>انتقال آیتم</span><button id="transfer-modal-close">✕</button></div>
+      <p class="subtitle" id="transfer-item-label" style="margin-bottom:0;"></p>
+      <input type="text" id="transfer-target-input" placeholder="آیدی عددی تلگرام گیرنده" inputmode="numeric">
+      <p class="subtitle" style="margin-bottom:10px;">⚠️ این عمل قابل برگشت نیست؛ آیدی رو درست وارد کن.</p>
+      <button class="btn" id="transfer-confirm-btn">ارسال آیتم</button>
+    </div>
+  </div>
+
+  <!-- PERKS -->
+  <div class="screen hidden" id="screen-perks">
+    <h1 class="title">⚡ ارتقاها</h1>
+    <div class="perk-card">
+      <div class="perk-head"><span class="perk-name">کاهش کول‌داون تقسیم</span><span class="perk-level" id="perk-split-level">لول 0/50</span></div>
+      <div class="perk-bar-bg"><div class="perk-bar-fill" id="perk-split-bar" style="width:0%"></div></div>
+      <div class="perk-upgrade">
+        <span class="perk-cost" id="perk-split-cost">هزینه: 50 توکن</span>
+        <button class="perk-btn" id="perk-split-btn">ارتقا</button>
+      </div>
+    </div>
+    <div class="perk-card">
+      <div class="perk-head"><span class="perk-name">افزایش سرعت</span><span class="perk-level" id="perk-speed-level">لول 0/50</span></div>
+      <div class="perk-bar-bg"><div class="perk-bar-fill" id="perk-speed-bar" style="width:0%"></div></div>
+      <div class="perk-upgrade">
+        <span class="perk-cost" id="perk-speed-cost">هزینه: 50 توکن</span>
+        <button class="perk-btn" id="perk-speed-btn">ارتقا</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- BOTTOM NAV -->
+  <div id="bottomnav">
+    <div class="nav-btn active" data-tab="home"><span class="nav-icon">🏠</span>خانه</div>
+    <div class="nav-btn" data-tab="convert"><span class="nav-icon">🔄</span>تبدیل</div>
+    <div class="nav-btn" data-tab="duel"><span class="nav-icon">⚔️</span>دوئل</div>
+    <div class="nav-btn" data-tab="items"><span class="nav-icon">🎒</span>آیتم‌ها</div>
+    <div class="nav-btn" data-tab="perks"><span class="nav-icon">⚡</span>ارتقا</div>
+  </div>
+
   <!-- GAME -->
   <div class="screen hidden full" id="screen-game">
     <canvas id="board"></canvas>
@@ -252,15 +596,6 @@
     <div class="go-best">رکورد شما: <b id="go-best">0</b></div>
     <button class="btn" id="retry-btn">🔁 دوباره بازی کن</button>
     <button class="btn secondary" id="menu-btn">منوی اصلی</button>
-  </div>
-
-  <!-- BOTTOM NAV -->
-  <div id="bottomnav">
-    <div class="nav-btn active" data-tab="home"><span class="nav-icon">🏠</span>خانه</div>
-    <div class="nav-btn" data-tab="duel"><span class="nav-icon">⚔️</span>دوئل</div>
-    <div class="nav-btn" data-tab="soon"><span class="nav-icon">✨</span>بزودی</div>
-    <div class="nav-btn" data-tab="items"><span class="nav-icon">🎒</span>آیتم‌ها</div>
-    <div class="nav-btn" data-tab="perks"><span class="nav-icon">⚡</span>ارتقا</div>
   </div>
 
 </div>
@@ -297,13 +632,25 @@
     collector_cap:  { name:'Collector',        rarity:'legend',  color:'#a86fff' },
     triangle_nine:  { name:'Triangle 9',       rarity:'legend',  color:'#3dd6ff' },
   };
+  const LOOTBOX_POOL = {
+    common: ['no_mouse','golden_bowl'],
+    rare: ['slime_resist','when_lambo','higher'],
+    epic: ['reputation'],
+    legend: ['collector_cap','triangle_nine']
+  };
+  const RARITY_WEIGHTS = { common:60, rare:25, epic:10, legend:5 };
   const TAG_CLASS = { starter:'tag-starter', common:'tag-common', rare:'tag-rare', epic:'tag-epic', legend:'tag-legend' };
   const TAG_LABEL = { starter:'شروع', common:'Common', rare:'Rare', epic:'Epic', legend:'Legend' };
+
+  const LOOTBOX_PRICE = 5;
+  const CONVERT_RATE = 500;
+  const CONVERT_AMOUNT = 10;
 
   function defaultProfile(){
     return {
       name: displayName,
       tokens: 0,
+      planetCoins: 0,
       bestMass: 0,
       equippedSkin: 'dead_star',
       perks: { splitCooldownLevel:0, speedLevel:0 },
@@ -319,29 +666,11 @@
   let db = null;
   let userRef = null;
 
+  // ===== DUEL VARIABLES =====
   let duelSearching = false;
   let duelMatchId = null;
   let duelOpponent = null;
   let duelInterval = null;
-
-  // ===== GAME VARIABLES =====
-  const canvas = document.getElementById('board');
-  const ctx = canvas.getContext('2d');
-  let pieces, pellets, camScale, running, lastT, maxMassReached;
-  let smoothCamX = null, smoothCamY = null;
-  let isDuel = false;
-  let opponentPieces = [];
-  let opponentMass = 0;
-  let duelWinner = null;
-
-  function fitCanvas(){ 
-    canvas.width = innerWidth*devicePixelRatio; 
-    canvas.height = innerHeight*devicePixelRatio;
-    canvas.style.width = innerWidth+'px'; 
-    canvas.style.height = innerHeight+'px';
-    ctx.setTransform(devicePixelRatio,0,0,devicePixelRatio,0,0); 
-  }
-  window.addEventListener('resize', fitCanvas);
 
   function initFirebase(){
     const firebaseConfig = {
@@ -366,7 +695,10 @@
   }
 
   function saveField(path, value){
-    if (!db || !userRef) return;
+    if (!db || !userRef) {
+      console.log('Local-only save:', path, value);
+      return;
+    }
     userRef.child(path).set(value).catch(e => console.error('save error', path, e));
   }
 
@@ -399,6 +731,7 @@
         profile = {
           name: remote.name || displayName,
           tokens: typeof remote.tokens === 'number' ? remote.tokens : 0,
+          planetCoins: typeof remote.planetCoins === 'number' ? remote.planetCoins : 0,
           bestMass: typeof remote.bestMass === 'number' ? remote.bestMass : 0,
           equippedSkin: remote.equippedSkin || 'dead_star',
           perks: remote.perks ? { ...remote.perks } : { splitCooldownLevel:0, speedLevel:0 },
@@ -437,7 +770,19 @@
       showScreen('screen-'+btn.dataset.tab);
       if (btn.dataset.tab==='items') renderItems();
       if (btn.dataset.tab==='perks') renderPerks();
+      if (btn.dataset.tab==='convert') renderConvert();
     });
+  });
+  document.getElementById('inv-close-btn').addEventListener('click', ()=>{
+    document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+    document.querySelector('.nav-btn[data-tab="home"]').classList.add('active');
+    showScreen('screen-home');
+  });
+  document.getElementById('inv-add-btn').addEventListener('click', ()=>notify('این بخش به زودی اضافه می‌شه.'));
+  document.getElementById('inv-settings-btn').addEventListener('click', ()=>{
+    document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+    document.querySelector('.nav-btn[data-tab="perks"]').classList.add('active');
+    showScreen('screen-perks'); renderPerks();
   });
 
   function renderAll(){
@@ -445,6 +790,7 @@
     document.getElementById('home-rank').textContent = Math.max(1, Math.floor((profile.bestMass||0)/50)+1);
     renderItems();
     renderPerks();
+    renderConvert();
   }
 
   /* ---------- game mode picker ---------- */
@@ -472,17 +818,410 @@
     startGame();
   });
 
-  function notify(msg){ if (tg && tg.showAlert) tg.showAlert(msg); else alert(msg); }
-
-  /* ================= DUEL SYSTEM ================= */
-  document.getElementById('duel-find-btn').addEventListener('click', findDuel);
-  document.getElementById('duel-cancel-btn').addEventListener('click', cancelDuel);
   document.getElementById('duel-btn').addEventListener('click', ()=>{
     if (!profileSynced) notify('در حال اتصال به سرور...');
     showScreen('screen-duel');
     document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
     document.querySelector('.nav-btn[data-tab="duel"]').classList.add('active');
   });
+
+  function notify(msg){ if (tg && tg.showAlert) tg.showAlert(msg); else alert(msg); }
+
+  /* ===== CONVERT ===== */
+  function renderConvert(){
+    document.getElementById('convert-tokens').textContent = profile.tokens || 0;
+    document.getElementById('convert-coins').textContent = profile.planetCoins || 0;
+    updateConvertResult();
+  }
+
+  function updateConvertResult(){
+    const input = document.getElementById('convert-input');
+    const val = parseInt(input.value) || 0;
+    const result = Math.floor(val / CONVERT_RATE) * CONVERT_AMOUNT;
+    document.getElementById('convert-result').textContent = `${result} پلنت کوین`;
+    const btn = document.getElementById('convert-btn');
+    btn.disabled = val < CONVERT_RATE || val > (profile.tokens || 0);
+  }
+
+  document.getElementById('convert-input').addEventListener('input', updateConvertResult);
+
+  document.getElementById('convert-btn').addEventListener('click', function(){
+    const input = document.getElementById('convert-input');
+    const val = parseInt(input.value) || 0;
+    
+    if (val < CONVERT_RATE) {
+      notify(`حداقل تبدیل ${CONVERT_RATE} توکن هست!`);
+      return;
+    }
+    if (val > (profile.tokens || 0)) {
+      notify('توکن کافی نداری!');
+      return;
+    }
+    
+    const result = Math.floor(val / CONVERT_RATE) * CONVERT_AMOUNT;
+    const usedTokens = Math.floor(val / CONVERT_RATE) * CONVERT_RATE;
+    
+    profile.tokens -= usedTokens;
+    profile.planetCoins = (profile.planetCoins || 0) + result;
+    saveField('tokens', profile.tokens);
+    saveField('planetCoins', profile.planetCoins);
+    
+    notify(`✅ ${usedTokens} توکن به ${result} پلنت کوین تبدیل شد! 🪐`);
+    renderAll();
+    document.getElementById('convert-input').value = CONVERT_RATE;
+    updateConvertResult();
+  });
+
+  /* ===== ITEMS ===== */
+  function wireAccordion(headId, bodyId, chevronId){
+    document.getElementById(headId).addEventListener('click', ()=>{
+      const body = document.getElementById(bodyId);
+      const chev = document.getElementById(chevronId);
+      const opening = !body.classList.contains('open');
+      body.classList.toggle('open', opening);
+      chev.classList.toggle('open', opening);
+    });
+  }
+  wireAccordion('skins-acc-head','skins-acc-body','skins-chevron');
+  wireAccordion('lootbox-acc-head','lootbox-acc-body','lootbox-chevron');
+
+  function renderSkinGrid(){
+    const grid = document.getElementById('skin-grid');
+    grid.innerHTML = '';
+    Object.keys(SKIN_DB).forEach(id=>{
+      const skin = SKIN_DB[id];
+      const owned = ownsSkin(id);
+      const copies = skinCopies(id);
+      const tag = id==='dead_star' ? 'starter' : skin.rarity;
+      const card = document.createElement('div');
+      card.className = 'skin-card' + (profile.equippedSkin===id ? ' equipped':'');
+      card.innerHTML = `
+        <div class="skin-avatar" style="background:radial-gradient(circle at 35% 30%, #fff6, ${skin.color})"></div>
+        ${copies>1 ? '<div class="skin-owned-badge">×'+copies+'</div>' : ''}
+        <div class="skin-name">${skin.name}</div>
+        <div class="skin-tag ${TAG_CLASS[tag]||'tag-common'}">${TAG_LABEL[tag]||tag}</div>
+        ${!owned ? '<div class="lock-overlay">🔒</div>' : ''}
+      `;
+      if (owned) card.addEventListener('click', ()=>openSkinModal(id));
+      grid.appendChild(card);
+    });
+
+    const ownedIds = Object.keys(SKIN_DB).filter(ownsSkin);
+    document.getElementById('skins-count').textContent = ownedIds.length + ' items';
+    const preview = document.getElementById('skins-preview');
+    preview.innerHTML = '';
+    ownedIds.slice(-4).forEach(id=>{
+      const dot = document.createElement('div');
+      dot.className = 'acc-preview-avatar';
+      dot.style.background = `radial-gradient(circle at 35% 30%, #fff6, ${SKIN_DB[id].color})`;
+      preview.appendChild(dot);
+    });
+  }
+
+  function renderOwnedLootboxes(){
+    const list = document.getElementById('lootbox-owned-list');
+    const boxes = Object.entries(profile.inventory.lootboxes||{});
+    document.getElementById('lootbox-count').textContent = boxes.length + ' items';
+    const preview = document.getElementById('lootbox-preview');
+    preview.innerHTML = '';
+    if (boxes.length) {
+      const dot = document.createElement('div');
+      dot.className = 'acc-preview-avatar';
+      dot.style.background = '#141a24'; dot.style.display='flex'; dot.style.alignItems='center';
+      dot.style.justifyContent='center'; dot.style.fontSize='22px'; dot.textContent='📦';
+      preview.appendChild(dot);
+    }
+    if (!boxes.length) { list.innerHTML = '<div class="empty-hint">لوت‌باکس بازنشده‌ای نداری.</div>'; return; }
+    list.innerHTML = '';
+    boxes.forEach(([key, box])=>{
+      const row = document.createElement('div');
+      row.className = 'lootbox-owned-row';
+      row.innerHTML = `
+        <div class="lootbox-icon">📦</div>
+        <div class="lootbox-owned-name">Newer</div>
+        <button class="lootbox-transfer-btn" data-key="${key}">انتقال</button>
+        <button class="lootbox-open-btn" data-key="${key}">باز کردن</button>
+      `;
+      row.querySelector('.lootbox-open-btn').addEventListener('click', ()=>openLootbox(key));
+      row.querySelector('.lootbox-transfer-btn').addEventListener('click', ()=>openTransferModal({ kind:'lootbox', key, box, label:'لوت‌باکس Newer (بازنشده)' }));
+      list.appendChild(row);
+    });
+  }
+
+  /* ----- daily claim ----- */
+  const DAILY_REWARDS = [10,15,20,30,40,60,100];
+  function todayKey(){ const d = new Date(); return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate(); }
+  function daysBetween(a,b){ return Math.round((b-a)/86400000); }
+  
+  function renderDailyClaim(){
+    const dc = profile.dailyClaim || { streak:0, lastClaimDay:null };
+    const today = todayKey();
+    const claimedToday = dc.lastClaimDay === today;
+    const btn = document.getElementById('daily-claim-btn');
+    if (claimedToday) {
+      btn.textContent = 'دریافت شد'; btn.disabled = true; btn.classList.add('daily-claimed-badge');
+    } else {
+      btn.textContent = 'دریافت'; btn.disabled = false; btn.classList.remove('daily-claimed-badge');
+    }
+    const row = document.getElementById('daily-row');
+    row.innerHTML = '';
+    for (let i=1;i<=7;i++){
+      const day = document.createElement('div');
+      const isDone = i <= dc.streak && (i < dc.streak || claimedToday);
+      const isToday = claimedToday ? i === dc.streak : i === dc.streak+1;
+      day.className = 'daily-day' + (isDone?' done':'') + (isToday?' today':'');
+      day.innerHTML = `${isDone?'<span class="daily-check">✓</span>':''}<span>🎁</span><span class="daily-reward">${DAILY_REWARDS[i-1]}</span>`;
+      row.appendChild(day);
+    }
+  }
+
+  document.getElementById('daily-claim-btn').addEventListener('click', ()=>{
+    const dc = profile.dailyClaim || { streak:0, lastClaimDay:null };
+    const today = todayKey();
+    if (dc.lastClaimDay === today) return;
+    let streak = dc.streak || 0;
+    if (dc.lastClaimDay) {
+      const gap = daysBetween(new Date(dc.lastClaimDay), new Date(today));
+      streak = gap === 1 ? streak : 0;
+    }
+    streak = (streak % 7) + 1;
+    const reward = DAILY_REWARDS[streak-1];
+    profile.tokens = (profile.tokens||0) + reward;
+    profile.dailyClaim = { streak, lastClaimDay: today };
+    saveField('tokens', profile.tokens);
+    saveField('dailyClaim', profile.dailyClaim);
+    notify('+'+reward+' توکن گرفتی 🪙');
+    renderDailyClaim();
+    renderInvSummary();
+    document.getElementById('home-tokens').textContent = profile.tokens;
+    renderConvert();
+  });
+
+  function renderInvSummary(){
+    document.getElementById('inv-tokens').textContent = profile.tokens||0;
+    document.getElementById('inv-bestmass').textContent = profile.bestMass||0;
+    const equipped = SKIN_DB[profile.equippedSkin]||SKIN_DB.dead_star;
+    document.getElementById('inv-avatar-ring').style.background = `radial-gradient(circle at 35% 30%, #fff6, ${equipped.color})`;
+  }
+
+  function renderItems(){
+    renderInvSummary();
+    renderDailyClaim();
+    renderSkinGrid();
+    renderOwnedLootboxes();
+    if (db) {
+      db.ref('lootboxSupply/newer').once('value').then(snap=>{
+        const d = snap.val() || { claimed:0, max:1000 };
+        document.getElementById('lootbox-supply').textContent = `${d.claimed}/${d.max} برداشته شده`;
+        document.getElementById('lootbox-buy-btn').disabled = d.claimed >= d.max;
+      }).catch(e=>console.error('lootbox supply read failed', e));
+    } else {
+      document.getElementById('lootbox-supply').textContent = 'اتصال به سرور برقرار نیست';
+      document.getElementById('lootbox-buy-btn').disabled = true;
+    }
+  }
+
+  function pickRandomSkin(){
+    const roll = Math.random()*100;
+    let acc=0, chosenRarity='common';
+    for (const r of ['common','rare','epic','legend']){
+      acc += RARITY_WEIGHTS[r];
+      if (roll <= acc) { chosenRarity = r; break; }
+    }
+    const pool = LOOTBOX_POOL[chosenRarity];
+    const skinId = pool[Math.floor(Math.random()*pool.length)];
+    return { skinId, rarity: chosenRarity };
+  }
+
+  /* ----- buy lootbox with planet coins ----- */
+  document.getElementById('lootbox-buy-btn').addEventListener('click', ()=>{
+    if (!db) { notify('اتصال به سرور برقرار نیست.'); return; }
+    if ((profile.planetCoins||0) < LOOTBOX_PRICE) { 
+      notify(`پلنت کوین کافی نداری! به ${LOOTBOX_PRICE} پلنت کوین نیاز داری. 🪐`); 
+      return; 
+    }
+
+    const supplyRef = db.ref('lootboxSupply/newer');
+    supplyRef.transaction(current=>{
+      current = current || { claimed:0, max:1000 };
+      if (current.claimed >= current.max) return;
+      current.claimed += 1;
+      return current;
+    }, (err, committed, snap)=>{
+      if (err) { notify('خطا در بررسی موجودی، دوباره امتحان کن.'); return; }
+      if (!committed) { notify('لوت‌باکس Newer تموم شده! 😔'); renderItems(); return; }
+
+      profile.planetCoins -= LOOTBOX_PRICE;
+      saveField('planetCoins', profile.planetCoins);
+
+      const boxData = { type:'newer', acquiredAt: Date.now() };
+      const pushRef = userRef.child('inventory/lootboxes').push();
+      pushRef.set(boxData).then(()=>{
+        profile.inventory.lootboxes[pushRef.key] = boxData;
+        notify('لوت‌باکس Newer به اینونتوریت اضافه شد! برو بازش کن 📦');
+        renderItems();
+        renderConvert();
+      }).catch(e=>{ console.error('lootbox push failed', e); notify('خطا در ذخیره‌سازی، دوباره امتحان کن.'); });
+    });
+  });
+
+  function openLootbox(key){
+    if (!db) { notify('اتصال به سرور برقرار نیست.'); return; }
+    const box = profile.inventory.lootboxes[key];
+    if (!box) return;
+
+    const { skinId, rarity } = pickRandomSkin();
+    const instRef = userRef.child('inventory/skins/'+skinId).push();
+
+    function commitGrant(serial){
+      const safeSerial = (serial===null || serial===undefined) ? Date.now() : serial;
+      const updates = {};
+      updates['inventory/lootboxes/'+key] = null;
+      updates['inventory/skins/'+skinId+'/'+instRef.key] = safeSerial;
+      userRef.update(updates).then(()=>{
+        delete profile.inventory.lootboxes[key];
+        profile.inventory.skins[skinId] = profile.inventory.skins[skinId] || {};
+        profile.inventory.skins[skinId][instRef.key] = safeSerial;
+        notify('اسکین «'+SKIN_DB[skinId].name+'» ('+TAG_LABEL[rarity]+') — تگ #'+String(safeSerial).padStart(4,'0')+' گرفتی 🎉');
+        renderItems();
+      }).catch(e=>{ console.error('lootbox open failed', e); notify('خطا در باز کردن، دوباره امتحان کن.'); });
+    }
+
+    db.ref('skinClaims/'+skinId).transaction(current => (current||0) + 1, (err, committed, snap) => {
+      const serial = (!err && committed && snap && snap.exists()) ? snap.val() : null;
+      commitGrant(serial);
+    });
+  }
+
+  /* ===== SKIN MODAL ===== */
+  const skinModal = document.getElementById('skin-modal');
+  function openSkinModal(id){
+    const skin = SKIN_DB[id];
+    document.getElementById('skin-modal-title').textContent = skin.name;
+    const equipBtn = document.getElementById('skin-modal-equip');
+    equipBtn.disabled = profile.equippedSkin===id;
+    equipBtn.textContent = profile.equippedSkin===id ? 'در حال استفاده' : 'استفاده از این اسکین';
+    equipBtn.onclick = ()=>{
+      profile.equippedSkin = id;
+      saveField('equippedSkin', id);
+      closeSkinModal();
+      renderItems();
+    };
+    const list = document.getElementById('skin-modal-instances');
+    if (id==='dead_star') {
+      list.innerHTML = '<div class="empty-hint">اسکین شروع — همه از اول دارنش، شماره‌ای نداره.</div>';
+    } else {
+      const instances = profile.inventory.skins[id] || {};
+      const keys = Object.keys(instances);
+      if (!keys.length) { list.innerHTML = '<div class="empty-hint">نسخه‌ای نداری.</div>'; }
+      else {
+        list.innerHTML = '';
+        keys.forEach(key=>{
+          const serial = instances[key];
+          const row = document.createElement('div');
+          row.className = 'skin-instance-row';
+          row.innerHTML = `<span class="instance-serial">تگ #${String(serial).padStart(4,'0')}</span>
+            <button class="lootbox-transfer-btn">انتقال</button>`;
+          row.querySelector('button').addEventListener('click', ()=>openTransferModal({
+            kind:'skin', skinId:id, key, serial, label: skin.name+' — تگ #'+String(serial).padStart(4,'0')
+          }));
+          list.appendChild(row);
+        });
+      }
+    }
+    skinModal.classList.remove('hidden');
+  }
+  function closeSkinModal(){ skinModal.classList.add('hidden'); }
+  document.getElementById('skin-modal-close').addEventListener('click', closeSkinModal);
+
+  /* ===== TRANSFER MODAL ===== */
+  const transferModal = document.getElementById('transfer-modal');
+  let pendingTransfer = null;
+  function openTransferModal(item){
+    pendingTransfer = item;
+    document.getElementById('transfer-item-label').textContent = item.label;
+    document.getElementById('transfer-target-input').value = '';
+    transferModal.classList.remove('hidden');
+  }
+  function closeTransferModal(){ transferModal.classList.add('hidden'); pendingTransfer = null; }
+  document.getElementById('transfer-modal-close').addEventListener('click', closeTransferModal);
+
+  document.getElementById('transfer-confirm-btn').addEventListener('click', ()=>{
+    if (!pendingTransfer) return;
+    if (!db) { notify('اتصال به سرور برقرار نیست.'); return; }
+    const raw = document.getElementById('transfer-target-input').value.trim();
+    const digits = raw.replace(/[^0-9]/g,'');
+    if (!digits) { notify('آیدی عددی معتبر وارد کن.'); return; }
+    const targetUid = 'tg_' + digits;
+    if (targetUid === uid) { notify('نمی‌تونی برای خودت انتقال بدی.'); return; }
+
+    if (pendingTransfer.kind === 'skin') {
+      const { skinId, key, serial } = pendingTransfer;
+      const updates = {};
+      updates['inventory/skins/'+skinId+'/'+key] = null;
+      userRef.child('inventory/skins/'+skinId).push(serial)
+        .then(()=> userRef.update(updates))
+        .then(()=>{
+          delete profile.inventory.skins[skinId][key];
+          notify('اسکین با تگ #'+String(serial).padStart(4,'0')+' منتقل شد.');
+          closeTransferModal(); closeSkinModal(); renderItems();
+        })
+        .catch(e=>{ console.error('skin transfer failed', e); notify('انتقال ناموفق بود، دوباره امتحان کن.'); });
+    } else if (pendingTransfer.kind === 'lootbox') {
+      const { key, box } = pendingTransfer;
+      const updates = {};
+      updates['inventory/lootboxes/'+key] = null;
+      userRef.child('inventory/lootboxes').push(box)
+        .then(()=> userRef.update(updates))
+        .then(()=>{
+          delete profile.inventory.lootboxes[key];
+          notify('لوت‌باکس منتقل شد.');
+          closeTransferModal(); renderItems();
+        })
+        .catch(e=>{ console.error('lootbox transfer failed', e); notify('انتقال ناموفق بود، دوباره امتحان کن.'); });
+    }
+  });
+
+  /* ===== PERKS ===== */
+  const MAX_PERK_LEVEL = 50;
+  function perkCost(nextLevel){ return Math.round(50 * Math.pow(1.3, nextLevel-1)); }
+
+  function renderPerks(){
+    const sLvl = profile.perks.splitCooldownLevel || 0;
+    const spLvl = profile.perks.speedLevel || 0;
+    document.getElementById('perk-split-level').textContent = `لول ${sLvl}/${MAX_PERK_LEVEL}`;
+    document.getElementById('perk-split-bar').style.width = (sLvl/MAX_PERK_LEVEL*100)+'%';
+    document.getElementById('perk-speed-level').textContent = `لول ${spLvl}/${MAX_PERK_LEVEL}`;
+    document.getElementById('perk-speed-bar').style.width = (spLvl/MAX_PERK_LEVEL*100)+'%';
+
+    const splitMaxed = sLvl>=MAX_PERK_LEVEL, speedMaxed = spLvl>=MAX_PERK_LEVEL;
+    const sCost = splitMaxed?0:perkCost(sLvl+1), spCost = speedMaxed?0:perkCost(spLvl+1);
+    document.getElementById('perk-split-cost').textContent = splitMaxed?'حداکثر':'هزینه: '+sCost+' توکن';
+    document.getElementById('perk-speed-cost').textContent = speedMaxed?'حداکثر':'هزینه: '+spCost+' توکن';
+    document.getElementById('perk-split-btn').disabled = splitMaxed || (profile.tokens||0) < sCost;
+    document.getElementById('perk-speed-btn').disabled = speedMaxed || (profile.tokens||0) < spCost;
+  }
+
+  function tryUpgrade(kind){
+    const key = kind==='split' ? 'splitCooldownLevel' : 'speedLevel';
+    const lvl = profile.perks[key] || 0;
+    if (lvl >= MAX_PERK_LEVEL) return;
+    const cost = perkCost(lvl+1);
+    if ((profile.tokens||0) < cost) return;
+    profile.tokens -= cost;
+    profile.perks[key] = lvl+1;
+    saveField('tokens', profile.tokens);
+    saveField('perks/'+key, profile.perks[key]);
+    document.getElementById('home-tokens').textContent = profile.tokens;
+    renderPerks();
+    renderConvert();
+  }
+  document.getElementById('perk-split-btn').addEventListener('click', ()=>tryUpgrade('split'));
+  document.getElementById('perk-speed-btn').addEventListener('click', ()=>tryUpgrade('speed'));
+
+  /* ================= DUEL SYSTEM ================= */
+  document.getElementById('duel-find-btn').addEventListener('click', findDuel);
+  document.getElementById('duel-cancel-btn').addEventListener('click', cancelDuel);
 
   function findDuel() {
     if (!db) { notify('اتصال به سرور برقرار نیست.'); return; }
@@ -497,7 +1236,6 @@
     document.getElementById('duel-status').innerHTML = '🔍 در حال جستجوی حریف...';
     document.getElementById('duel-timer').textContent = '⏳';
 
-    // ثبت در صف دوئل
     const duelRef = db.ref('duelQueue');
     const myData = {
       uid: uid,
@@ -506,7 +1244,6 @@
       skin: profile.equippedSkin || 'dead_star'
     };
 
-    // اول چک کن کسی در صف هست
     duelRef.once('value').then(snap => {
       const queue = snap.val() || {};
       let foundOpponent = null;
@@ -521,21 +1258,16 @@
       }
 
       if (foundOpponent) {
-        // حریف پیدا شد!
         duelMatchId = foundKey;
         duelOpponent = foundOpponent;
         duelRef.child(foundKey).remove();
         startDuelGame(foundOpponent);
       } else {
-        // اضافه کردن خودم به صف
         duelRef.push(myData).then(ref => {
           duelMatchId = ref.key;
-          // گوش دادن به تغییرات صف
           const watcher = duelRef.on('child_removed', (snap) => {
             if (snap.key === duelMatchId) {
-              // خودم حذف شدم یعنی یکی دیگه پیدا شده
               duelRef.off('child_removed');
-              // دوباره چک کن ببین کی منو برداشته
               duelRef.once('value').then(s => {
                 const q = s.val() || {};
                 let opponent = null;
@@ -556,7 +1288,6 @@
             }
           });
 
-          // تایمر 30 ثانیه
           let timeLeft = 30;
           document.getElementById('duel-timer').textContent = timeLeft + 's';
           const timer = setInterval(() => {
@@ -569,7 +1300,6 @@
               notify('⏰ زمان جستجو به پایان رسید!');
             }
           }, 1000);
-          
           duelInterval = timer;
         });
       }
@@ -630,16 +1360,32 @@
   }
 
   /* ================= GAME ENGINE ================= */
+  const canvas = document.getElementById('board');
+  const ctx = canvas.getContext('2d');
+  let pieces, pellets, camScale, running, lastT, maxMassReached;
+  let smoothCamX = null, smoothCamY = null;
+  let isDuel = false;
+  let opponentPieces = [];
+  let opponentMass = 0;
+  let opponentRef = null;
+  let bots = [];
+  let splitCooldownLeft = 0;
+
+  function fitCanvas(){ 
+    canvas.width = innerWidth*devicePixelRatio; 
+    canvas.height = innerHeight*devicePixelRatio;
+    canvas.style.width = innerWidth+'px'; 
+    canvas.style.height = innerHeight+'px';
+    ctx.setTransform(devicePixelRatio,0,0,devicePixelRatio,0,0); 
+  }
+  window.addEventListener('resize', fitCanvas);
+
   const WORLD = 3000, PELLET_COUNT = 220;
   const MIN_MASS_TO_SPLIT = 32;
   const MAX_PIECES = 16;
   const EAT_MASS_RATIO = 1.25;
   const EAT_OVERLAP = 0.7;
   const BASE_SPLIT_COOLDOWN = 5;
-
-  let bots = [];
-  let splitCooldownLeft = 0;
-  let opponentRef = null;
 
   function radiusFromMass(m){ return 8 + Math.sqrt(m)*3.1; }
   function baseSpeedFromRadius(r){ return Math.max(46, 320/(1+r/34)); }
@@ -669,10 +1415,8 @@
       }
     } else {
       bots = [];
-      // شروع دوئل با حریف
       opponentPieces = [];
       opponentMass = 22;
-      // گوش دادن به تغییرات حریف
       if (opponentRef) opponentRef.off();
       opponentRef = db.ref('duelGames/' + duelMatchId + '/' + duelOpponent.uid);
       opponentRef.on('value', (snap) => {
@@ -682,8 +1426,6 @@
           opponentMass = data.totalMass || 22;
         }
       });
-      // ارسال اطلاعات خودم
-      sendMyGameData();
     }
     
     camScale = 1; running = true; lastT = null; splitCooldownLeft = 0; maxMassReached = 22;
@@ -896,7 +1638,6 @@
   }
 
   function checkCollisions(){
-    // برخورد با بات‌ها
     for (let bi=bots.length-1; bi>=0; bi--){
       const bot = bots[bi];
       for (let pi=pieces.length-1; pi>=0; pi--){
@@ -910,7 +1651,6 @@
         else if (bot.mass > piece.mass*EAT_MASS_RATIO) { pieces.splice(pi,1); if (pieces.length===0) { endGame(); return; } }
       }
     }
-    // برخورد بات‌ها با هم
     for (let i=bots.length-1; i>=0; i--){
       for (let j=i-1; j>=0; j--){
         const a=bots[i], b=bots[j];
@@ -924,7 +1664,6 @@
       }
     }
 
-    // دوئل: برخورد با حریف
     if (isDuel && opponentPieces.length > 0) {
       for (const op of opponentPieces) {
         for (let pi=pieces.length-1; pi>=0; pi--){
@@ -936,11 +1675,9 @@
           if (!engulfed) continue;
           if (piece.mass > op.mass*EAT_MASS_RATIO) { 
             piece.mass += op.mass * 0.6; 
-            // حریف رو از لیست حذف کن
             const idx = opponentPieces.indexOf(op);
             if (idx > -1) opponentPieces.splice(idx, 1);
             if (opponentPieces.length === 0) {
-              // برنده شدیم!
               endDuel(true);
               return;
             }
@@ -982,7 +1719,6 @@
     running = false;
     if (isDuel) {
       if (opponentRef) opponentRef.off();
-      // اگر دوئل بود و به اینجا رسیدیم یعنی بازیکن مرده
       endDuel(false);
       return;
     }
@@ -1092,7 +1828,6 @@
     const equippedColor = (SKIN_DB[profile.equippedSkin]||SKIN_DB.dead_star).color;
     pieces.forEach(p=>drawCircle(p, equippedColor, true, null));
 
-    // رسم حریف در دوئل
     if (isDuel && opponentPieces.length > 0) {
       const oppColor = '#ff4444';
       opponentPieces.forEach(p => drawCircle(p, oppColor, false, duelOpponent ? duelOpponent.name : 'حریف'));
@@ -1124,7 +1859,6 @@
       const tm = totalMass(); if (tm>maxMassReached) maxMassReached=tm;
       document.getElementById('hud-mass').textContent = Math.round(tm)+'kg';
       
-      // ارسال داده در دوئل
       if (isDuel) sendMyGameData();
       
       draw();
@@ -1139,17 +1873,9 @@
     requestAnimationFrame(loop);
   }
 
-  function renderItems(){
-    // برای سادگی
-  }
-
-  function renderPerks(){
-    // برای سادگی
-  }
-
   showScreen('screen-home');
   loadProfile();
 })();
 </script>
 </body>
-</html>
+ </html>
