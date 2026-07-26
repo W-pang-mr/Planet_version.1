@@ -724,14 +724,23 @@
     pieces.forEach(p=>{ p.dispR += (radiusFromMass(p.mass)-p.dispR)*Math.min(1,dt*6); });
   }
 
-  function updateBot(bot, dt){
+  function updateBot(bot, dt, allBots){
     bot.dispR += (radiusFromMass(bot.mass)-bot.dispR)*Math.min(1,dt*6);
-    let nearestPiece=null, nd=Infinity;
-    for (const p of pieces){ const d=Math.hypot(p.x-bot.x,p.y-bot.y); if (d<nd){nd=d; nearestPiece=p;} }
+    // FIX: bots used to only ever look at the player's pieces, so every bot
+    // on the map converged on you at once. Now they scan the player AND
+    // every other bot and go after whichever nearby target makes sense —
+    // so bots hunt and eat each other too, not just swarm the player.
+    let nearestEnt=null, nd=Infinity;
+    for (const p of pieces){ const d=Math.hypot(p.x-bot.x,p.y-bot.y); if (d<nd){nd=d; nearestEnt=p;} }
+    for (const other of allBots){
+      if (other===bot) continue;
+      const d=Math.hypot(other.x-bot.x,other.y-bot.y);
+      if (d<nd){ nd=d; nearestEnt=other; }
+    }
     let dir=null;
-    if (nearestPiece && nd<420) {
-      if (bot.mass > nearestPiece.mass*1.15) dir={x:(nearestPiece.x-bot.x)/nd,y:(nearestPiece.y-bot.y)/nd};
-      else if (nearestPiece.mass > bot.mass*1.15) dir={x:(bot.x-nearestPiece.x)/nd,y:(bot.y-nearestPiece.y)/nd};
+    if (nearestEnt && nd<420) {
+      if (bot.mass > nearestEnt.mass*EAT_MASS_RATIO) dir={x:(nearestEnt.x-bot.x)/nd,y:(nearestEnt.y-bot.y)/nd};
+      else if (nearestEnt.mass > bot.mass*EAT_MASS_RATIO) dir={x:(bot.x-nearestEnt.x)/nd,y:(bot.y-nearestEnt.y)/nd};
     }
     if (!dir) {
       let np=null, npd=Infinity;
@@ -764,6 +773,19 @@
         if (!engulfed) continue;
         if (piece.mass > bot.mass*EAT_MASS_RATIO) { piece.mass += bot.mass*0.6; bots[bi] = makeBot(bi+1, piece); break; }
         else if (bot.mass > piece.mass*EAT_MASS_RATIO) { pieces.splice(pi,1); if (pieces.length===0) { endGame(); return; } }
+      }
+    }
+    // bot vs bot: bots now eat each other, not just the player
+    for (let i=bots.length-1; i>=0; i--){
+      for (let j=i-1; j>=0; j--){
+        const a=bots[i], b=bots[j];
+        const d = Math.hypot(a.x-b.x, a.y-b.y);
+        const bigger = a.mass >= b.mass ? a : b;
+        const smaller = a.mass >= b.mass ? b : a;
+        const engulfed = d < bigger.dispR - smaller.dispR*EAT_OVERLAP;
+        if (!engulfed) continue;
+        if (a.mass > b.mass*EAT_MASS_RATIO) { a.mass += b.mass*0.6; bots[j] = makeBot(j+1, a); }
+        else if (b.mass > a.mass*EAT_MASS_RATIO) { b.mass += a.mass*0.6; bots[i] = makeBot(i+1, b); break; }
       }
     }
   }
@@ -849,7 +871,7 @@
     if (!running) return;
     try {
       if (!lastT) lastT=t; const dt=Math.min(0.05,(t-lastT)/1000); lastT=t;
-      updatePieces(dt); bots.forEach(b=>updateBot(b,dt)); checkCollisions();
+      updatePieces(dt); bots.forEach(b=>updateBot(b,dt,bots)); checkCollisions();
       if (!running) return;
       if (splitCooldownLeft>0) splitCooldownLeft=Math.max(0,splitCooldownLeft-dt);
       const tm = totalMass(); if (tm>maxMassReached) maxMassReached=tm;
