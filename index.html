@@ -552,7 +552,11 @@
 
   const WORLD = 3000, PELLET_COUNT = 220, BOT_COUNT = 10;
   const BOT_COLORS = ['#ff5c5c','#ffd23d','#7ee787','#ff9d3d','#a86fff','#3dd6ff','#ff5cf0','#ff8080','#80ffcf','#c48bff'];
-  const SPLIT_MIN_MASS = 35, MAX_PIECES = 16, SPLIT_MERGE_LOCK = 15;
+  // agar.io-style split constants
+  const MIN_MASS_TO_SPLIT = 32;      // a piece needs at least this much mass to split in two
+  const MAX_PIECES = 16;
+  const EAT_MASS_RATIO = 1.25;       // must be 25% heavier to eat (agar.io standard)
+  const EAT_OVERLAP = 0.7;           // how much the smaller blob must be swallowed by the bigger one
   const BASE_SPLIT_COOLDOWN = 5;
 
   let pieces, bots, pellets, camScale, running, lastT, splitCooldownLeft, maxMassReached;
@@ -561,6 +565,10 @@
   function baseSpeedFromRadius(r){ return Math.max(46, 320/(1+r/34)); }
   function speedMultiplier(){ return 1 + (profile.perks.speedLevel||0)*0.02; }
   function splitCooldownMax(){ return Math.max(0, BASE_SPLIT_COOLDOWN - (profile.perks.splitCooldownLevel||0)*0.1); }
+  // Bigger blobs stay split apart longer before they're allowed to re-merge — matches agar.io's feel.
+  function mergeTimeFor(mass){ return 12 + Math.min(40, mass*0.25); }
+  // Launched half flies out fast then decelerates (friction), instead of a flat fixed-duration boost.
+  function splitLaunchSpeed(dispR){ return 260 + dispR*3.2; }
 
   function randPos(){ return { x:40+Math.random()*(WORLD-80), y:40+Math.random()*(WORLD-80) }; }
   function makePellet(){ const p=randPos(); return {x:p.x,y:p.y,r:5+Math.random()*3,color:`hsl(${Math.floor(Math.random()*360)},80%,60%)`}; }
@@ -572,7 +580,7 @@
 
   function startGame(){
     fitCanvas();
-    pieces = [ { x:WORLD/2, y:WORLD/2, mass:22, dispR:radiusFromMass(22), boostT:0, boostX:0, boostY:0, mergeAt:0 } ];
+    pieces = [ { x:WORLD/2, y:WORLD/2, mass:22, dispR:radiusFromMass(22), vx:0, vy:0, mergeAt:0 } ];
     bots = []; for (let i=1;i<=BOT_COUNT;i++) bots.push(makeBot(i, pieces[0]));
     pellets = []; for (let i=0;i<PELLET_COUNT;i++) pellets.push(makePellet());
     camScale = 1; running = true; lastT = null; splitCooldownLeft = 0; maxMassReached = 22;
@@ -615,22 +623,34 @@
   function doSplit(){
     if (!running) return;
     if (splitCooldownLeft > 0) return;
-    if (totalMass() < SPLIT_MIN_MASS) return;
+    // any single piece massive enough to split, not just the sum — matches agar.io
+    if (!pieces.some(p => p.mass >= MIN_MASS_TO_SPLIT)) return;
     if (pieces.length >= MAX_PIECES) return;
     const dir = currentDir();
     const dx = dir.x||0, dy = dir.y|| -1;
+    const now = performance.now();
     const snapshot = pieces.slice();
+    let splitAny = false;
     for (const piece of snapshot) {
       if (pieces.length >= MAX_PIECES) break;
-      if (piece.mass < 18) continue;
+      if (piece.mass < MIN_MASS_TO_SPLIT) continue;
+      splitAny = true;
       const half = piece.mass/2;
       piece.mass = half; piece.dispR = radiusFromMass(half);
-      const nx = piece.x + dx*piece.dispR, ny = piece.y + dy*piece.dispR;
-      pieces.push({ x:nx, y:ny, mass:half, dispR:radiusFromMass(half),
-        boostT:0.28, boostX:dx*420, boostY:dy*420, mergeAt: performance.now()+SPLIT_MERGE_LOCK*1000 });
-      piece.mergeAt = performance.now()+SPLIT_MERGE_LOCK*1000;
+      piece.mergeAt = now + mergeTimeFor(half)*1000;
+      const launchSpd = splitLaunchSpeed(piece.dispR);
+      // the new piece launches outward fast; the parent gets a small kickback,
+      // both decelerate via friction each frame (see updatePieces)
+      const nx = piece.x + dx*piece.dispR*0.6, ny = piece.y + dy*piece.dispR*0.6;
+      pieces.push({
+        x:nx, y:ny, mass:half, dispR:radiusFromMass(half),
+        vx: dx*launchSpd, vy: dy*launchSpd,
+        mergeAt: now + mergeTimeFor(half)*1000
+      });
+      piece.vx = (piece.vx||0) - dx*launchSpd*0.15;
+      piece.vy = (piece.vy||0) - dy*launchSpd*0.15;
     }
-    splitCooldownLeft = splitCooldownMax();
+    if (splitAny) splitCooldownLeft = splitCooldownMax();
   }
 
   function clampWorld(e){ e.x=Math.max(e.dispR||8, Math.min(WORLD-(e.dispR||8), e.x)); e.y=Math.max(e.dispR||8, Math.min(WORLD-(e.dispR||8), e.y)); }
@@ -638,19 +658,24 @@
   function updatePieces(dt){
     const dir = currentDir();
     const mult = speedMultiplier();
+    // friction is frame-rate independent: velocity shrinks by FRICTION_BASE each second
+    const FRICTION_BASE = 0.045; // lower = split pieces glide farther before stopping
+    const frictionFactor = Math.pow(FRICTION_BASE, dt);
     for (const p of pieces) {
       const spd = baseSpeedFromRadius(p.dispR) * mult;
-      let vx = dir.x*spd, vy = dir.y*spd;
-      if (p.boostT > 0) { vx += p.boostX*(p.boostT/0.28); vy += p.boostY*(p.boostT/0.28); p.boostT = Math.max(0, p.boostT-dt); }
-      p.x += vx*dt; p.y += vy*dt;
+      const steerVx = dir.x*spd, steerVy = dir.y*spd;
+      p.vx = (p.vx||0) * frictionFactor;
+      p.vy = (p.vy||0) * frictionFactor;
+      p.x += (steerVx + p.vx)*dt;
+      p.y += (steerVy + p.vy)*dt;
       clampWorld(p);
       for (let i=pellets.length-1;i>=0;i--){
         const pel = pellets[i]; const d = Math.hypot(pel.x-p.x, pel.y-p.y);
         if (d < p.dispR) { p.mass += 1.1; pellets[i] = makePellet(); }
       }
     }
-    // merge own pieces if lock expired and overlapping
     const now = performance.now();
+    // merge own pieces once their lock expires and they're overlapping enough
     for (let i=pieces.length-1;i>0;i--){
       for (let j=i-1;j>=0;j--){
         const a=pieces[i], b=pieces[j];
@@ -659,6 +684,23 @@
         if (d < Math.max(a.dispR,b.dispR)*0.5) {
           b.mass += a.mass; b.dispR = radiusFromMass(b.mass);
           pieces.splice(i,1); break;
+        }
+      }
+    }
+    // soft push-apart for own pieces that ARE touching but not yet merge-ready,
+    // so freshly split blobs don't just sit stacked on top of each other
+    for (let i=0;i<pieces.length;i++){
+      for (let j=i+1;j<pieces.length;j++){
+        const a=pieces[i], b=pieces[j];
+        if (now >= a.mergeAt && now >= b.mergeAt) continue; // eligible to merge instead, skip pushing
+        const dx=b.x-a.x, dy=b.y-a.y; const d=Math.hypot(dx,dy) || 0.001;
+        const minDist = (a.dispR+b.dispR)*0.85;
+        if (d < minDist) {
+          const overlap = (minDist-d)/2;
+          const nx=dx/d, ny=dy/d;
+          a.x -= nx*overlap; a.y -= ny*overlap;
+          b.x += nx*overlap; b.y += ny*overlap;
+          clampWorld(a); clampWorld(b);
         }
       }
     }
@@ -697,10 +739,14 @@
       for (let pi=pieces.length-1; pi>=0; pi--){
         const piece = pieces[pi];
         const d = Math.hypot(piece.x-bot.x, piece.y-bot.y);
-        const overlap = d < Math.max(piece.dispR,bot.dispR) - Math.min(piece.dispR,bot.dispR)*0.35;
-        if (!overlap) continue;
-        if (piece.mass > bot.mass*1.15) { piece.mass += bot.mass*0.6; bots[bi] = makeBot(bi+1, piece); break; }
-        else if (bot.mass > piece.mass*1.15) { pieces.splice(pi,1); if (pieces.length===0) { endGame(); return; } }
+        const bigger = piece.mass >= bot.mass ? piece : bot;
+        const smaller = piece.mass >= bot.mass ? bot : piece;
+        // the smaller blob's center has to be substantially inside the bigger one —
+        // just touching edges shouldn't trigger an eat, like agar.io
+        const engulfed = d < bigger.dispR - smaller.dispR*EAT_OVERLAP;
+        if (!engulfed) continue;
+        if (piece.mass > bot.mass*EAT_MASS_RATIO) { piece.mass += bot.mass*0.6; bots[bi] = makeBot(bi+1, piece); break; }
+        else if (bot.mass > piece.mass*EAT_MASS_RATIO) { pieces.splice(pi,1); if (pieces.length===0) { endGame(); return; } }
       }
     }
   }
@@ -763,7 +809,8 @@
     pieces.forEach(p=>drawCircle(p, equippedColor, true, null));
 
     // split cooldown UI
-    splitBtn.disabled = totalM < SPLIT_MIN_MASS || pieces.length>=MAX_PIECES || splitCooldownLeft>0;
+    const canSplit = pieces.some(p => p.mass >= MIN_MASS_TO_SPLIT);
+    splitBtn.disabled = !canSplit || pieces.length>=MAX_PIECES || splitCooldownLeft>0;
     splitBtn.textContent = splitCooldownLeft>0 ? Math.ceil(splitCooldownLeft)+'s' : 'تقسیم';
   }
 
