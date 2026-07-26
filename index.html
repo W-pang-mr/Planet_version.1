@@ -46,7 +46,7 @@
   .soon-box { display:flex; flex-direction:column; align-items:center; justify-content:center; height:100%; gap:10px; }
   .soon-box .big { font-size:44px; }
 
-  /* ===== Inventory screen (redesigned to match reference) ===== */
+  /* ===== Inventory screen ===== */
   #screen-items { padding:0; align-items:stretch; }
   .inv-topbar { display:flex; align-items:center; justify-content:space-between; padding:14px 16px; width:100%; }
   .inv-close { display:flex; align-items:center; gap:6px; background:none; border:none; color:#fff; font-size:15px; font-weight:700; }
@@ -94,7 +94,6 @@
   .acc-body { max-height:0; overflow:hidden; transition:max-height .25s ease; padding:0 16px; }
   .acc-body.open { max-height:640px; padding:0 16px 16px; overflow-y:auto; }
 
-  /* Items screen */
   .section-title { align-self:flex-start; font-weight:800; font-size:15px; margin:14px 2px 8px; width:100%; max-width:420px; }
   .skin-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; width:100%; max-width:420px; }
   .skin-card { background:#0e131b; border:2px solid #22303f; border-radius:14px; padding:10px; text-align:center; position:relative; }
@@ -102,7 +101,6 @@
   .skin-avatar { width:64px; height:64px; border-radius:50%; margin:0 auto 6px; }
   .skin-tag { font-size:9px; font-weight:800; padding:2px 6px; border-radius:999px; display:inline-block; margin-top:4px; }
   .skin-name { font-size:11px; font-weight:700; margin-top:2px; }
-  .skin-serial { font-size:9px; color:#5c6b7d; font-family:monospace; margin-top:3px; letter-spacing:.3px; }
   .tag-starter { background:#2a3a4d; color:#9fc7ff; }
   .tag-common { background:#1f5c33; color:#7ee787; }
   .tag-rare { background:#1a4a7a; color:#7fd0ff; }
@@ -110,6 +108,8 @@
   .tag-legend { background:#7a5a10; color:#ffd766; }
   .lock-overlay { position:absolute; inset:0; background:rgba(0,0,0,.55); border-radius:14px; display:flex;
     align-items:center; justify-content:center; font-size:22px; }
+  .skin-owned-badge { position:absolute; top:6px; left:6px; background:rgba(79,168,255,.9); color:#fff;
+    font-size:10px; font-weight:800; padding:2px 7px; border-radius:999px; }
 
   .lootbox-card { background:linear-gradient(160deg,#141a24,#0d1218); border:1px solid #26364a; border-radius:18px;
     padding:16px; width:100%; max-width:420px; display:flex; align-items:center; gap:14px; margin-bottom:10px; }
@@ -122,7 +122,6 @@
     border:none; border-radius:10px; padding:8px 14px; font-size:13px; white-space:nowrap; }
   .lootbox-buy:disabled, .lootbox-open-btn:disabled { opacity:.4; }
 
-  /* owned/unopened lootboxes list */
   #lootbox-owned-list { width:100%; display:flex; flex-direction:column; gap:8px; }
   .lootbox-owned-row { display:flex; align-items:center; gap:12px; background:#131a24; border:1px solid #22303f;
     border-radius:14px; padding:10px 12px; }
@@ -134,11 +133,6 @@
     font-weight:700; padding:7px 10px; font-size:12px; }
   .empty-hint { color:#5c6b7d; font-size:12px; padding:10px 2px; }
 
-  /* skin owned count badge */
-  .skin-owned-badge { position:absolute; top:6px; left:6px; background:rgba(79,168,255,.9); color:#fff;
-    font-size:10px; font-weight:800; padding:2px 7px; border-radius:999px; }
-
-  /* modals */
   .modal-overlay { position:absolute; inset:0; z-index:30; background:rgba(0,0,0,.65); display:flex;
     align-items:flex-end; justify-content:center; }
   .modal-overlay.hidden { display:none; }
@@ -153,7 +147,6 @@
   #transfer-target-input { width:100%; max-width:420px; background:#131a24; border:1px solid #2c3d52; border-radius:10px;
     color:#fff; padding:12px 14px; font-size:14px; margin:10px 0; direction:ltr; text-align:left; }
 
-  /* Perks screen */
   .perk-card { background:#0e131b; border:1px solid #22303f; border-radius:16px; padding:14px; width:100%; max-width:420px; margin-bottom:12px; }
   .perk-head { display:flex; justify-content:space-between; align-items:center; margin-bottom:6px; }
   .perk-name { font-weight:800; font-size:15px; }
@@ -165,6 +158,80 @@
   .perk-btn { background:linear-gradient(135deg,#4fa8ff,#3d7fc9); border:none; border-radius:10px; color:#fff;
     font-weight:700; padding:8px 16px; font-size:13px; }
   .perk-btn:disabled { opacity:.35; }
+
+  /* ===== Shop styles ===== */
+  .shop-container {
+    width: 100%;
+    max-width: 420px;
+    padding: 16px;
+  }
+  .shop-balance {
+    display: flex;
+    justify-content: space-around;
+    background: #0e131b;
+    border: 1px solid #22303f;
+    border-radius: 16px;
+    padding: 16px;
+    margin-bottom: 20px;
+  }
+  .balance-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 15px;
+    font-weight: 700;
+  }
+  .balance-icon { font-size: 20px; }
+  .balance-label { color: #8a99ad; }
+  .balance-value { color: #fff; }
+  .shop-packs {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+  .pack-card {
+    background: #0e131b;
+    border: 1px solid #22303f;
+    border-radius: 14px;
+    padding: 16px;
+    text-align: center;
+  }
+  .pack-icon {
+    font-size: 28px;
+    font-weight: 800;
+    margin-bottom: 6px;
+    color: #ffd766;
+  }
+  .pack-price {
+    font-size: 13px;
+    color: #8a99ad;
+    margin-bottom: 10px;
+  }
+  .pack-buy-btn {
+    background: linear-gradient(135deg, #4fa8ff, #3d7fc9);
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    padding: 8px 16px;
+    font-size: 13px;
+    font-weight: 800;
+    width: 100%;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .pack-buy-btn:active { transform: scale(0.95); }
+  .pack-buy-btn:disabled { opacity: 0.4; }
+  .shop-note {
+    background: #0e131b;
+    border: 1px solid #22303f;
+    border-radius: 14px;
+    padding: 14px;
+    text-align: center;
+    font-size: 13px;
+    color: #8a99ad;
+  }
+  .shop-note b { color: #ffd766; }
 
   /* bottom nav */
   #bottomnav { position:absolute; left:0; right:0; bottom:0; height:64px; display:flex;
@@ -180,7 +247,6 @@
   #hud-mass-pill { position:absolute; top:12px; right:12px; z-index:8; background:rgba(20,24,32,.85);
     border:1px solid #2a3648; border-radius:999px; padding:8px 14px; font-size:14px; font-weight:800;
     color:#cfe0f2; display:flex; align-items:center; gap:6px; }
-
   #split-btn { position:absolute; bottom:26px; right:20px; width:78px; height:78px; border-radius:50%;
     background:rgba(79,168,255,.25); border:2px solid #4fa8ff; color:#fff; font-weight:800; font-size:13px; z-index:8; }
   #split-btn:disabled { opacity:.35; border-color:#48607a; }
@@ -192,9 +258,6 @@
   .go-mass { font-size:44px; font-weight:900; color:#7ee787; margin:8px 0; }
   .go-tokens { color:#ffd766; font-weight:700; margin-bottom:6px; }
   .go-best { color:#8a99ad; font-size:14px; margin-bottom:20px; }
-
-  /* loading overlay for play button while profile syncs */
-  #play-btn.loading { opacity:.6; }
 </style>
 </head>
 <body>
@@ -222,17 +285,57 @@
     <button class="btn" id="play-btn">▶ شروع بازی</button>
   </div>
 
-  <!-- MARKET (soon) -->
-  <div class="screen hidden" id="screen-market">
-    <div class="soon-box"><div class="big">🛒</div><h1 class="title">مارکت</h1><p class="subtitle">به زودی...</p></div>
+  <!-- SHOP (جایگزین "به زودی") -->
+  <div class="screen hidden" id="screen-shop">
+    <div class="shop-container">
+      <h1 class="title">🪐 فروشگاه</h1>
+      <p class="subtitle">با استارز پلنت کوین بخر و لوت‌باکس باز کن!</p>
+      
+      <div class="shop-balance">
+        <div class="balance-item">
+          <span class="balance-icon">🪙</span>
+          <span class="balance-label">توکن:</span>
+          <span class="balance-value" id="shop-tokens">0</span>
+        </div>
+        <div class="balance-item">
+          <span class="balance-icon">🪐</span>
+          <span class="balance-label">پلنت کوین:</span>
+          <span class="balance-value" id="shop-coins">0</span>
+        </div>
+      </div>
+
+      <div class="shop-packs">
+        <div class="pack-card">
+          <div class="pack-icon">🪐×10</div>
+          <div class="pack-price">⭐ ۵ استارز</div>
+          <button class="pack-buy-btn" data-coins="10" data-stars="5">خرید</button>
+        </div>
+        <div class="pack-card">
+          <div class="pack-icon">🪐×50</div>
+          <div class="pack-price">⭐ ۲۵ استارز</div>
+          <button class="pack-buy-btn" data-coins="50" data-stars="25">خرید</button>
+        </div>
+        <div class="pack-card">
+          <div class="pack-icon">🪐×100</div>
+          <div class="pack-price">⭐ ۵۰ استارز</div>
+          <button class="pack-buy-btn" data-coins="100" data-stars="50">خرید</button>
+        </div>
+        <div class="pack-card">
+          <div class="pack-icon">🪐×500</div>
+          <div class="pack-price">⭐ ۲۵۰ استارز</div>
+          <button class="pack-buy-btn" data-coins="500" data-stars="250">خرید</button>
+        </div>
+      </div>
+
+      <div class="shop-note">
+        <p>💡 با پلنت کوین می‌تونی لوت‌باکس بخری!</p>
+        <p>هر لوت‌باکس: <b>۵ پلنت کوین</b></p>
+        <p style="margin-top:8px;font-size:11px;color:#5c6b7d;">⭐ ۱ استارز = ۰.۰۱ تون‌کوین</p>
+      </div>
+    </div>
   </div>
 
-  <!-- SOON -->
-  <div class="screen hidden" id="screen-soon">
-    <div class="soon-box"><div class="big">✨</div><h1 class="title">به زودی</h1><p class="subtitle">این بخش هنوز آماده نشده</p></div>
-  </div>
-
-  <!-- ITEMS / INVENTORY (redesigned) -->
+  <!-- ITEMS -->
   <div class="screen hidden" id="screen-items">
     <div class="inv-topbar">
       <button class="inv-close" id="inv-close-btn">✕ بستن</button>
@@ -253,7 +356,6 @@
     </div>
 
     <div class="inv-body">
-      <!-- Daily claim -->
       <div class="daily-card">
         <div class="daily-head">
           <span class="daily-title">جایزه روزانه</span>
@@ -262,7 +364,6 @@
         <div class="daily-row" id="daily-row"></div>
       </div>
 
-      <!-- Skins accordion -->
       <div class="acc-card">
         <div class="acc-head" id="skins-acc-head">
           <div class="acc-head-left">
@@ -279,7 +380,6 @@
         </div>
       </div>
 
-      <!-- Lootboxes accordion -->
       <div class="acc-card">
         <div class="acc-head" id="lootbox-acc-head">
           <div class="acc-head-left">
@@ -298,7 +398,7 @@
               <div class="lootbox-name">Newer</div>
               <div class="lootbox-supply" id="lootbox-supply">در حال بارگذاری...</div>
             </div>
-            <button class="lootbox-buy" id="lootbox-buy-btn">🪙 50</button>
+            <button class="lootbox-buy" id="lootbox-buy-btn">🪐 ۵</button>
           </div>
           <div id="lootbox-owned-list"></div>
         </div>
@@ -330,7 +430,6 @@
   <!-- PERKS -->
   <div class="screen hidden" id="screen-perks">
     <h1 class="title">⚡ ارتقاها</h1>
-
     <div class="perk-card">
       <div class="perk-head"><span class="perk-name">کاهش کول‌داون تقسیم</span><span class="perk-level" id="perk-split-level">لول 0/50</span></div>
       <div class="perk-bar-bg"><div class="perk-bar-fill" id="perk-split-bar" style="width:0%"></div></div>
@@ -339,7 +438,6 @@
         <button class="perk-btn" id="perk-split-btn">ارتقا</button>
       </div>
     </div>
-
     <div class="perk-card">
       <div class="perk-head"><span class="perk-name">افزایش سرعت</span><span class="perk-level" id="perk-speed-level">لول 0/50</span></div>
       <div class="perk-bar-bg"><div class="perk-bar-fill" id="perk-speed-bar" style="width:0%"></div></div>
@@ -353,7 +451,7 @@
   <!-- BOTTOM NAV -->
   <div id="bottomnav">
     <div class="nav-btn active" data-tab="home"><span class="nav-icon">🏠</span>خانه</div>
-    <div class="nav-btn" data-tab="market"><span class="nav-icon">🛒</span>مارکت</div>
+    <div class="nav-btn" data-tab="shop"><span class="nav-icon">🪐</span>فروشگاه</div>
     <div class="nav-btn" data-tab="soon"><span class="nav-icon">✨</span>بزودی</div>
     <div class="nav-btn" data-tab="items"><span class="nav-icon">🎒</span>آیتم‌ها</div>
     <div class="nav-btn" data-tab="perks"><span class="nav-icon">⚡</span>ارتقا</div>
@@ -362,10 +460,8 @@
   <!-- GAME -->
   <div class="screen hidden full" id="screen-game">
     <canvas id="board"></canvas>
-
     <button id="back-btn">✕ خروج</button>
     <div id="hud-mass-pill">🎒 <span id="hud-mass">0</span></div>
-
     <button id="split-btn">تقسیم</button>
     <div id="joystick-base"></div>
     <div id="joystick-knob"></div>
@@ -425,23 +521,13 @@
   const TAG_CLASS = { starter:'tag-starter', common:'tag-common', rare:'tag-rare', epic:'tag-epic', legend:'tag-legend' };
   const TAG_LABEL = { starter:'شروع', common:'Common', rare:'Rare', epic:'Epic', legend:'Legend' };
 
-  // تابع کمکی برای ادغام عمیق (deep merge)
-  function deepMerge(target, source) {
-    const result = { ...target };
-    for (const key in source) {
-      if (source[key] && typeof source[key] === 'object' && !Array.isArray(source[key])) {
-        result[key] = deepMerge(target[key] || {}, source[key]);
-      } else {
-        result[key] = source[key];
-      }
-    }
-    return result;
-  }
+  const LOOTBOX_PRICE = 5;  // ۵ پلنت کوین
 
   function defaultProfile(){
     return {
       name: displayName,
       tokens: 0,
+      planetCoins: 0,
       bestMass: 0,
       equippedSkin: 'dead_star',
       perks: { splitCooldownLevel:0, speedLevel:0 },
@@ -452,12 +538,10 @@
   function ownsSkin(id){ return id==='dead_star' || !!(profile.inventory.skins[id] && Object.keys(profile.inventory.skins[id]).length); }
   function skinCopies(id){ return id==='dead_star' ? 1 : Object.keys(profile.inventory.skins[id]||{}).length; }
 
-  // ====== مهم: پروفایل با یک آبجکت خالی شروع می‌شه، نه با مقادیر پیش‌فرض ======
-  let profile = { tokens: 0, bestMass: 0, perks: { splitCooldownLevel:0, speedLevel:0 }, inventory: { skins: {}, lootboxes: {} }, dailyClaim: { streak:0, lastClaimDay:null } };
+  let profile = defaultProfile();
   let profileSynced = false;
   let db = null;
   let userRef = null;
-  let initialLoadDone = false;
 
   function initFirebase(){
     const firebaseConfig = {
@@ -475,19 +559,25 @@
       db = firebase.database();
       return true;
     } catch (e) {
-      console.error('Firebase init failed, continuing in local-only mode', e);
+      console.error('Firebase init failed', e);
       db = null;
       return false;
     }
   }
 
-  // ====== اصلاح اصلی: تابع loadProfile به درستی داده‌ها را از دیتابیس می‌خواند و با داده‌های محلی ادغام می‌کند ======
+  function saveField(path, value){
+    if (!db || !userRef) {
+      console.log('Local-only save:', path, value);
+      return;
+    }
+    userRef.child(path).set(value).catch(e => console.error('save error', path, e));
+  }
+
   function loadProfile(){
-    if (!initFirebase()) { 
-      profileSynced = true; 
-      initialLoadDone = true;
-      renderAll(); 
-      return; 
+    if (!initFirebase()) {
+      profileSynced = true;
+      renderAll();
+      return;
     }
     userRef = db.ref('users/' + uid);
 
@@ -496,7 +586,6 @@
       if (settled) return;
       settled = true;
       profileSynced = true;
-      initialLoadDone = true;
       renderAll();
     }, 6000);
 
@@ -506,16 +595,14 @@
       clearTimeout(timeoutId);
       
       if (!snap.exists()) {
-        // کاربر جدید: یک پروفایل با مقادیر پیش‌فرض ایجاد کن
         profile = defaultProfile();
         userRef.set(profile).catch(e=>console.error('initial profile save failed', e));
       } else {
         const remote = snap.val() || {};
-        // فقط داده‌هایی که در دیتابیس وجود دارند را با داده‌های محلی ادغام کن
-        // اما اگر داده‌ای در دیتابیس نبود، مقدار پیش‌فرض را نگه دار
         profile = {
           name: remote.name || displayName,
           tokens: typeof remote.tokens === 'number' ? remote.tokens : 0,
+          planetCoins: typeof remote.planetCoins === 'number' ? remote.planetCoins : 0,
           bestMass: typeof remote.bestMass === 'number' ? remote.bestMass : 0,
           equippedSkin: remote.equippedSkin || 'dead_star',
           perks: remote.perks ? { ...remote.perks } : { splitCooldownLevel:0, speedLevel:0 },
@@ -525,47 +612,20 @@
           } : { skins: {}, lootboxes: {} },
           dailyClaim: remote.dailyClaim ? { ...remote.dailyClaim } : { streak:0, lastClaimDay:null }
         };
-        // اطمینان از اینکه ساختارهای مورد نیاز وجود دارند
         if (!profile.inventory.skins) profile.inventory.skins = {};
         if (!profile.inventory.lootboxes) profile.inventory.lootboxes = {};
         if (!profile.perks) profile.perks = { splitCooldownLevel:0, speedLevel:0 };
         if (!profile.dailyClaim) profile.dailyClaim = { streak:0, lastClaimDay:null };
       }
       profileSynced = true;
-      initialLoadDone = true;
       renderAll();
     }).catch(err => {
       if (settled) return;
       settled = true;
       clearTimeout(timeoutId);
-      console.error('Firebase read error, continuing in local-only mode', err);
+      console.error('Firebase read error', err);
       profileSynced = true;
-      initialLoadDone = true;
       renderAll();
-    });
-  }
-
-  // ====== تابع ذخیره‌سازی: فقط فیلد مشخص‌شده را آپدیت می‌کند، نه کل پروفایل را ======
-  function saveField(path, value){
-    if (!db || !userRef) {
-      // اگر دیتابیس وصل نیست، فقط در حافظه محلی ذخیره کن
-      console.log('Local-only save:', path, value);
-      return;
-    }
-    userRef.child(path).set(value).catch(e => {
-      console.error('save error', path, e);
-    });
-  }
-
-  // ====== تابع ذخیره‌سازی چندگانه (برای عملیات اتمی) ======
-  function saveMultiple(updates){
-    if (!db || !userRef) {
-      console.log('Local-only multi-save:', updates);
-      return Promise.resolve();
-    }
-    return userRef.update(updates).catch(e => {
-      console.error('multi-save error', e);
-      throw e;
     });
   }
 
@@ -581,6 +641,7 @@
       showScreen('screen-'+btn.dataset.tab);
       if (btn.dataset.tab==='items') renderItems();
       if (btn.dataset.tab==='perks') renderPerks();
+      if (btn.dataset.tab==='shop') renderShop();
     });
   });
   document.getElementById('inv-close-btn').addEventListener('click', ()=>{
@@ -600,6 +661,7 @@
     document.getElementById('home-rank').textContent = Math.max(1, Math.floor((profile.bestMass||0)/50)+1);
     renderItems();
     renderPerks();
+    renderShop();
   }
 
   /* ---------- game mode picker ---------- */
@@ -622,16 +684,13 @@
 
   document.getElementById('play-btn').addEventListener('click', ()=>{
     if (!MODES[modeIdx].enabled) return;
-    if (!profileSynced) {
-      notify('در حال اتصال به سرور... بازی با تنظیمات پیش‌فرض شروع می‌شه.');
-    }
+    if (!profileSynced) notify('در حال اتصال به سرور...');
     startGame();
   });
 
-  /* ---------- items rendering ---------- */
   function notify(msg){ if (tg && tg.showAlert) tg.showAlert(msg); else alert(msg); }
 
-  /* ----- accordion open/close (skins + lootboxes cards) ----- */
+  /* ----- accordion ----- */
   function wireAccordion(headId, bodyId, chevronId){
     document.getElementById(headId).addEventListener('click', ()=>{
       const body = document.getElementById(bodyId);
@@ -644,6 +703,7 @@
   wireAccordion('skins-acc-head','skins-acc-body','skins-chevron');
   wireAccordion('lootbox-acc-head','lootbox-acc-body','lootbox-chevron');
 
+  /* ----- render functions ----- */
   function renderSkinGrid(){
     const grid = document.getElementById('skin-grid');
     grid.innerHTML = '';
@@ -711,6 +771,7 @@
   const DAILY_REWARDS = [10,15,20,30,40,60,100];
   function todayKey(){ const d = new Date(); return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate(); }
   function daysBetween(a,b){ return Math.round((b-a)/86400000); }
+  
   function renderDailyClaim(){
     const dc = profile.dailyClaim || { streak:0, lastClaimDay:null };
     const today = todayKey();
@@ -732,6 +793,7 @@
       row.appendChild(day);
     }
   }
+
   document.getElementById('daily-claim-btn').addEventListener('click', ()=>{
     const dc = profile.dailyClaim || { streak:0, lastClaimDay:null };
     const today = todayKey();
@@ -777,7 +839,41 @@
     }
   }
 
-  /* ---------- skin detail modal ---------- */
+  /* ----- render shop ----- */
+  function renderShop(){
+    document.getElementById('shop-tokens').textContent = profile.tokens || 0;
+    document.getElementById('shop-coins').textContent = profile.planetCoins || 0;
+  }
+
+  /* ----- buy planet coins with stars ----- */
+  function buyPlanetCoins(coins, stars) {
+    if (tg) {
+      tg.sendData(JSON.stringify({
+        action: 'buy_planet_coins',
+        coins: coins,
+        stars: stars
+      }));
+      notify(`⏳ درخواست خرید ${coins} پلنت کوین ارسال شد...`);
+    } else {
+      if (confirm(`⭐ ${stars} استارز برای ${coins} پلنت کوین؟`)) {
+        profile.planetCoins = (profile.planetCoins || 0) + coins;
+        saveField('planetCoins', profile.planetCoins);
+        renderShop();
+        renderItems();
+        notify(`✅ ${coins} پلنت کوین خریداری شد! 🪐`);
+      }
+    }
+  }
+
+  document.querySelectorAll('.pack-buy-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+      const coins = parseInt(this.dataset.coins);
+      const stars = parseInt(this.dataset.stars);
+      buyPlanetCoins(coins, stars);
+    });
+  });
+
+  /* ----- skin modal ----- */
   const skinModal = document.getElementById('skin-modal');
   function openSkinModal(id){
     const skin = SKIN_DB[id];
@@ -818,7 +914,7 @@
   function closeSkinModal(){ skinModal.classList.add('hidden'); }
   document.getElementById('skin-modal-close').addEventListener('click', closeSkinModal);
 
-  /* ---------- transfer modal ---------- */
+  /* ----- transfer modal ----- */
   const transferModal = document.getElementById('transfer-modal');
   let pendingTransfer = null;
   function openTransferModal(item){
@@ -866,8 +962,6 @@
     }
   });
 
-  const LOOTBOX_PRICE = 50;
-
   function pickRandomSkin(){
     const roll = Math.random()*100;
     let acc=0, chosenRarity='common';
@@ -880,9 +974,13 @@
     return { skinId, rarity: chosenRarity };
   }
 
+  /* ----- buy lootbox with planet coins ----- */
   document.getElementById('lootbox-buy-btn').addEventListener('click', ()=>{
     if (!db) { notify('اتصال به سرور برقرار نیست.'); return; }
-    if ((profile.tokens||0) < LOOTBOX_PRICE) { notify('توکن کافی نداری! به '+LOOTBOX_PRICE+' توکن نیاز داری.'); return; }
+    if ((profile.planetCoins||0) < LOOTBOX_PRICE) { 
+      notify(`پلنت کوین کافی نداری! به ${LOOTBOX_PRICE} پلنت کوین نیاز داری. 🪐`); 
+      return; 
+    }
 
     const supplyRef = db.ref('lootboxSupply/newer');
     supplyRef.transaction(current=>{
@@ -894,9 +992,10 @@
       if (err) { notify('خطا در بررسی موجودی، دوباره امتحان کن.'); return; }
       if (!committed) { notify('لوت‌باکس Newer تموم شده! 😔'); renderItems(); return; }
 
-      profile.tokens -= LOOTBOX_PRICE;
-      saveField('tokens', profile.tokens);
-      document.getElementById('home-tokens').textContent = profile.tokens;
+      profile.planetCoins -= LOOTBOX_PRICE;
+      saveField('planetCoins', profile.planetCoins);
+      document.getElementById('shop-coins').textContent = profile.planetCoins;
+      document.getElementById('inv-tokens').textContent = profile.tokens;
 
       const boxData = { type:'newer', acquiredAt: Date.now() };
       const pushRef = userRef.child('inventory/lootboxes').push();
@@ -904,6 +1003,7 @@
         profile.inventory.lootboxes[pushRef.key] = boxData;
         notify('لوت‌باکس Newer به اینونتوریت اضافه شد! برو بازش کن 📦');
         renderItems();
+        renderShop();
       }).catch(e=>{ console.error('lootbox push failed', e); notify('خطا در ذخیره‌سازی، دوباره امتحان کن.'); });
     });
   });
@@ -936,7 +1036,7 @@
     });
   }
 
-  /* ---------- perks rendering ---------- */
+  /* ---------- perks ---------- */
   const MAX_PERK_LEVEL = 50;
   function perkCost(nextLevel){ return Math.round(50 * Math.pow(1.3, nextLevel-1)); }
 
@@ -968,6 +1068,7 @@
     saveField('perks/'+key, profile.perks[key]);
     document.getElementById('home-tokens').textContent = profile.tokens;
     renderPerks();
+    renderShop();
   }
   document.getElementById('perk-split-btn').addEventListener('click', ()=>tryUpgrade('split'));
   document.getElementById('perk-speed-btn').addEventListener('click', ()=>tryUpgrade('speed'));
@@ -1065,6 +1166,7 @@
     doSplit();
   }, {passive:false});
   splitBtn.addEventListener('touchend', e=>{ e.preventDefault(); e.stopPropagation(); }, {passive:false});
+
   function doSplit(){
     if (!running) return;
     if (splitCooldownLeft > 0) return;
@@ -1250,6 +1352,7 @@
     bottomnav.style.display='flex';
     showScreen('screen-over');
   }
+
   document.getElementById('back-btn').addEventListener('click', ()=>{
     if (!running) return;
     running = false;
@@ -1265,6 +1368,7 @@
     showScreen('screen-home');
     notify('+'+earnedTokens+' توکن گرفتی 🪙');
   });
+
   document.getElementById('retry-btn').addEventListener('click', startGame);
   document.getElementById('menu-btn').addEventListener('click', ()=>showScreen('screen-home'));
 
@@ -1348,7 +1452,7 @@
       document.getElementById('hud-mass').textContent = Math.round(tm)+'kg';
       draw();
     } catch (e) {
-      console.error('Game loop error, returning to menu', e);
+      console.error('Game loop error', e);
       running = false;
       bottomnav.style.display='flex';
       showScreen('screen-home');
