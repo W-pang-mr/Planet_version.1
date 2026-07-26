@@ -94,33 +94,11 @@
   .nav-btn .nav-icon { font-size:20px; }
 
   /* game screen */
-  #game-topleft { position:absolute; top:12px; left:12px; z-index:8; display:flex; flex-direction:column; gap:8px; align-items:flex-start; }
-  #back-btn { background:rgba(20,24,32,.85); border:1px solid #2a3648; color:#fff; border-radius:999px;
-    padding:9px 16px; font-size:13px; font-weight:700; display:flex; align-items:center; gap:6px; }
-  .game-rank-pill { background:rgba(20,24,32,.85); border:1px solid #2a3648; border-radius:999px;
-    padding:8px 14px; font-size:13px; font-weight:800; display:flex; align-items:center; gap:6px; color:#ffd766; }
-
-  #game-topcenter { position:absolute; top:12px; left:50%; transform:translateX(-50%); z-index:8;
-    display:flex; gap:10px; }
-  .stat-pill { background:rgba(20,24,32,.85); border:1px solid #2a3648; border-radius:999px;
-    padding:9px 16px; font-size:13px; font-weight:800; color:#cfe0f2; display:flex; align-items:center; gap:6px; white-space:nowrap; }
-  .stat-icon { font-size:14px; }
-
-  #game-topright { position:absolute; top:12px; right:12px; z-index:8; display:flex; flex-direction:column; gap:8px; align-items:flex-end; }
-  .icon-btn { width:34px; height:34px; border-radius:50%; background:rgba(20,24,32,.85); border:1px solid #2a3648;
-    color:#cfe0f2; font-size:15px; display:flex; align-items:center; justify-content:center; }
-
-  #leaderboard { position:absolute; top:110px; right:12px; z-index:8; display:flex; flex-direction:column;
-    align-items:center; gap:6px; max-height:52vh; overflow:visible; }
-  #leaderboard.collapsed { display:none; }
-  .lb-avatar-wrap { display:flex; flex-direction:column; align-items:center; gap:2px; }
-  .lb-avatar { width:44px; height:44px; border-radius:50%; display:flex; align-items:center; justify-content:center;
-    font-size:20px; border:2px solid rgba(255,255,255,.15); background:#12161f; position:relative; }
-  .lb-avatar.me { border-color:#4fa8ff; box-shadow:0 0 0 2px rgba(79,168,255,.3); }
-  .lb-score { font-size:10px; color:#8a99ad; font-weight:700; }
-
-  #hud-name-tag { position:absolute; pointer-events:none; z-index:5; color:#fff; font-size:13px; font-weight:700;
-    text-shadow:0 1px 3px rgba(0,0,0,.8); left:50%; transform:translateX(-50%); white-space:nowrap; }
+  #back-btn { position:absolute; top:12px; left:12px; z-index:8; background:rgba(255,255,255,.08); border:none;
+    color:#fff; border-radius:10px; padding:6px 10px; font-size:13px; }
+  #hud-mass-pill { position:absolute; top:12px; right:12px; z-index:8; background:rgba(20,24,32,.85);
+    border:1px solid #2a3648; border-radius:999px; padding:8px 14px; font-size:14px; font-weight:800;
+    color:#cfe0f2; display:flex; align-items:center; gap:6px; }
 
   #split-btn { position:absolute; bottom:26px; right:20px; width:78px; height:78px; border-radius:50%;
     background:rgba(79,168,255,.25); border:2px solid #4fa8ff; color:#fff; font-weight:800; font-size:13px; z-index:8; }
@@ -226,23 +204,8 @@
   <div class="screen hidden full" id="screen-game">
     <canvas id="board"></canvas>
 
-    <div id="game-topleft">
-      <button id="back-btn">✕ بستن</button>
-      <div class="game-rank-pill">🏆 <span id="game-rank">#1</span></div>
-    </div>
-
-    <div id="game-topcenter">
-      <div class="stat-pill"><span class="stat-icon">🎒</span><span id="hud-mass">0kg</span></div>
-      <div class="stat-pill"><span class="stat-icon">🍪</span><span id="hud-eaten">0</span></div>
-      <div class="stat-pill"><span class="stat-icon">⏱</span><span id="hud-timer">00:00</span></div>
-    </div>
-
-    <div id="game-topright">
-      <button class="icon-btn" id="leaderboard-toggle">⌄</button>
-      <button class="icon-btn" id="menu-toggle">⋮</button>
-    </div>
-
-    <div id="leaderboard"></div>
+    <button id="back-btn">✕ خروج</button>
+    <div id="hud-mass-pill">🎒 <span id="hud-mass">0</span></div>
 
     <button id="split-btn">تقسیم</button>
     <div id="joystick-base"></div>
@@ -606,8 +569,6 @@
   const BASE_SPLIT_COOLDOWN = 5;
 
   let pieces, bots, pellets, camScale, running, lastT, splitCooldownLeft, maxMassReached;
-  let pelletsEaten, gameStartT, leaderboardCollapsed = false;
-  const BOT_AVATARS = ['🐙','🦑','🐡','🦈','🐊','🦀','🐢','🦖','🐲','👾'];
 
   function radiusFromMass(m){ return 8 + Math.sqrt(m)*3.1; }
   function baseSpeedFromRadius(r){ return Math.max(46, 320/(1+r/34)); }
@@ -623,7 +584,7 @@
   function makeBot(idx, awayFrom){
     let pos; do { pos = randPos(); } while (awayFrom && Math.hypot(pos.x-awayFrom.x,pos.y-awayFrom.y) < 500);
     return { name:'AI '+idx, x:pos.x, y:pos.y, mass:14+Math.random()*14, color:BOT_COLORS[idx%BOT_COLORS.length],
-      avatar: BOT_AVATARS[idx%BOT_AVATARS.length], wanderDir:{x:0,y:0}, wanderT:0, dispR:12 };
+      wanderDir:{x:0,y:0}, wanderT:0, dispR:12 };
   }
 
   function startGame(){
@@ -632,9 +593,7 @@
     bots = []; for (let i=1;i<=BOT_COUNT;i++) bots.push(makeBot(i, pieces[0]));
     pellets = []; for (let i=0;i<PELLET_COUNT;i++) pellets.push(makePellet());
     camScale = 1; running = true; lastT = null; splitCooldownLeft = 0; maxMassReached = 22;
-    pelletsEaten = 0; gameStartT = performance.now();
     showScreen('screen-game'); bottomnav.style.display='none';
-    document.getElementById('leaderboard').classList.toggle('collapsed', leaderboardCollapsed);
     requestAnimationFrame(loop);
   }
 
@@ -737,7 +696,7 @@
       clampWorld(p);
       for (let i=pellets.length-1;i>=0;i--){
         const pel = pellets[i]; const d = Math.hypot(pel.x-p.x, pel.y-p.y);
-        if (d < p.dispR) { p.mass += 1.1; pellets[i] = makePellet(); pelletsEaten++; }
+        if (d < p.dispR) { p.mass += 1.1; pellets[i] = makePellet(); }
       }
     }
     const now = performance.now();
@@ -874,42 +833,6 @@
   document.getElementById('retry-btn').addEventListener('click', startGame);
   document.getElementById('menu-btn').addEventListener('click', ()=>showScreen('screen-home'));
 
-  const leaderboardEl = document.getElementById('leaderboard');
-  document.getElementById('leaderboard-toggle').addEventListener('click', ()=>{
-    leaderboardCollapsed = !leaderboardCollapsed;
-    leaderboardEl.classList.toggle('collapsed', leaderboardCollapsed);
-    document.getElementById('leaderboard-toggle').textContent = leaderboardCollapsed ? '⌃' : '⌄';
-  });
-  document.getElementById('menu-toggle').addEventListener('click', ()=>{
-    notify('حجم: '+Math.round(totalMass())+'kg — بهترین: '+(profile.bestMass||0));
-  });
-
-  function myRank(){
-    const mine = totalMass();
-    let rank = 1;
-    bots.forEach(b=>{ if (b.mass > mine) rank++; });
-    return rank;
-  }
-
-  function renderLeaderboard(){
-    if (leaderboardCollapsed) return;
-    const mine = { avatar:'🧑', mass: totalMass(), isMe:true };
-    const ranked = bots.map(b=>({ avatar:b.avatar, mass:b.mass, isMe:false })).concat([mine])
-      .sort((a,b)=>b.mass-a.mass).slice(0,5);
-    leaderboardEl.innerHTML = ranked.map(e=>`
-      <div class="lb-avatar-wrap">
-        <div class="lb-avatar${e.isMe?' me':''}">${e.avatar}</div>
-        <div class="lb-score">${Math.round(e.mass)}</div>
-      </div>`).join('');
-  }
-
-  function formatTimer(ms){
-    const s = Math.floor(ms/1000);
-    const mm = String(Math.floor(s/60)).padStart(2,'0');
-    const ss = String(s%60).padStart(2,'0');
-    return mm+':'+ss;
-  }
-
   function worldToScreen(x,y,camX,camY,scale){ return { x: innerWidth/2+(x-camX)*scale, y: innerHeight/2+(y-camY)*scale }; }
 
   function draw(){
@@ -923,14 +846,21 @@
 
     ctx.fillStyle='#04070c'; ctx.fillRect(0,0,innerWidth,innerHeight);
 
-    // FIX/REDESIGN: replaced the flat square grid with a radar-style polar
-    // grid (concentric rings + spokes) centered on screen-center, matching
-    // the reference UI — since the camera always keeps the player centered
-    // on screen, the grid's origin is simply the screen center, not a
-    // world-space offset.
-    const cx = innerWidth/2, cy = innerHeight/2;
+    // FIX: the grid was anchored to screen-center every frame, so it always
+    // sat glued directly under the player and never actually moved as you
+    // drove around — it looked "attached to you" instead of being part of
+    // the map. Anchoring it to a fixed world coordinate (the map center)
+    // and projecting that through worldToScreen makes it genuinely fixed
+    // relative to the map: it scrolls past you as you move, the same way
+    // the pellets and bots do.
+    const gridAnchor = worldToScreen(WORLD/2, WORLD/2, camX, camY, camScale);
+    const cx = gridAnchor.x, cy = gridAnchor.y;
     const ringStep = 90*camScale;
-    const maxR = Math.hypot(innerWidth,innerHeight)/2 + ringStep;
+    let maxR = 0;
+    [[0,0],[innerWidth,0],[0,innerHeight],[innerWidth,innerHeight]].forEach(([x,y])=>{
+      maxR = Math.max(maxR, Math.hypot(x-cx,y-cy));
+    });
+    maxR += ringStep;
     ctx.strokeStyle='rgba(255,255,255,0.06)'; ctx.lineWidth=1;
     for (let r=ringStep; r<maxR; r+=ringStep){
       ctx.beginPath(); ctx.arc(cx,cy,r,0,Math.PI*2); ctx.stroke();
@@ -986,10 +916,6 @@
       if (splitCooldownLeft>0) splitCooldownLeft=Math.max(0,splitCooldownLeft-dt);
       const tm = totalMass(); if (tm>maxMassReached) maxMassReached=tm;
       document.getElementById('hud-mass').textContent = Math.round(tm)+'kg';
-      document.getElementById('hud-eaten').textContent = pelletsEaten;
-      document.getElementById('hud-timer').textContent = formatTimer(performance.now()-gameStartT);
-      document.getElementById('game-rank').textContent = '#'+myRank();
-      renderLeaderboard();
       draw();
     } catch (e) {
       // FIX: any unexpected error inside the loop used to kill
