@@ -159,140 +159,77 @@
     font-weight:700; padding:8px 16px; font-size:13px; }
   .perk-btn:disabled { opacity:.35; }
 
-  /* ===== Shop styles ===== */
-  .shop-container {
+  /* ===== Convert styles ===== */
+  .convert-container {
     width: 100%;
     max-width: 420px;
     padding: 16px;
   }
-  .shop-balance {
-    display: flex;
-    justify-content: space-around;
-    background: #0e131b;
-    border: 1px solid #22303f;
-    border-radius: 16px;
-    padding: 16px;
-    margin-bottom: 20px;
-  }
-  .balance-item {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 15px;
-    font-weight: 700;
-  }
-  .balance-icon { font-size: 20px; }
-  .balance-label { color: #8a99ad; }
-  .balance-value { color: #fff; }
-  .shop-packs {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
-    margin-bottom: 20px;
-  }
-  .pack-card {
-    background: #0e131b;
-    border: 1px solid #22303f;
-    border-radius: 14px;
-    padding: 16px;
-    text-align: center;
-  }
-  .pack-icon {
-    font-size: 28px;
-    font-weight: 800;
-    margin-bottom: 6px;
-    color: #ffd766;
-  }
-  .pack-price {
-    font-size: 13px;
-    color: #8a99ad;
-    margin-bottom: 10px;
-  }
-  .pack-buy-btn {
-    background: linear-gradient(135deg, #4fa8ff, #3d7fc9);
-    color: #fff;
-    border: none;
-    border-radius: 10px;
-    padding: 8px 16px;
-    font-size: 13px;
-    font-weight: 800;
-    width: 100%;
-    cursor: pointer;
-    transition: all 0.2s;
-  }
-  .pack-buy-btn:active { transform: scale(0.95); }
-  .pack-buy-btn:disabled { opacity: 0.4; }
-  .shop-note {
-    background: #0e131b;
-    border: 1px solid #22303f;
-    border-radius: 14px;
-    padding: 14px;
-    text-align: center;
-    font-size: 13px;
-    color: #8a99ad;
-  }
-  .shop-note b { color: #ffd766; }
-
-  /* ===== Admin styles ===== */
-  .admin-section {
+  .convert-box {
     background: #0e131b;
     border: 2px solid #ffd766;
-    border-radius: 16px;
-    padding: 16px;
-    margin-top: 20px;
-    width: 100%;
+    border-radius: 18px;
+    padding: 24px;
+    text-align: center;
+    margin-top: 10px;
   }
-  .admin-title {
+  .convert-rate {
+    font-size: 18px;
+    color: #8a99ad;
+    margin: 16px 0;
+  }
+  .convert-rate b {
     color: #ffd766;
+    font-size: 22px;
+  }
+  .convert-input {
+    width: 100%;
+    max-width: 200px;
+    background: #1a1f2a;
+    border: 2px solid #2a3a4d;
+    border-radius: 12px;
+    color: #fff;
+    padding: 12px 16px;
+    font-size: 20px;
+    font-weight: 700;
+    text-align: center;
+    margin: 10px auto;
+    display: block;
+    direction: ltr;
+  }
+  .convert-input:focus {
+    border-color: #4fa8ff;
+    outline: none;
+  }
+  .convert-result {
+    font-size: 24px;
+    font-weight: 800;
+    color: #7ee787;
+    margin: 12px 0;
+  }
+  .convert-btn {
+    background: linear-gradient(135deg, #ffd700, #ff9d00);
+    color: #3a2400;
+    border: none;
+    border-radius: 14px;
+    padding: 14px 32px;
     font-size: 18px;
     font-weight: 800;
-    margin-bottom: 12px;
-    text-align: center;
-  }
-  .admin-request {
-    background: #1a1f2a;
-    border: 1px solid #2a3a4d;
-    border-radius: 10px;
-    padding: 12px;
-    margin-bottom: 10px;
-  }
-  .admin-request .req-info {
-    font-size: 13px;
-    color: #8a99ad;
-  }
-  .admin-request .req-info b { color: #fff; }
-  .admin-request .req-actions {
-    display: flex;
-    gap: 10px;
-    margin-top: 8px;
-  }
-  .admin-approve-btn {
-    background: #2fbf6e;
-    color: #fff;
-    border: none;
-    border-radius: 8px;
-    padding: 6px 16px;
-    font-weight: 700;
     cursor: pointer;
-    flex: 1;
+    width: 100%;
+    max-width: 280px;
+    transition: all 0.2s;
+    margin-top: 10px;
   }
-  .admin-reject-btn {
-    background: #ff4444;
-    color: #fff;
-    border: none;
-    border-radius: 8px;
-    padding: 6px 16px;
-    font-weight: 700;
-    cursor: pointer;
-    flex: 1;
-  }
-  .admin-approve-btn:active, .admin-reject-btn:active { transform: scale(0.95); }
-  .admin-empty {
+  .convert-btn:active { transform: scale(0.95); }
+  .convert-btn:disabled { opacity: 0.4; }
+  .convert-info {
     color: #5c6b7d;
-    text-align: center;
-    padding: 10px;
-    font-size: 14px;
+    font-size: 13px;
+    margin-top: 14px;
+    line-height: 1.8;
   }
+  .convert-info b { color: #ffd766; }
 
   /* bottom nav */
   #bottomnav { position:absolute; left:0; right:0; bottom:0; height:64px; display:flex;
@@ -346,65 +283,41 @@
     <button class="btn" id="play-btn">▶ شروع بازی</button>
   </div>
 
-  <!-- SHOP -->
-  <div class="screen hidden" id="screen-shop">
-    <div class="shop-container">
-      <h1 class="title">🪐 فروشگاه</h1>
-      <p class="subtitle">با تون‌کوین پلنت کوین بخر و لوت‌باکس باز کن!</p>
-      
-      <div class="shop-balance">
-        <div class="balance-item">
-          <span class="balance-icon">🪙</span>
-          <span class="balance-label">توکن:</span>
-          <span class="balance-value" id="shop-tokens">0</span>
-        </div>
-        <div class="balance-item">
-          <span class="balance-icon">🪐</span>
-          <span class="balance-label">پلنت کوین:</span>
-          <span class="balance-value" id="shop-coins">0</span>
-        </div>
-      </div>
+  <!-- CONVERT (جایگزین "به زودی") -->
+  <div class="screen hidden" id="screen-convert">
+    <div class="convert-container">
+      <h1 class="title">🔄 تبدیل توکن</h1>
+      <p class="subtitle">توکن‌های خود را به پلنت کوین تبدیل کن!</p>
 
-      <div class="shop-packs">
-        <div class="pack-card">
-          <div class="pack-icon">🪐×10</div>
-          <div class="pack-price">💰 ۰.۰۵ تون‌کوین</div>
-          <button class="pack-buy-btn" data-coins="10" data-price="0.05">درخواست خرید</button>
+      <div class="convert-box">
+        <div style="display:flex; justify-content:space-around; margin-bottom:16px;">
+          <div>
+            <div style="color:#8a99ad; font-size:13px;">توکن</div>
+            <div style="font-size:28px; font-weight:800; color:#ffd766;" id="convert-tokens">0</div>
+          </div>
+          <div style="display:flex; align-items:center; font-size:30px;">➜</div>
+          <div>
+            <div style="color:#8a99ad; font-size:13px;">پلنت کوین</div>
+            <div style="font-size:28px; font-weight:800; color:#7ee787;" id="convert-coins">0</div>
+          </div>
         </div>
-        <div class="pack-card">
-          <div class="pack-icon">🪐×50</div>
-          <div class="pack-price">💰 ۰.۲۵ تون‌کوین</div>
-          <button class="pack-buy-btn" data-coins="50" data-price="0.25">درخواست خرید</button>
-        </div>
-        <div class="pack-card">
-          <div class="pack-icon">🪐×100</div>
-          <div class="pack-price">💰 ۰.۵۰ تون‌کوین</div>
-          <button class="pack-buy-btn" data-coins="100" data-price="0.50">درخواست خرید</button>
-        </div>
-        <div class="pack-card">
-          <div class="pack-icon">🪐×500</div>
-          <div class="pack-price">💰 ۲.۵۰ تون‌کوین</div>
-          <button class="pack-buy-btn" data-coins="500" data-price="2.50">درخواست خرید</button>
-        </div>
-      </div>
 
-      <div class="shop-note">
-        <p>💡 با پلنت کوین می‌تونی لوت‌باکس بخری!</p>
-        <p>هر لوت‌باکس: <b>۵ پلنت کوین</b></p>
-        <p style="margin-top:8px;font-size:11px;color:#5c6b7d;">💰 پس از خرید، درخواست به ادمین ارسال میشه</p>
-      </div>
+        <div class="convert-rate">
+          نرخ تبدیل: <b>۵۰۰ توکن</b> = <b>۱۰ پلنت کوین</b>
+        </div>
 
-      <!-- Admin Panel -->
-      <div class="admin-section" id="admin-section" style="display:none;">
-        <div class="admin-title">👑 پنل ادمین</div>
-        <div id="admin-requests"></div>
+        <input type="number" class="convert-input" id="convert-input" placeholder="تعداد توکن" min="500" step="500" value="500">
+
+        <div class="convert-result" id="convert-result">۱۰ پلنت کوین</div>
+
+        <button class="convert-btn" id="convert-btn">🔄 تبدیل کن</button>
+
+        <div class="convert-info">
+          💡 حداقل تبدیل: <b>۵۰۰ توکن</b><br>
+          🪐 پلنت کوین برای خرید <b>لوت‌باکس</b> استفاده میشه
+        </div>
       </div>
     </div>
-  </div>
-
-  <!-- SOON -->
-  <div class="screen hidden" id="screen-soon">
-    <div class="soon-box"><div class="big">✨</div><h1 class="title">به زودی</h1><p class="subtitle">این بخش هنوز آماده نشده</p></div>
   </div>
 
   <!-- ITEMS -->
@@ -523,8 +436,7 @@
   <!-- BOTTOM NAV -->
   <div id="bottomnav">
     <div class="nav-btn active" data-tab="home"><span class="nav-icon">🏠</span>خانه</div>
-    <div class="nav-btn" data-tab="shop"><span class="nav-icon">🪐</span>فروشگاه</div>
-    <div class="nav-btn" data-tab="soon"><span class="nav-icon">✨</span>بزودی</div>
+    <div class="nav-btn" data-tab="convert"><span class="nav-icon">🔄</span>تبدیل</div>
     <div class="nav-btn" data-tab="items"><span class="nav-icon">🎒</span>آیتم‌ها</div>
     <div class="nav-btn" data-tab="perks"><span class="nav-icon">⚡</span>ارتقا</div>
   </div>
@@ -572,9 +484,6 @@
     displayName = 'بازیکن';
   }
 
-  // ===== ADMIN ID =====
-  const ADMIN_ID = 'tg_8701038601';
-
   const SKIN_DB = {
     dead_star:      { name:'Dead Star',        rarity:'starter', color:'#dfeaf2' },
     no_mouse:       { name:'No Mouse',         rarity:'common',  color:'#7a4fd9' },
@@ -597,6 +506,8 @@
   const TAG_LABEL = { starter:'شروع', common:'Common', rare:'Rare', epic:'Epic', legend:'Legend' };
 
   const LOOTBOX_PRICE = 5;
+  const CONVERT_RATE = 500; // 500 توکن = 10 پلنت کوین
+  const CONVERT_AMOUNT = 10; // 10 پلنت کوین
 
   function defaultProfile(){
     return {
@@ -607,8 +518,7 @@
       equippedSkin: 'dead_star',
       perks: { splitCooldownLevel:0, speedLevel:0 },
       inventory: { skins: {}, lootboxes: {} },
-      dailyClaim: { streak:0, lastClaimDay:null },
-      pendingRequests: []
+      dailyClaim: { streak:0, lastClaimDay:null }
     };
   }
   function ownsSkin(id){ return id==='dead_star' || !!(profile.inventory.skins[id] && Object.keys(profile.inventory.skins[id]).length); }
@@ -686,14 +596,12 @@
             skins: remote.inventory.skins || {}, 
             lootboxes: remote.inventory.lootboxes || {} 
           } : { skins: {}, lootboxes: {} },
-          dailyClaim: remote.dailyClaim ? { ...remote.dailyClaim } : { streak:0, lastClaimDay:null },
-          pendingRequests: remote.pendingRequests || []
+          dailyClaim: remote.dailyClaim ? { ...remote.dailyClaim } : { streak:0, lastClaimDay:null }
         };
         if (!profile.inventory.skins) profile.inventory.skins = {};
         if (!profile.inventory.lootboxes) profile.inventory.lootboxes = {};
         if (!profile.perks) profile.perks = { splitCooldownLevel:0, speedLevel:0 };
         if (!profile.dailyClaim) profile.dailyClaim = { streak:0, lastClaimDay:null };
-        if (!profile.pendingRequests) profile.pendingRequests = [];
       }
       profileSynced = true;
       renderAll();
@@ -719,7 +627,7 @@
       showScreen('screen-'+btn.dataset.tab);
       if (btn.dataset.tab==='items') renderItems();
       if (btn.dataset.tab==='perks') renderPerks();
-      if (btn.dataset.tab==='shop') renderShop();
+      if (btn.dataset.tab==='convert') renderConvert();
     });
   });
   document.getElementById('inv-close-btn').addEventListener('click', ()=>{
@@ -739,7 +647,7 @@
     document.getElementById('home-rank').textContent = Math.max(1, Math.floor((profile.bestMass||0)/50)+1);
     renderItems();
     renderPerks();
-    renderShop();
+    renderConvert();
   }
 
   /* ---------- game mode picker ---------- */
@@ -891,6 +799,7 @@
     renderDailyClaim();
     renderInvSummary();
     document.getElementById('home-tokens').textContent = profile.tokens;
+    renderConvert();
   });
 
   function renderInvSummary(){
@@ -917,122 +826,50 @@
     }
   }
 
-  /* ----- shop ----- */
-  function renderShop(){
-    document.getElementById('shop-tokens').textContent = profile.tokens || 0;
-    document.getElementById('shop-coins').textContent = profile.planetCoins || 0;
+  /* ----- convert ----- */
+  function renderConvert(){
+    document.getElementById('convert-tokens').textContent = profile.tokens || 0;
+    document.getElementById('convert-coins').textContent = profile.planetCoins || 0;
+    updateConvertResult();
+  }
+
+  function updateConvertResult(){
+    const input = document.getElementById('convert-input');
+    const val = parseInt(input.value) || 0;
+    const result = Math.floor(val / CONVERT_RATE) * CONVERT_AMOUNT;
+    document.getElementById('convert-result').textContent = `${result} پلنت کوین`;
+    const btn = document.getElementById('convert-btn');
+    btn.disabled = val < CONVERT_RATE || val > (profile.tokens || 0);
+  }
+
+  document.getElementById('convert-input').addEventListener('input', updateConvertResult);
+
+  document.getElementById('convert-btn').addEventListener('click', function(){
+    const input = document.getElementById('convert-input');
+    const val = parseInt(input.value) || 0;
     
-    // Admin panel
-    const adminSection = document.getElementById('admin-section');
-    if (uid === ADMIN_ID) {
-      adminSection.style.display = 'block';
-      renderAdminRequests();
-    } else {
-      adminSection.style.display = 'none';
+    if (val < CONVERT_RATE) {
+      notify(`حداقل تبدیل ${CONVERT_RATE} توکن هست!`);
+      return;
     }
-  }
-
-  /* ----- buy planet coins ----- */
-  function buyPlanetCoins(coins, price) {
-    if (!db) { notify('اتصال به سرور برقرار نیست.'); return; }
-    
-    const request = {
-      id: Date.now() + '_' + uid.replace('tg_', ''),
-      coins: coins,
-      price: price,
-      userId: uid,
-      username: displayName,
-      status: 'pending',
-      timestamp: Date.now()
-    };
-    
-    profile.pendingRequests = profile.pendingRequests || [];
-    profile.pendingRequests.push(request);
-    saveField('pendingRequests', profile.pendingRequests);
-    
-    notify(`✅ درخواست خرید ${coins} پلنت کوین به قیمت ${price} تون‌کوین ثبت شد!\n⏳ منتظر تایید ادمین باشید.`);
-    renderShop();
-  }
-
-  document.querySelectorAll('.pack-buy-btn').forEach(btn => {
-    btn.addEventListener('click', function() {
-      const coins = parseInt(this.dataset.coins);
-      const price = parseFloat(this.dataset.price);
-      buyPlanetCoins(coins, price);
-    });
-  });
-
-  /* ----- admin functions ----- */
-  function renderAdminRequests() {
-    const container = document.getElementById('admin-requests');
-    const requests = profile.pendingRequests || [];
-    const pending = requests.filter(r => r.status === 'pending');
-    
-    if (pending.length === 0) {
-      container.innerHTML = '<div class="admin-empty">📭 هیچ درخواست pending ای وجود ندارد.</div>';
+    if (val > (profile.tokens || 0)) {
+      notify('توکن کافی نداری!');
       return;
     }
     
-    container.innerHTML = '';
-    pending.forEach((req, index) => {
-      const div = document.createElement('div');
-      div.className = 'admin-request';
-      div.innerHTML = `
-        <div class="req-info">
-          👤 <b>${req.username}</b> | 🪐 ${req.coins} | 💰 ${req.price} تون‌کوین
-          <br>🆔 ${req.id}
-        </div>
-        <div class="req-actions">
-          <button class="admin-approve-btn" data-index="${index}">✅ تایید</button>
-          <button class="admin-reject-btn" data-index="${index}">❌ رد</button>
-        </div>
-      `;
-      container.appendChild(div);
-    });
+    const result = Math.floor(val / CONVERT_RATE) * CONVERT_AMOUNT;
+    const usedTokens = Math.floor(val / CONVERT_RATE) * CONVERT_RATE;
     
-    container.querySelectorAll('.admin-approve-btn').forEach(btn => {
-      btn.addEventListener('click', function() {
-        const index = parseInt(this.dataset.index);
-        approveRequest(index);
-      });
-    });
-    container.querySelectorAll('.admin-reject-btn').forEach(btn => {
-      btn.addEventListener('click', function() {
-        const index = parseInt(this.dataset.index);
-        rejectRequest(index);
-      });
-    });
-  }
-
-  function approveRequest(index) {
-    const requests = profile.pendingRequests || [];
-    const req = requests.find(r => r.status === 'pending');
-    if (!req) return;
-    
-    const realIndex = requests.indexOf(req);
-    if (realIndex === -1) return;
-    
-    req.status = 'approved';
-    profile.planetCoins = (profile.planetCoins || 0) + req.coins;
+    profile.tokens -= usedTokens;
+    profile.planetCoins = (profile.planetCoins || 0) + result;
+    saveField('tokens', profile.tokens);
     saveField('planetCoins', profile.planetCoins);
-    saveField('pendingRequests', profile.pendingRequests);
     
-    notify(`✅ درخواست ${req.id} تایید شد!\n🪐 ${req.coins} پلنت کوین به حساب اضافه شد.`);
-    renderShop();
-    renderItems();
-  }
-
-  function rejectRequest(index) {
-    const requests = profile.pendingRequests || [];
-    const req = requests.find(r => r.status === 'pending');
-    if (!req) return;
-    
-    req.status = 'rejected';
-    saveField('pendingRequests', profile.pendingRequests);
-    
-    notify(`❌ درخواست ${req.id} رد شد.`);
-    renderShop();
-  }
+    notify(`✅ ${usedTokens} توکن به ${result} پلنت کوین تبدیل شد! 🪐`);
+    renderAll();
+    document.getElementById('convert-input').value = CONVERT_RATE;
+    updateConvertResult();
+  });
 
   /* ----- skin modal ----- */
   const skinModal = document.getElementById('skin-modal');
@@ -1155,7 +992,6 @@
 
       profile.planetCoins -= LOOTBOX_PRICE;
       saveField('planetCoins', profile.planetCoins);
-      document.getElementById('shop-coins').textContent = profile.planetCoins;
 
       const boxData = { type:'newer', acquiredAt: Date.now() };
       const pushRef = userRef.child('inventory/lootboxes').push();
@@ -1163,7 +999,7 @@
         profile.inventory.lootboxes[pushRef.key] = boxData;
         notify('لوت‌باکس Newer به اینونتوریت اضافه شد! برو بازش کن 📦');
         renderItems();
-        renderShop();
+        renderConvert();
       }).catch(e=>{ console.error('lootbox push failed', e); notify('خطا در ذخیره‌سازی، دوباره امتحان کن.'); });
     });
   });
@@ -1228,7 +1064,7 @@
     saveField('perks/'+key, profile.perks[key]);
     document.getElementById('home-tokens').textContent = profile.tokens;
     renderPerks();
-    renderShop();
+    renderConvert();
   }
   document.getElementById('perk-split-btn').addEventListener('click', ()=>tryUpgrade('split'));
   document.getElementById('perk-speed-btn').addEventListener('click', ()=>tryUpgrade('speed'));
@@ -1627,4 +1463,4 @@
 })();
 </script>
 </body>
- </html>
+</html>
