@@ -94,11 +94,34 @@
   .nav-btn .nav-icon { font-size:20px; }
 
   /* game screen */
-  #hud { position:absolute; top:14px; left:14px; right:14px; display:flex; justify-content:space-between;
-    font-size:14px; color:#cfe0f2; pointer-events:none; z-index:5; }
-  #hud b { color:#4fa8ff; }
-  #back-btn { position:absolute; top:12px; left:12px; z-index:8; background:rgba(255,255,255,.08); border:none;
-    color:#fff; border-radius:10px; padding:6px 10px; font-size:13px; }
+  #game-topleft { position:absolute; top:12px; left:12px; z-index:8; display:flex; flex-direction:column; gap:8px; align-items:flex-start; }
+  #back-btn { background:rgba(20,24,32,.85); border:1px solid #2a3648; color:#fff; border-radius:999px;
+    padding:9px 16px; font-size:13px; font-weight:700; display:flex; align-items:center; gap:6px; }
+  .game-rank-pill { background:rgba(20,24,32,.85); border:1px solid #2a3648; border-radius:999px;
+    padding:8px 14px; font-size:13px; font-weight:800; display:flex; align-items:center; gap:6px; color:#ffd766; }
+
+  #game-topcenter { position:absolute; top:12px; left:50%; transform:translateX(-50%); z-index:8;
+    display:flex; gap:10px; }
+  .stat-pill { background:rgba(20,24,32,.85); border:1px solid #2a3648; border-radius:999px;
+    padding:9px 16px; font-size:13px; font-weight:800; color:#cfe0f2; display:flex; align-items:center; gap:6px; white-space:nowrap; }
+  .stat-icon { font-size:14px; }
+
+  #game-topright { position:absolute; top:12px; right:12px; z-index:8; display:flex; flex-direction:column; gap:8px; align-items:flex-end; }
+  .icon-btn { width:34px; height:34px; border-radius:50%; background:rgba(20,24,32,.85); border:1px solid #2a3648;
+    color:#cfe0f2; font-size:15px; display:flex; align-items:center; justify-content:center; }
+
+  #leaderboard { position:absolute; top:110px; right:12px; z-index:8; display:flex; flex-direction:column;
+    align-items:center; gap:6px; max-height:52vh; overflow:visible; }
+  #leaderboard.collapsed { display:none; }
+  .lb-avatar-wrap { display:flex; flex-direction:column; align-items:center; gap:2px; }
+  .lb-avatar { width:44px; height:44px; border-radius:50%; display:flex; align-items:center; justify-content:center;
+    font-size:20px; border:2px solid rgba(255,255,255,.15); background:#12161f; position:relative; }
+  .lb-avatar.me { border-color:#4fa8ff; box-shadow:0 0 0 2px rgba(79,168,255,.3); }
+  .lb-score { font-size:10px; color:#8a99ad; font-weight:700; }
+
+  #hud-name-tag { position:absolute; pointer-events:none; z-index:5; color:#fff; font-size:13px; font-weight:700;
+    text-shadow:0 1px 3px rgba(0,0,0,.8); left:50%; transform:translateX(-50%); white-space:nowrap; }
+
   #split-btn { position:absolute; bottom:26px; right:20px; width:78px; height:78px; border-radius:50%;
     background:rgba(79,168,255,.25); border:2px solid #4fa8ff; color:#fff; font-weight:800; font-size:13px; z-index:8; }
   #split-btn:disabled { opacity:.35; border-color:#48607a; }
@@ -202,11 +225,25 @@
   <!-- GAME -->
   <div class="screen hidden full" id="screen-game">
     <canvas id="board"></canvas>
-    <button id="back-btn">✕ خروج</button>
-    <div id="hud">
-      <span>حجم: <b id="hud-mass">0</b></span>
-      <span>قطعات: <b id="hud-pieces">1</b></span>
+
+    <div id="game-topleft">
+      <button id="back-btn">✕ بستن</button>
+      <div class="game-rank-pill">🏆 <span id="game-rank">#1</span></div>
     </div>
+
+    <div id="game-topcenter">
+      <div class="stat-pill"><span class="stat-icon">🎒</span><span id="hud-mass">0kg</span></div>
+      <div class="stat-pill"><span class="stat-icon">🍪</span><span id="hud-eaten">0</span></div>
+      <div class="stat-pill"><span class="stat-icon">⏱</span><span id="hud-timer">00:00</span></div>
+    </div>
+
+    <div id="game-topright">
+      <button class="icon-btn" id="leaderboard-toggle">⌄</button>
+      <button class="icon-btn" id="menu-toggle">⋮</button>
+    </div>
+
+    <div id="leaderboard"></div>
+
     <button id="split-btn">تقسیم</button>
     <div id="joystick-base"></div>
     <div id="joystick-knob"></div>
@@ -475,14 +512,23 @@
     if ((profile.tokens||0) < LOOTBOX_PRICE) { notify('توکن کافی نداری! به '+LOOTBOX_PRICE+' توکن نیاز داری.'); return; }
 
     const supplyRef = db.ref('lootboxSupply/newer');
+    // FIX: the transaction used to leave `claimed` unchanged (instead of
+    // aborting) once supply was full, and the callback checked
+    // `data.claimed > data.max` — which is never true once claimed===max.
+    // That meant every purchase after sellout still "succeeded": the
+    // player got charged tokens and received a skin even though no slot
+    // was actually reserved. Returning `undefined` here properly aborts
+    // the transaction (committed=false) so the sold-out case is detected.
     supplyRef.transaction(current=>{
       current = current || { claimed:0, max:1000 };
-      if (current.claimed < current.max) current.claimed += 1;
+      if (current.claimed >= current.max) return; // abort: no slots left
+      current.claimed += 1;
       return current;
     }, (err, committed, snap)=>{
       if (err) { notify('خطا در بررسی موجودی، دوباره امتحان کن.'); return; }
+      if (!committed) { notify('لوت‌باکس Newer تموم شده! 😔'); renderItems(); return; }
       const data = snap.val();
-      if (!data || data.claimed > data.max) { notify('لوت‌باکس Newer تموم شده! 😔'); return; }
+      if (!data) { notify('خطا در بررسی موجودی، دوباره امتحان کن.'); return; }
 
       profile.tokens -= LOOTBOX_PRICE;
       saveField('tokens', profile.tokens);
@@ -560,6 +606,8 @@
   const BASE_SPLIT_COOLDOWN = 5;
 
   let pieces, bots, pellets, camScale, running, lastT, splitCooldownLeft, maxMassReached;
+  let pelletsEaten, gameStartT, leaderboardCollapsed = false;
+  const BOT_AVATARS = ['🐙','🦑','🐡','🦈','🐊','🦀','🐢','🦖','🐲','👾'];
 
   function radiusFromMass(m){ return 8 + Math.sqrt(m)*3.1; }
   function baseSpeedFromRadius(r){ return Math.max(46, 320/(1+r/34)); }
@@ -575,7 +623,7 @@
   function makeBot(idx, awayFrom){
     let pos; do { pos = randPos(); } while (awayFrom && Math.hypot(pos.x-awayFrom.x,pos.y-awayFrom.y) < 500);
     return { name:'AI '+idx, x:pos.x, y:pos.y, mass:14+Math.random()*14, color:BOT_COLORS[idx%BOT_COLORS.length],
-      wanderDir:{x:0,y:0}, wanderT:0, dispR:12 };
+      avatar: BOT_AVATARS[idx%BOT_AVATARS.length], wanderDir:{x:0,y:0}, wanderT:0, dispR:12 };
   }
 
   function startGame(){
@@ -584,7 +632,9 @@
     bots = []; for (let i=1;i<=BOT_COUNT;i++) bots.push(makeBot(i, pieces[0]));
     pellets = []; for (let i=0;i<PELLET_COUNT;i++) pellets.push(makePellet());
     camScale = 1; running = true; lastT = null; splitCooldownLeft = 0; maxMassReached = 22;
+    pelletsEaten = 0; gameStartT = performance.now();
     showScreen('screen-game'); bottomnav.style.display='none';
+    document.getElementById('leaderboard').classList.toggle('collapsed', leaderboardCollapsed);
     requestAnimationFrame(loop);
   }
 
@@ -687,7 +737,7 @@
       clampWorld(p);
       for (let i=pellets.length-1;i>=0;i--){
         const pel = pellets[i]; const d = Math.hypot(pel.x-p.x, pel.y-p.y);
-        if (d < p.dispR) { p.mass += 1.1; pellets[i] = makePellet(); }
+        if (d < p.dispR) { p.mass += 1.1; pellets[i] = makePellet(); pelletsEaten++; }
       }
     }
     const now = performance.now();
@@ -824,6 +874,42 @@
   document.getElementById('retry-btn').addEventListener('click', startGame);
   document.getElementById('menu-btn').addEventListener('click', ()=>showScreen('screen-home'));
 
+  const leaderboardEl = document.getElementById('leaderboard');
+  document.getElementById('leaderboard-toggle').addEventListener('click', ()=>{
+    leaderboardCollapsed = !leaderboardCollapsed;
+    leaderboardEl.classList.toggle('collapsed', leaderboardCollapsed);
+    document.getElementById('leaderboard-toggle').textContent = leaderboardCollapsed ? '⌃' : '⌄';
+  });
+  document.getElementById('menu-toggle').addEventListener('click', ()=>{
+    notify('حجم: '+Math.round(totalMass())+'kg — بهترین: '+(profile.bestMass||0));
+  });
+
+  function myRank(){
+    const mine = totalMass();
+    let rank = 1;
+    bots.forEach(b=>{ if (b.mass > mine) rank++; });
+    return rank;
+  }
+
+  function renderLeaderboard(){
+    if (leaderboardCollapsed) return;
+    const mine = { avatar:'🧑', mass: totalMass(), isMe:true };
+    const ranked = bots.map(b=>({ avatar:b.avatar, mass:b.mass, isMe:false })).concat([mine])
+      .sort((a,b)=>b.mass-a.mass).slice(0,5);
+    leaderboardEl.innerHTML = ranked.map(e=>`
+      <div class="lb-avatar-wrap">
+        <div class="lb-avatar${e.isMe?' me':''}">${e.avatar}</div>
+        <div class="lb-score">${Math.round(e.mass)}</div>
+      </div>`).join('');
+  }
+
+  function formatTimer(ms){
+    const s = Math.floor(ms/1000);
+    const mm = String(Math.floor(s/60)).padStart(2,'0');
+    const ss = String(s%60).padStart(2,'0');
+    return mm+':'+ss;
+  }
+
   function worldToScreen(x,y,camX,camY,scale){ return { x: innerWidth/2+(x-camX)*scale, y: innerHeight/2+(y-camY)*scale }; }
 
   function draw(){
@@ -836,11 +922,24 @@
     camX/=wsum; camY/=wsum;
 
     ctx.fillStyle='#04070c'; ctx.fillRect(0,0,innerWidth,innerHeight);
-    ctx.strokeStyle='rgba(255,255,255,0.04)';
-    const gStep=100*camScale;
-    const offX=(innerWidth/2-camX*camScale)%gStep, offY=(innerHeight/2-camY*camScale)%gStep;
-    for (let x=offX;x<innerWidth;x+=gStep){ ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,innerHeight); ctx.stroke(); }
-    for (let y=offY;y<innerHeight;y+=gStep){ ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(innerWidth,y); ctx.stroke(); }
+
+    // FIX/REDESIGN: replaced the flat square grid with a radar-style polar
+    // grid (concentric rings + spokes) centered on screen-center, matching
+    // the reference UI — since the camera always keeps the player centered
+    // on screen, the grid's origin is simply the screen center, not a
+    // world-space offset.
+    const cx = innerWidth/2, cy = innerHeight/2;
+    const ringStep = 90*camScale;
+    const maxR = Math.hypot(innerWidth,innerHeight)/2 + ringStep;
+    ctx.strokeStyle='rgba(255,255,255,0.06)'; ctx.lineWidth=1;
+    for (let r=ringStep; r<maxR; r+=ringStep){
+      ctx.beginPath(); ctx.arc(cx,cy,r,0,Math.PI*2); ctx.stroke();
+    }
+    const spokes = 16;
+    for (let i=0;i<spokes;i++){
+      const ang = (i/spokes)*Math.PI*2;
+      ctx.beginPath(); ctx.moveTo(cx,cy); ctx.lineTo(cx+Math.cos(ang)*maxR, cy+Math.sin(ang)*maxR); ctx.stroke();
+    }
 
     pellets.forEach(p=>{
       const s=worldToScreen(p.x,p.y,camX,camY,camScale);
@@ -861,6 +960,17 @@
     const equippedColor = (SKIN_DB[profile.equippedSkin]||SKIN_DB.dead_star).color;
     pieces.forEach(p=>drawCircle(p, equippedColor, true, null));
 
+    // single name label under the whole player cluster (not per-piece),
+    // matching the reference screenshot's name row under the blobs
+    let lowestY = -Infinity, avgX = 0;
+    pieces.forEach(p=>{ const s=worldToScreen(p.x,p.y,camX,camY,camScale); avgX+=s.x;
+      lowestY = Math.max(lowestY, s.y + p.dispR*camScale); });
+    avgX /= pieces.length;
+    ctx.fillStyle='#fff'; ctx.font='700 14px sans-serif'; ctx.textAlign='center';
+    ctx.shadowColor='rgba(0,0,0,.8)'; ctx.shadowBlur=4;
+    ctx.fillText(profile.name || displayName, avgX, lowestY + 22);
+    ctx.shadowBlur=0;
+
     // split cooldown UI
     const canSplit = pieces.some(p => p.mass >= MIN_MASS_TO_SPLIT);
     splitBtn.disabled = !canSplit || pieces.length>=MAX_PIECES || splitCooldownLeft>0;
@@ -875,8 +985,11 @@
       if (!running) return;
       if (splitCooldownLeft>0) splitCooldownLeft=Math.max(0,splitCooldownLeft-dt);
       const tm = totalMass(); if (tm>maxMassReached) maxMassReached=tm;
-      document.getElementById('hud-mass').textContent = Math.round(tm);
-      document.getElementById('hud-pieces').textContent = pieces.length;
+      document.getElementById('hud-mass').textContent = Math.round(tm)+'kg';
+      document.getElementById('hud-eaten').textContent = pelletsEaten;
+      document.getElementById('hud-timer').textContent = formatTimer(performance.now()-gameStartT);
+      document.getElementById('game-rank').textContent = '#'+myRank();
+      renderLeaderboard();
       draw();
     } catch (e) {
       // FIX: any unexpected error inside the loop used to kill
