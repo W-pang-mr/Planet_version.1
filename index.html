@@ -425,7 +425,7 @@
   const TAG_CLASS = { starter:'tag-starter', common:'tag-common', rare:'tag-rare', epic:'tag-epic', legend:'tag-legend' };
   const TAG_LABEL = { starter:'شروع', common:'Common', rare:'Rare', epic:'Epic', legend:'Legend' };
 
-  // تابع کمکی برای ادغام عمیق (deep merge) - این مشکل اصلی نمایش صفر برای توکن‌ها را حل می‌کند
+  // تابع کمکی برای ادغام عمیق (deep merge)
   function deepMerge(target, source) {
     const result = { ...target };
     for (const key in source) {
@@ -438,16 +438,6 @@
     return result;
   }
 
-  // Inventory model:
-  //   inventory.skins[skinId] = { <pushKey>: serialNumber, ... }  — one
-  //     entry per numbered copy the player owns (a duplicate pull now
-  //     grants a NEW copy with a new serial, not a refund).
-  //   inventory.lootboxes[<pushKey>] = { type, acquiredAt }  — unopened
-  //     boxes sitting in the inventory until the player opens them.
-  //   dailyClaim = { streak, lastClaimDay }  — lastClaimDay is a
-  //     YYYY-MM-DD string in the player's local date, streak is 1..7
-  // dead_star is the free starter skin everyone has; it's never stored as
-  // an instance/serial, ownership of it is implicit.
   function defaultProfile(){
     return {
       name: displayName,
@@ -461,24 +451,13 @@
   }
   function ownsSkin(id){ return id==='dead_star' || !!(profile.inventory.skins[id] && Object.keys(profile.inventory.skins[id]).length); }
   function skinCopies(id){ return id==='dead_star' ? 1 : Object.keys(profile.inventory.skins[id]||{}).length; }
-  function ownedSkinCount(){ return Object.keys(SKIN_DB).filter(ownsSkin).length; }
 
-  /*
-   * FIX: profile used to start as `null` and every screen (including the
-   * game loop) assumed it was already populated from Firebase. If the
-   * player tapped "شروع بازی" before the async Firebase read resolved
-   * (slow/blocked connection to gstatic.com / firebaseio.com — common on
-   * mobile networks), `profile.perks...` inside the game loop threw and
-   * silently killed the requestAnimationFrame loop -> black screen with
-   * nothing drawn, no error shown to the user.
-   *
-   * Fix: start with a local default profile immediately so nothing can
-   * ever read from `null`, then merge in the real Firebase data (or fall
-   * back to local-only play) once/if it arrives.
-   */
-  let profile = defaultProfile();
-  let profileSynced = false; // true once we've merged real Firebase data (or given up)
+  // ====== مهم: پروفایل با یک آبجکت خالی شروع می‌شه، نه با مقادیر پیش‌فرض ======
+  let profile = { tokens: 0, bestMass: 0, perks: { splitCooldownLevel:0, speedLevel:0 }, inventory: { skins: {}, lootboxes: {} }, dailyClaim: { streak:0, lastClaimDay:null } };
+  let profileSynced = false;
   let db = null;
+  let userRef = null;
+  let initialLoadDone = false;
 
   function initFirebase(){
     const firebaseConfig = {
@@ -502,54 +481,58 @@
     }
   }
 
-  let userRef = null;
-
+  // ====== اصلاح اصلی: تابع loadProfile به درستی داده‌ها را از دیتابیس می‌خواند و با داده‌های محلی ادغام می‌کند ======
   function loadProfile(){
     if (!initFirebase()) { 
       profileSynced = true; 
+      initialLoadDone = true;
       renderAll(); 
       return; 
     }
     userRef = db.ref('users/' + uid);
 
-    // Safety net: if Firebase never responds (blocked domain, bad network),
-    // don't leave the UI stuck — fall back to the local default profile
-    // after a timeout so the player can still play (progress just won't sync).
     let settled = false;
     const timeoutId = setTimeout(() => {
       if (settled) return;
       settled = true;
       profileSynced = true;
+      initialLoadDone = true;
       renderAll();
     }, 6000);
 
     userRef.once('value').then(snap => {
-      if (settled) return; // timeout already fired, ignore late response for now
+      if (settled) return;
       settled = true;
       clearTimeout(timeoutId);
       
       if (!snap.exists()) {
-        // کاربر جدید است، پروفایل پیش‌فرض را در دیتابیس ذخیره کن
+        // کاربر جدید: یک پروفایل با مقادیر پیش‌فرض ایجاد کن
+        profile = defaultProfile();
         userRef.set(profile).catch(e=>console.error('initial profile save failed', e));
       } else {
         const remote = snap.val() || {};
-        // ادغام عمیق: مقادیر دیتابیس را با پروفایل پیش‌فرض ترکیب کن
-        profile = deepMerge(defaultProfile(), remote);
-        
-        // اطمینان از وجود ساختارهای مورد نیاز
-        if (!profile.inventory) profile.inventory = { skins:{}, lootboxes:{} };
+        // فقط داده‌هایی که در دیتابیس وجود دارند را با داده‌های محلی ادغام کن
+        // اما اگر داده‌ای در دیتابیس نبود، مقدار پیش‌فرض را نگه دار
+        profile = {
+          name: remote.name || displayName,
+          tokens: typeof remote.tokens === 'number' ? remote.tokens : 0,
+          bestMass: typeof remote.bestMass === 'number' ? remote.bestMass : 0,
+          equippedSkin: remote.equippedSkin || 'dead_star',
+          perks: remote.perks ? { ...remote.perks } : { splitCooldownLevel:0, speedLevel:0 },
+          inventory: remote.inventory ? { 
+            skins: remote.inventory.skins || {}, 
+            lootboxes: remote.inventory.lootboxes || {} 
+          } : { skins: {}, lootboxes: {} },
+          dailyClaim: remote.dailyClaim ? { ...remote.dailyClaim } : { streak:0, lastClaimDay:null }
+        };
+        // اطمینان از اینکه ساختارهای مورد نیاز وجود دارند
         if (!profile.inventory.skins) profile.inventory.skins = {};
         if (!profile.inventory.lootboxes) profile.inventory.lootboxes = {};
         if (!profile.perks) profile.perks = { splitCooldownLevel:0, speedLevel:0 };
-        if (!profile.equippedSkin) profile.equippedSkin = 'dead_star';
         if (!profile.dailyClaim) profile.dailyClaim = { streak:0, lastClaimDay:null };
-        
-        // اگر توکن‌ها و سایر مقادیر عددی به درستی از دیتابیس آمده‌اند، آنها را حفظ کن
-        // اما اگر به هر دلیلی NaN یا undefined هستند، مقدار پیش‌فرض را بگذار
-        profile.tokens = typeof profile.tokens === 'number' ? profile.tokens : 0;
-        profile.bestMass = typeof profile.bestMass === 'number' ? profile.bestMass : 0;
       }
       profileSynced = true;
+      initialLoadDone = true;
       renderAll();
     }).catch(err => {
       if (settled) return;
@@ -557,12 +540,33 @@
       clearTimeout(timeoutId);
       console.error('Firebase read error, continuing in local-only mode', err);
       profileSynced = true;
+      initialLoadDone = true;
       renderAll();
     });
   }
 
+  // ====== تابع ذخیره‌سازی: فقط فیلد مشخص‌شده را آپدیت می‌کند، نه کل پروفایل را ======
   function saveField(path, value){
-    if (uid && db && userRef) userRef.child(path).set(value).catch(e=>console.error('save error', path, e));
+    if (!db || !userRef) {
+      // اگر دیتابیس وصل نیست، فقط در حافظه محلی ذخیره کن
+      console.log('Local-only save:', path, value);
+      return;
+    }
+    userRef.child(path).set(value).catch(e => {
+      console.error('save error', path, e);
+    });
+  }
+
+  // ====== تابع ذخیره‌سازی چندگانه (برای عملیات اتمی) ======
+  function saveMultiple(updates){
+    if (!db || !userRef) {
+      console.log('Local-only multi-save:', updates);
+      return Promise.resolve();
+    }
+    return userRef.update(updates).catch(e => {
+      console.error('multi-save error', e);
+      throw e;
+    });
   }
 
   /* ---------- screens / nav ---------- */
@@ -618,9 +622,6 @@
 
   document.getElementById('play-btn').addEventListener('click', ()=>{
     if (!MODES[modeIdx].enabled) return;
-    // profile always has a safe default now, so this can never crash the
-    // game loop — but if the real Firebase data hasn't arrived yet we
-    // still let the user know their progress may not have loaded.
     if (!profileSynced) {
       notify('در حال اتصال به سرور... بازی با تنظیمات پیش‌فرض شروع می‌شه.');
     }
@@ -664,7 +665,6 @@
       grid.appendChild(card);
     });
 
-    // accordion header summary: count + stacked preview circles of owned skins
     const ownedIds = Object.keys(SKIN_DB).filter(ownsSkin);
     document.getElementById('skins-count').textContent = ownedIds.length + ' items';
     const preview = document.getElementById('skins-preview');
@@ -723,7 +723,6 @@
     }
     const row = document.getElementById('daily-row');
     row.innerHTML = '';
-    const currentStreak = claimedToday ? dc.streak : dc.streak; // display up to current streak position
     for (let i=1;i<=7;i++){
       const day = document.createElement('div');
       const isDone = i <= dc.streak && (i < dc.streak || claimedToday);
@@ -737,7 +736,6 @@
     const dc = profile.dailyClaim || { streak:0, lastClaimDay:null };
     const today = todayKey();
     if (dc.lastClaimDay === today) return;
-    // if they missed a day (gap of more than 1 calendar day) the streak resets
     let streak = dc.streak || 0;
     if (dc.lastClaimDay) {
       const gap = daysBetween(new Date(dc.lastClaimDay), new Date(today));
@@ -779,7 +777,7 @@
     }
   }
 
-  /* ---------- skin detail modal (list numbered copies, equip, transfer) ---------- */
+  /* ---------- skin detail modal ---------- */
   const skinModal = document.getElementById('skin-modal');
   function openSkinModal(id){
     const skin = SKIN_DB[id];
@@ -820,7 +818,7 @@
   function closeSkinModal(){ skinModal.classList.add('hidden'); }
   document.getElementById('skin-modal-close').addEventListener('click', closeSkinModal);
 
-  /* ---------- transfer modal (skins or unopened lootboxes, to another Telegram user id) ---------- */
+  /* ---------- transfer modal ---------- */
   const transferModal = document.getElementById('transfer-modal');
   let pendingTransfer = null;
   function openTransferModal(item){
@@ -841,14 +839,12 @@
     const targetUid = 'tg_' + digits;
     if (targetUid === uid) { notify('نمی‌تونی برای خودت انتقال بدی.'); return; }
 
-    // NOTE: there's no server-side lookup of existing players in this app —
-    // the item is written straight to users/<targetUid>/... the same way
-    // every other write in this app is client-trusted. If the id is wrong,
-    // the item lands on a node nobody controls and is unrecoverable.
     if (pendingTransfer.kind === 'skin') {
       const { skinId, key, serial } = pendingTransfer;
-      db.ref('users/'+targetUid+'/inventory/skins/'+skinId).push(serial)
-        .then(()=> userRef.child('inventory/skins/'+skinId+'/'+key).remove())
+      const updates = {};
+      updates['inventory/skins/'+skinId+'/'+key] = null;
+      userRef.child('inventory/skins/'+skinId).push(serial)
+        .then(()=> userRef.update(updates))
         .then(()=>{
           delete profile.inventory.skins[skinId][key];
           notify('اسکین با تگ #'+String(serial).padStart(4,'0')+' منتقل شد.');
@@ -857,8 +853,10 @@
         .catch(e=>{ console.error('skin transfer failed', e); notify('انتقال ناموفق بود، دوباره امتحان کن.'); });
     } else if (pendingTransfer.kind === 'lootbox') {
       const { key, box } = pendingTransfer;
-      db.ref('users/'+targetUid+'/inventory/lootboxes').push(box)
-        .then(()=> userRef.child('inventory/lootboxes/'+key).remove())
+      const updates = {};
+      updates['inventory/lootboxes/'+key] = null;
+      userRef.child('inventory/lootboxes').push(box)
+        .then(()=> userRef.update(updates))
         .then(()=>{
           delete profile.inventory.lootboxes[key];
           notify('لوت‌باکس منتقل شد.');
@@ -882,9 +880,6 @@
     return { skinId, rarity: chosenRarity };
   }
 
-  // Buying a lootbox no longer opens it immediately — it's added to the
-  // inventory as an unopened box (pushed under inventory/lootboxes), same
-  // as the reference inventory screen. Opening happens separately below.
   document.getElementById('lootbox-buy-btn').addEventListener('click', ()=>{
     if (!db) { notify('اتصال به سرور برقرار نیست.'); return; }
     if ((profile.tokens||0) < LOOTBOX_PRICE) { notify('توکن کافی نداری! به '+LOOTBOX_PRICE+' توکن نیاز داری.'); return; }
@@ -892,7 +887,7 @@
     const supplyRef = db.ref('lootboxSupply/newer');
     supplyRef.transaction(current=>{
       current = current || { claimed:0, max:1000 };
-      if (current.claimed >= current.max) return; // abort: no slots left
+      if (current.claimed >= current.max) return;
       current.claimed += 1;
       return current;
     }, (err, committed, snap)=>{
@@ -913,32 +908,6 @@
     });
   });
 
-  /*
-   * FIX (main bug report): opening a box could grant a skin visually in the
-   * current session, but the skin would be GONE after leaving and
-   * re-entering the app.
-   *
-   * Root cause: the old flow did three separate sequential writes —
-   *   1) remove the lootbox
-   *   2) run a transaction on skinClaims/<skinId> to get a serial number
-   *   3) push().set(serial) the new skin instance
-   * If step 2's transaction didn't commit (denied by security rules, a
-   * dropped connection, anything), `serial` fell back to `null` — and
-   * calling `.set(null)` on a Firebase Realtime Database path does NOT
-   * write a null value, it DELETES that path / writes nothing. So step 3
-   * silently became a no-op: the lootbox was already gone (step 1
-   * succeeded), but the skin was never actually saved to the server. The
-   * player only ever saw it because the in-memory `profile` object was
-   * updated locally regardless of whether the server write worked — the
-   * next fresh load from Firebase would come back without it.
-   *
-   * Fix: grant the skin using a single atomic multi-path update() that
-   * removes the lootbox AND writes the skin instance together, using a
-   * value that is never null (a timestamp-based fallback id if the nicer
-   * sequential serial can't be obtained). That guarantees the skin is
-   * actually persisted the instant the lootbox disappears — there's no
-   * window where the box is gone but the skin isn't saved.
-   */
   function openLootbox(key){
     if (!db) { notify('اتصال به سرور برقرار نیست.'); return; }
     const box = profile.inventory.lootboxes[key];
@@ -948,12 +917,10 @@
     const instRef = userRef.child('inventory/skins/'+skinId).push();
 
     function commitGrant(serial){
-      // never let serial end up null/undefined — a null value would delete
-      // the path instead of writing it, which is exactly the original bug
       const safeSerial = (serial===null || serial===undefined) ? Date.now() : serial;
       const updates = {};
-      updates['inventory/lootboxes/'+key] = null; // remove the box
-      updates['inventory/skins/'+skinId+'/'+instRef.key] = safeSerial; // grant the skin
+      updates['inventory/lootboxes/'+key] = null;
+      updates['inventory/skins/'+skinId+'/'+instRef.key] = safeSerial;
       userRef.update(updates).then(()=>{
         delete profile.inventory.lootboxes[key];
         profile.inventory.skins[skinId] = profile.inventory.skins[skinId] || {};
@@ -963,9 +930,6 @@
       }).catch(e=>{ console.error('lootbox open failed', e); notify('خطا در باز کردن، دوباره امتحان کن.'); });
     }
 
-    // best-effort nicer sequential serial; if this fails for any reason we
-    // still grant the skin (with a timestamp-based tag) via commitGrant —
-    // getting a pretty serial number is never allowed to block the grant.
     db.ref('skinClaims/'+skinId).transaction(current => (current||0) + 1, (err, committed, snap) => {
       const serial = (!err && committed && snap && snap.exists()) ? snap.val() : null;
       commitGrant(serial);
@@ -1018,11 +982,10 @@
 
   const WORLD = 3000, PELLET_COUNT = 220, BOT_COUNT = 10;
   const BOT_COLORS = ['#ff5c5c','#ffd23d','#7ee787','#ff9d3d','#a86fff','#3dd6ff','#ff5cf0','#ff8080','#80ffcf','#c48bff'];
-  // agar.io-style split constants
-  const MIN_MASS_TO_SPLIT = 32;      // a piece needs at least this much mass to split in two
+  const MIN_MASS_TO_SPLIT = 32;
   const MAX_PIECES = 16;
-  const EAT_MASS_RATIO = 1.25;       // must be 25% heavier to eat (agar.io standard)
-  const EAT_OVERLAP = 0.7;           // how much the smaller blob must be swallowed by the bigger one
+  const EAT_MASS_RATIO = 1.25;
+  const EAT_OVERLAP = 0.7;
   const BASE_SPLIT_COOLDOWN = 5;
 
   let pieces, bots, pellets, camScale, running, lastT, splitCooldownLeft, maxMassReached;
@@ -1083,12 +1046,6 @@
     if (keys['arrowleft']||keys['a']) x-=1; if (keys['arrowright']||keys['d']) x+=1;
     const d=Math.hypot(x,y); return d>0?{x:x/d,y:y/d}:{x:0,y:0}; }
   function currentDir(){ return joy.active ? {x:joy.dx,y:joy.dy} : keyboardDir(); }
-  // FIX: splits used to default to a hardcoded "up" whenever the player
-  // wasn't actively steering (idle joystick/keys). In agar.io the aim is
-  // the cursor position, which stays put even when you stop moving — so
-  // splits keep firing toward wherever you were last facing instead of
-  // always snapping back to "up". We approximate that by remembering the
-  // last non-zero steering direction and falling back to it.
   let lastDir = {x:0, y:-1};
   function facingDir(){
     const d = currentDir();
@@ -1160,14 +1117,6 @@
       }
     }
 
-    // FIX: the merge-pull below only kicked in once two pieces were
-    // individually merge-ready, so a freshly split cluster (still mid-lock)
-    // had nothing holding it together at all — it just spread out forever
-    // under the same steering input. This adds a light cohesion pull
-    // toward the whole cluster's center for every piece, all the time, so
-    // the group generally tries to stay bunched around you instead of
-    // scattering, on top of the stronger merge-pull once pieces are
-    // actually eligible to recombine.
     if (pieces.length > 1) {
       let cx=0, cy=0, wsum=0;
       pieces.forEach(p=>{ cx+=p.x*p.mass; cy+=p.y*p.mass; wsum+=p.mass; });
@@ -1183,23 +1132,13 @@
       });
     }
     const now = performance.now();
-    // FIX (the real bug here): once pieces' merge timer expired, nothing
-    // ever pulled them toward each other. Since every piece gets the same
-    // steering direction, in open space two split pieces just glide along
-    // in parallel forever, holding whatever separation they happened to
-    // have — they only ever got close enough to actually merge when the
-    // world border stopped one of them and let the other catch up, which
-    // is why it looked like you "had to drive into the wall" to recombine.
-    // Real agar.io pulls merge-eligible cells toward each other; we do the
-    // same here with a gentle homing pull, gated to only merge-eligible
-    // pairs so it never fights the player during an active split-attack.
     const PULL_SPEED = 420;
     for (let i=0;i<pieces.length;i++){
       for (let j=i+1;j<pieces.length;j++){
         const a=pieces[i], b=pieces[j];
         if (now < a.mergeAt || now < b.mergeAt) continue;
         const dx=b.x-a.x, dy=b.y-a.y; const d=Math.hypot(dx,dy) || 0.001;
-        if (d < 4) continue; // already basically together, let the merge check below handle it
+        if (d < 4) continue;
         const nx=dx/d, ny=dy/d;
         const pull = Math.min(PULL_SPEED*dt, d*0.8);
         a.x += nx*pull; a.y += ny*pull;
