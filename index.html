@@ -46,6 +46,54 @@
   .soon-box { display:flex; flex-direction:column; align-items:center; justify-content:center; height:100%; gap:10px; }
   .soon-box .big { font-size:44px; }
 
+  /* ===== Inventory screen (redesigned to match reference) ===== */
+  #screen-items { padding:0; align-items:stretch; }
+  .inv-topbar { display:flex; align-items:center; justify-content:space-between; padding:14px 16px; width:100%; }
+  .inv-close { display:flex; align-items:center; gap:6px; background:none; border:none; color:#fff; font-size:15px; font-weight:700; }
+  .inv-title { font-size:17px; font-weight:800; }
+  .inv-topbar-right { display:flex; align-items:center; gap:14px; color:#fff; font-size:18px; }
+
+  .inv-summary { display:flex; align-items:center; justify-content:space-between; width:100%; max-width:460px;
+    margin:6px auto 18px; padding:0 20px; }
+  .inv-coin-pill { display:flex; align-items:center; gap:8px; background:#12161f; border:1px solid #24303f;
+    border-radius:999px; padding:9px 16px; font-weight:800; font-size:15px; }
+  .inv-avatar-ring { width:78px; height:78px; border-radius:50%; border:2.5px solid #fff; display:flex;
+    align-items:center; justify-content:center; font-size:34px; flex-shrink:0; }
+  .inv-avatar-wrap { display:flex; flex-direction:column; align-items:center; gap:6px; }
+  .inv-avatar-label { font-size:13px; color:#8a99ad; font-weight:700; }
+  .inv-icon-btn { width:46px; height:46px; border-radius:50%; background:#12161f; border:1px solid #24303f;
+    display:flex; align-items:center; justify-content:center; font-size:19px; color:#cfe0f2; }
+  .inv-icon-group { display:flex; align-items:center; gap:10px; }
+
+  .inv-body { width:100%; max-width:460px; margin:0 auto; padding:0 16px 16px; }
+
+  .daily-card { background:#0e131b; border:1px solid #22303f; border-radius:18px; padding:16px; margin-bottom:14px; }
+  .daily-head { display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; }
+  .daily-head .daily-title { font-size:17px; font-weight:800; }
+  .daily-claimed-badge { background:#1b2330; color:#5c6b7d; font-size:11px; font-weight:800; padding:6px 12px; border-radius:999px; }
+  .daily-claim-btn { background:linear-gradient(135deg,#4fa8ff,#3d7fc9); color:#fff; font-size:11px; font-weight:800;
+    padding:6px 14px; border-radius:999px; border:none; }
+  .daily-row { display:flex; gap:8px; overflow-x:auto; }
+  .daily-day { flex-shrink:0; width:60px; height:60px; border-radius:14px; background:#141a24; border:1px solid #22303f;
+    display:flex; flex-direction:column; align-items:center; justify-content:center; font-size:20px; position:relative; }
+  .daily-day.done { background:#123023; border-color:#1f5c33; }
+  .daily-day.today { border-color:#4fa8ff; box-shadow:0 0 0 1px #4fa8ff inset; }
+  .daily-day .daily-reward { font-size:9px; color:#ffd766; font-weight:800; margin-top:2px; }
+  .daily-day .daily-check { position:absolute; top:3px; left:3px; width:16px; height:16px; border-radius:50%;
+    background:#2fbf6e; display:flex; align-items:center; justify-content:center; font-size:10px; }
+
+  .acc-card { background:#0e131b; border:1px solid #22303f; border-radius:18px; margin-bottom:14px; overflow:hidden; }
+  .acc-head { display:flex; align-items:center; justify-content:space-between; padding:16px; cursor:pointer; }
+  .acc-head-left { display:flex; flex-direction:column; gap:6px; }
+  .acc-head-title { font-size:18px; font-weight:800; }
+  .acc-head-count { font-size:12px; color:#8a99ad; background:#161f2b; border-radius:999px; padding:4px 10px; width:fit-content; }
+  .acc-head-preview { display:flex; align-items:center; }
+  .acc-preview-avatar { width:52px; height:52px; border-radius:50%; margin-right:-14px; border:2px solid #0e131b; }
+  .acc-chevron { font-size:16px; color:#8a99ad; margin-right:10px; transition:transform .2s; flex-shrink:0; }
+  .acc-chevron.open { transform:rotate(180deg); }
+  .acc-body { max-height:0; overflow:hidden; transition:max-height .25s ease; padding:0 16px; }
+  .acc-body.open { max-height:640px; padding:0 16px 16px; overflow-y:auto; }
+
   /* Items screen */
   .section-title { align-self:flex-start; font-weight:800; font-size:15px; margin:14px 2px 8px; width:100%; max-width:420px; }
   .skin-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; width:100%; max-width:420px; }
@@ -75,8 +123,8 @@
   .lootbox-buy:disabled, .lootbox-open-btn:disabled { opacity:.4; }
 
   /* owned/unopened lootboxes list */
-  #lootbox-owned-list { width:100%; max-width:420px; display:flex; flex-direction:column; gap:8px; }
-  .lootbox-owned-row { display:flex; align-items:center; gap:12px; background:#0e131b; border:1px solid #22303f;
+  #lootbox-owned-list { width:100%; display:flex; flex-direction:column; gap:8px; }
+  .lootbox-owned-row { display:flex; align-items:center; gap:12px; background:#131a24; border:1px solid #22303f;
     border-radius:14px; padding:10px 12px; }
   .lootbox-owned-row .lootbox-icon { width:40px; height:40px; font-size:20px; border-radius:10px; }
   .lootbox-owned-row .lootbox-owned-name { flex:1; font-size:13px; font-weight:700; }
@@ -84,7 +132,7 @@
     font-weight:700; padding:7px 14px; font-size:12px; }
   .lootbox-transfer-btn { background:#161f2b; border:1px solid #2c3d52; border-radius:10px; color:#cfe0f2;
     font-weight:700; padding:7px 10px; font-size:12px; }
-  .empty-hint { color:#5c6b7d; font-size:12px; padding:6px 2px; }
+  .empty-hint { color:#5c6b7d; font-size:12px; padding:10px 2px; }
 
   /* skin owned count badge */
   .skin-owned-badge { position:absolute; top:6px; left:6px; background:rgba(79,168,255,.9); color:#fff;
@@ -184,22 +232,78 @@
     <div class="soon-box"><div class="big">✨</div><h1 class="title">به زودی</h1><p class="subtitle">این بخش هنوز آماده نشده</p></div>
   </div>
 
-  <!-- ITEMS / INVENTORY -->
+  <!-- ITEMS / INVENTORY (redesigned) -->
   <div class="screen hidden" id="screen-items">
-    <h1 class="title">🎒 اینونتوری</h1>
-    <div class="section-title">اسکین‌ها</div>
-    <div class="skin-grid" id="skin-grid"></div>
-
-    <div class="section-title">لوت‌باکس‌ها</div>
-    <div class="lootbox-card">
-      <div class="lootbox-icon">📦</div>
-      <div class="lootbox-info">
-        <div class="lootbox-name">Newer</div>
-        <div class="lootbox-supply" id="lootbox-supply">در حال بارگذاری...</div>
-      </div>
-      <button class="lootbox-buy" id="lootbox-buy-btn">🪙 50</button>
+    <div class="inv-topbar">
+      <button class="inv-close" id="inv-close-btn">✕ بستن</button>
+      <div class="inv-title">اینونتوری</div>
+      <div class="inv-topbar-right"><span>⌄</span><span>⋮</span></div>
     </div>
-    <div id="lootbox-owned-list"></div>
+
+    <div class="inv-summary">
+      <div class="inv-coin-pill">🪙 <span id="inv-tokens">0</span></div>
+      <div class="inv-avatar-wrap">
+        <div class="inv-avatar-ring" id="inv-avatar-ring">🪐</div>
+        <div class="inv-avatar-label"><span id="inv-bestmass">0</span> رکورد</div>
+      </div>
+      <div class="inv-icon-group">
+        <div class="inv-icon-btn" id="inv-add-btn">👤+</div>
+        <div class="inv-icon-btn" id="inv-settings-btn">⚙️</div>
+      </div>
+    </div>
+
+    <div class="inv-body">
+      <!-- Daily claim -->
+      <div class="daily-card">
+        <div class="daily-head">
+          <span class="daily-title">جایزه روزانه</span>
+          <button class="daily-claim-btn" id="daily-claim-btn">دریافت</button>
+        </div>
+        <div class="daily-row" id="daily-row"></div>
+      </div>
+
+      <!-- Skins accordion -->
+      <div class="acc-card">
+        <div class="acc-head" id="skins-acc-head">
+          <div class="acc-head-left">
+            <span class="acc-head-title">اسکین‌ها</span>
+            <span class="acc-head-count" id="skins-count">0 items</span>
+          </div>
+          <div style="display:flex; align-items:center;">
+            <div class="acc-head-preview" id="skins-preview"></div>
+            <span class="acc-chevron" id="skins-chevron">⌄</span>
+          </div>
+        </div>
+        <div class="acc-body" id="skins-acc-body">
+          <div class="skin-grid" id="skin-grid"></div>
+        </div>
+      </div>
+
+      <!-- Lootboxes accordion -->
+      <div class="acc-card">
+        <div class="acc-head" id="lootbox-acc-head">
+          <div class="acc-head-left">
+            <span class="acc-head-title">لوت‌باکس‌ها</span>
+            <span class="acc-head-count" id="lootbox-count">0 items</span>
+          </div>
+          <div style="display:flex; align-items:center;">
+            <div class="acc-head-preview" id="lootbox-preview"></div>
+            <span class="acc-chevron" id="lootbox-chevron">⌄</span>
+          </div>
+        </div>
+        <div class="acc-body" id="lootbox-acc-body">
+          <div class="lootbox-card">
+            <div class="lootbox-icon">📦</div>
+            <div class="lootbox-info">
+              <div class="lootbox-name">Newer</div>
+              <div class="lootbox-supply" id="lootbox-supply">در حال بارگذاری...</div>
+            </div>
+            <button class="lootbox-buy" id="lootbox-buy-btn">🪙 50</button>
+          </div>
+          <div id="lootbox-owned-list"></div>
+        </div>
+      </div>
+    </div>
   </div>
 
   <!-- SKIN DETAIL MODAL -->
@@ -327,6 +431,8 @@
   //     grants a NEW copy with a new serial, not a refund).
   //   inventory.lootboxes[<pushKey>] = { type, acquiredAt }  — unopened
   //     boxes sitting in the inventory until the player opens them.
+  //   dailyClaim = { streak, lastClaimDay }  — lastClaimDay is a
+  //     YYYY-MM-DD string in the player's local date, streak is 1..7
   // dead_star is the free starter skin everyone has; it's never stored as
   // an instance/serial, ownership of it is implicit.
   function defaultProfile(){
@@ -336,11 +442,13 @@
       bestMass: 0,
       equippedSkin: 'dead_star',
       perks: { splitCooldownLevel:0, speedLevel:0 },
-      inventory: { skins: {}, lootboxes: {} }
+      inventory: { skins: {}, lootboxes: {} },
+      dailyClaim: { streak:0, lastClaimDay:null }
     };
   }
   function ownsSkin(id){ return id==='dead_star' || !!(profile.inventory.skins[id] && Object.keys(profile.inventory.skins[id]).length); }
   function skinCopies(id){ return id==='dead_star' ? 1 : Object.keys(profile.inventory.skins[id]||{}).length; }
+  function ownedSkinCount(){ return Object.keys(SKIN_DB).filter(ownsSkin).length; }
 
   /*
    * FIX: profile used to start as `null` and every screen (including the
@@ -412,6 +520,7 @@
         if (!profile.inventory.lootboxes) profile.inventory.lootboxes = {};
         if (!profile.perks) profile.perks = { splitCooldownLevel:0, speedLevel:0 };
         if (!profile.equippedSkin) profile.equippedSkin = 'dead_star';
+        if (!profile.dailyClaim) profile.dailyClaim = { streak:0, lastClaimDay:null };
       }
       profileSynced = true;
       renderAll();
@@ -442,6 +551,17 @@
       if (btn.dataset.tab==='items') renderItems();
       if (btn.dataset.tab==='perks') renderPerks();
     });
+  });
+  document.getElementById('inv-close-btn').addEventListener('click', ()=>{
+    document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+    document.querySelector('.nav-btn[data-tab="home"]').classList.add('active');
+    showScreen('screen-home');
+  });
+  document.getElementById('inv-add-btn').addEventListener('click', ()=>notify('این بخش به زودی اضافه می‌شه.'));
+  document.getElementById('inv-settings-btn').addEventListener('click', ()=>{
+    document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+    document.querySelector('.nav-btn[data-tab="perks"]').classList.add('active');
+    showScreen('screen-perks'); renderPerks();
   });
 
   function renderAll(){
@@ -483,6 +603,19 @@
   /* ---------- items rendering ---------- */
   function notify(msg){ if (tg && tg.showAlert) tg.showAlert(msg); else alert(msg); }
 
+  /* ----- accordion open/close (skins + lootboxes cards) ----- */
+  function wireAccordion(headId, bodyId, chevronId){
+    document.getElementById(headId).addEventListener('click', ()=>{
+      const body = document.getElementById(bodyId);
+      const chev = document.getElementById(chevronId);
+      const opening = !body.classList.contains('open');
+      body.classList.toggle('open', opening);
+      chev.classList.toggle('open', opening);
+    });
+  }
+  wireAccordion('skins-acc-head','skins-acc-body','skins-chevron');
+  wireAccordion('lootbox-acc-head','lootbox-acc-body','lootbox-chevron');
+
   function renderSkinGrid(){
     const grid = document.getElementById('skin-grid');
     grid.innerHTML = '';
@@ -503,11 +636,33 @@
       if (owned) card.addEventListener('click', ()=>openSkinModal(id));
       grid.appendChild(card);
     });
+
+    // accordion header summary: count + stacked preview circles of owned skins
+    const ownedIds = Object.keys(SKIN_DB).filter(ownsSkin);
+    document.getElementById('skins-count').textContent = ownedIds.length + ' items';
+    const preview = document.getElementById('skins-preview');
+    preview.innerHTML = '';
+    ownedIds.slice(-4).forEach(id=>{
+      const dot = document.createElement('div');
+      dot.className = 'acc-preview-avatar';
+      dot.style.background = `radial-gradient(circle at 35% 30%, #fff6, ${SKIN_DB[id].color})`;
+      preview.appendChild(dot);
+    });
   }
 
   function renderOwnedLootboxes(){
     const list = document.getElementById('lootbox-owned-list');
     const boxes = Object.entries(profile.inventory.lootboxes||{});
+    document.getElementById('lootbox-count').textContent = boxes.length + ' items';
+    const preview = document.getElementById('lootbox-preview');
+    preview.innerHTML = '';
+    if (boxes.length) {
+      const dot = document.createElement('div');
+      dot.className = 'acc-preview-avatar';
+      dot.style.background = '#141a24'; dot.style.display='flex'; dot.style.alignItems='center';
+      dot.style.justifyContent='center'; dot.style.fontSize='22px'; dot.textContent='📦';
+      preview.appendChild(dot);
+    }
     if (!boxes.length) { list.innerHTML = '<div class="empty-hint">لوت‌باکس بازنشده‌ای نداری.</div>'; return; }
     list.innerHTML = '';
     boxes.forEach(([key, box])=>{
@@ -525,7 +680,64 @@
     });
   }
 
+  /* ----- daily claim ----- */
+  const DAILY_REWARDS = [10,15,20,30,40,60,100];
+  function todayKey(){ const d = new Date(); return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate(); }
+  function daysBetween(a,b){ return Math.round((b-a)/86400000); }
+  function renderDailyClaim(){
+    const dc = profile.dailyClaim || { streak:0, lastClaimDay:null };
+    const today = todayKey();
+    const claimedToday = dc.lastClaimDay === today;
+    const btn = document.getElementById('daily-claim-btn');
+    if (claimedToday) {
+      btn.textContent = 'دریافت شد'; btn.disabled = true; btn.classList.add('daily-claimed-badge');
+    } else {
+      btn.textContent = 'دریافت'; btn.disabled = false; btn.classList.remove('daily-claimed-badge');
+    }
+    const row = document.getElementById('daily-row');
+    row.innerHTML = '';
+    const currentStreak = claimedToday ? dc.streak : dc.streak; // display up to current streak position
+    for (let i=1;i<=7;i++){
+      const day = document.createElement('div');
+      const isDone = i <= dc.streak && (i < dc.streak || claimedToday);
+      const isToday = claimedToday ? i === dc.streak : i === dc.streak+1;
+      day.className = 'daily-day' + (isDone?' done':'') + (isToday?' today':'');
+      day.innerHTML = `${isDone?'<span class="daily-check">✓</span>':''}<span>🎁</span><span class="daily-reward">${DAILY_REWARDS[i-1]}</span>`;
+      row.appendChild(day);
+    }
+  }
+  document.getElementById('daily-claim-btn').addEventListener('click', ()=>{
+    const dc = profile.dailyClaim || { streak:0, lastClaimDay:null };
+    const today = todayKey();
+    if (dc.lastClaimDay === today) return;
+    // if they missed a day (gap of more than 1 calendar day) the streak resets
+    let streak = dc.streak || 0;
+    if (dc.lastClaimDay) {
+      const gap = daysBetween(new Date(dc.lastClaimDay), new Date(today));
+      streak = gap === 1 ? streak : 0;
+    }
+    streak = (streak % 7) + 1;
+    const reward = DAILY_REWARDS[streak-1];
+    profile.tokens = (profile.tokens||0) + reward;
+    profile.dailyClaim = { streak, lastClaimDay: today };
+    saveField('tokens', profile.tokens);
+    saveField('dailyClaim', profile.dailyClaim);
+    notify('+'+reward+' توکن گرفتی 🪙');
+    renderDailyClaim();
+    renderInvSummary();
+    document.getElementById('home-tokens').textContent = profile.tokens;
+  });
+
+  function renderInvSummary(){
+    document.getElementById('inv-tokens').textContent = profile.tokens||0;
+    document.getElementById('inv-bestmass').textContent = profile.bestMass||0;
+    const equipped = SKIN_DB[profile.equippedSkin]||SKIN_DB.dead_star;
+    document.getElementById('inv-avatar-ring').style.background = `radial-gradient(circle at 35% 30%, #fff6, ${equipped.color})`;
+  }
+
   function renderItems(){
+    renderInvSummary();
+    renderDailyClaim();
     renderSkinGrid();
     renderOwnedLootboxes();
     if (db) {
@@ -651,9 +863,6 @@
     if ((profile.tokens||0) < LOOTBOX_PRICE) { notify('توکن کافی نداری! به '+LOOTBOX_PRICE+' توکن نیاز داری.'); return; }
 
     const supplyRef = db.ref('lootboxSupply/newer');
-    // FIX (kept from before): abort the transaction once supply is full
-    // instead of silently letting `claimed` stop moving while the purchase
-    // still went through.
     supplyRef.transaction(current=>{
       current = current || { claimed:0, max:1000 };
       if (current.claimed >= current.max) return; // abort: no slots left
@@ -677,34 +886,63 @@
     });
   });
 
-  // Opening an unopened lootbox: rolls a skin and grants a brand-new
-  // numbered copy every time — including when the player already owns
-  // that skin. No more refund-on-duplicate; duplicates just stack as
-  // additional numbered copies (visible as the ×N badge on the card).
+  /*
+   * FIX (main bug report): opening a box could grant a skin visually in the
+   * current session, but the skin would be GONE after leaving and
+   * re-entering the app.
+   *
+   * Root cause: the old flow did three separate sequential writes —
+   *   1) remove the lootbox
+   *   2) run a transaction on skinClaims/<skinId> to get a serial number
+   *   3) push().set(serial) the new skin instance
+   * If step 2's transaction didn't commit (denied by security rules, a
+   * dropped connection, anything), `serial` fell back to `null` — and
+   * calling `.set(null)` on a Firebase Realtime Database path does NOT
+   * write a null value, it DELETES that path / writes nothing. So step 3
+   * silently became a no-op: the lootbox was already gone (step 1
+   * succeeded), but the skin was never actually saved to the server. The
+   * player only ever saw it because the in-memory `profile` object was
+   * updated locally regardless of whether the server write worked — the
+   * next fresh load from Firebase would come back without it.
+   *
+   * Fix: grant the skin using a single atomic multi-path update() that
+   * removes the lootbox AND writes the skin instance together, using a
+   * value that is never null (a timestamp-based fallback id if the nicer
+   * sequential serial can't be obtained). That guarantees the skin is
+   * actually persisted the instant the lootbox disappears — there's no
+   * window where the box is gone but the skin isn't saved.
+   */
   function openLootbox(key){
     if (!db) { notify('اتصال به سرور برقرار نیست.'); return; }
     const box = profile.inventory.lootboxes[key];
     if (!box) return;
 
-    userRef.child('inventory/lootboxes/'+key).remove().then(()=>{
-      delete profile.inventory.lootboxes[key];
+    const { skinId, rarity } = pickRandomSkin();
+    const instRef = userRef.child('inventory/skins/'+skinId).push();
 
-      const { skinId, rarity } = pickRandomSkin();
-      // Claim number is always assigned fresh via an atomic counter — this
-      // is what makes it a true "who got this copy Nth" tag, even across
-      // duplicates from the same or different players.
-      db.ref('skinClaims/'+skinId).transaction(current => (current||0) + 1, (err, committed, snap) => {
-        const serial = (!err && committed) ? snap.val() : null;
-        const instRef = userRef.child('inventory/skins/'+skinId).push();
-        instRef.set(serial).then(()=>{
-          profile.inventory.skins[skinId] = profile.inventory.skins[skinId] || {};
-          profile.inventory.skins[skinId][instRef.key] = serial;
-          const serialTxt = serial ? (' — تگ #'+String(serial).padStart(4,'0')) : '';
-          notify('اسکین «'+SKIN_DB[skinId].name+'» ('+TAG_LABEL[rarity]+')'+serialTxt+' گرفتی 🎉');
-          renderItems();
-        }).catch(e=>{ console.error('skin instance save failed', e); notify('خطا در ذخیره‌سازی اسکین.'); renderItems(); });
-      });
-    }).catch(e=>{ console.error('lootbox remove failed', e); notify('خطا در باز کردن، دوباره امتحان کن.'); });
+    function commitGrant(serial){
+      // never let serial end up null/undefined — a null value would delete
+      // the path instead of writing it, which is exactly the original bug
+      const safeSerial = (serial===null || serial===undefined) ? Date.now() : serial;
+      const updates = {};
+      updates['inventory/lootboxes/'+key] = null; // remove the box
+      updates['inventory/skins/'+skinId+'/'+instRef.key] = safeSerial; // grant the skin
+      userRef.update(updates).then(()=>{
+        delete profile.inventory.lootboxes[key];
+        profile.inventory.skins[skinId] = profile.inventory.skins[skinId] || {};
+        profile.inventory.skins[skinId][instRef.key] = safeSerial;
+        notify('اسکین «'+SKIN_DB[skinId].name+'» ('+TAG_LABEL[rarity]+') — تگ #'+String(safeSerial).padStart(4,'0')+' گرفتی 🎉');
+        renderItems();
+      }).catch(e=>{ console.error('lootbox open failed', e); notify('خطا در باز کردن، دوباره امتحان کن.'); });
+    }
+
+    // best-effort nicer sequential serial; if this fails for any reason we
+    // still grant the skin (with a timestamp-based tag) via commitGrant —
+    // getting a pretty serial number is never allowed to block the grant.
+    db.ref('skinClaims/'+skinId).transaction(current => (current||0) + 1, (err, committed, snap) => {
+      const serial = (!err && committed && snap && snap.exists()) ? snap.val() : null;
+      commitGrant(serial);
+    });
   }
 
   /* ---------- perks rendering ---------- */
@@ -761,25 +999,13 @@
   const BASE_SPLIT_COOLDOWN = 5;
 
   let pieces, bots, pellets, camScale, running, lastT, splitCooldownLeft, maxMassReached;
-  // FIX (map/camera bug): the camera center (camX/camY) used to be
-  // recomputed from scratch every frame with no smoothing at all — only
-  // camScale had a lerp. As long as all your pieces moved together this
-  // was invisible, but the instant the AI ate one of your split-off
-  // pieces, the weighted average jumped straight to the remaining
-  // piece(s)' position in a single frame. If that eaten piece was far
-  // from the rest (very common right after a split), the view would snap
-  // hard to a new spot — which reads exactly like the map "resetting".
-  // smoothCamX/Y hold the on-screen camera position and are eased toward
-  // the real target each frame, same as camScale already was.
   let smoothCamX = null, smoothCamY = null;
 
   function radiusFromMass(m){ return 8 + Math.sqrt(m)*3.1; }
   function baseSpeedFromRadius(r){ return Math.max(46, 320/(1+r/34)); }
   function speedMultiplier(){ return 1 + (profile.perks.speedLevel||0)*0.02; }
   function splitCooldownMax(){ return Math.max(0, BASE_SPLIT_COOLDOWN - (profile.perks.splitCooldownLevel||0)*0.1); }
-  // Bigger blobs stay split apart longer before they're allowed to re-merge — matches agar.io's feel.
   function mergeTimeFor(mass){ return 12 + Math.min(40, mass*0.25); }
-  // Launched half flies out fast then decelerates (friction), instead of a flat fixed-duration boost.
   function splitLaunchSpeed(dispR){ return 260 + dispR*3.2; }
 
   function randPos(){ return { x:40+Math.random()*(WORLD-80), y:40+Math.random()*(WORLD-80) }; }
@@ -796,7 +1022,7 @@
     bots = []; for (let i=1;i<=BOT_COUNT;i++) bots.push(makeBot(i, pieces[0]));
     pellets = []; for (let i=0;i<PELLET_COUNT;i++) pellets.push(makePellet());
     camScale = 1; running = true; lastT = null; splitCooldownLeft = 0; maxMassReached = 22;
-    smoothCamX = null; smoothCamY = null; // fresh camera lock for the new game, no smoothing from the last run
+    smoothCamX = null; smoothCamY = null;
     showScreen('screen-game'); bottomnav.style.display='none';
     requestAnimationFrame(loop);
   }
@@ -834,15 +1060,9 @@
   const splitBtn = document.getElementById('split-btn');
   let splitTouchLock = false;
   splitBtn.addEventListener('click', ()=>{
-    if (splitTouchLock) { splitTouchLock = false; return; } // already handled by touchstart
+    if (splitTouchLock) { splitTouchLock = false; return; }
     doSplit();
   });
-  // FIX: relying only on 'click' meant the split button could feel
-  // unresponsive while the player already had a finger down on the
-  // joystick (moving) — some touch/WebView environments delay or drop
-  // the synthetic click for a second finger while another touch sequence
-  // is active. touchstart fires immediately and independently per finger,
-  // so splitting now works reliably while moving.
   splitBtn.addEventListener('touchstart', e=>{
     e.preventDefault(); e.stopPropagation();
     splitTouchLock = true;
@@ -852,7 +1072,6 @@
   function doSplit(){
     if (!running) return;
     if (splitCooldownLeft > 0) return;
-    // any single piece massive enough to split, not just the sum — matches agar.io
     if (!pieces.some(p => p.mass >= MIN_MASS_TO_SPLIT)) return;
     if (pieces.length >= MAX_PIECES) return;
     const dir = currentDir();
@@ -868,8 +1087,6 @@
       piece.mass = half; piece.dispR = radiusFromMass(half);
       piece.mergeAt = now + mergeTimeFor(half)*1000;
       const launchSpd = splitLaunchSpeed(piece.dispR);
-      // the new piece launches outward fast; the parent gets a small kickback,
-      // both decelerate via friction each frame (see updatePieces)
       const nx = piece.x + dx*piece.dispR*0.6, ny = piece.y + dy*piece.dispR*0.6;
       pieces.push({
         x:nx, y:ny, mass:half, dispR:radiusFromMass(half),
@@ -887,8 +1104,7 @@
   function updatePieces(dt){
     const dir = currentDir();
     const mult = speedMultiplier();
-    // friction is frame-rate independent: velocity shrinks by FRICTION_BASE each second
-    const FRICTION_BASE = 0.045; // lower = split pieces glide farther before stopping
+    const FRICTION_BASE = 0.045;
     const frictionFactor = Math.pow(FRICTION_BASE, dt);
     for (const p of pieces) {
       const spd = baseSpeedFromRadius(p.dispR) * mult;
@@ -904,7 +1120,6 @@
       }
     }
     const now = performance.now();
-    // merge own pieces once their lock expires and they're overlapping enough
     for (let i=pieces.length-1;i>0;i--){
       for (let j=i-1;j>=0;j--){
         const a=pieces[i], b=pieces[j];
@@ -916,13 +1131,10 @@
         }
       }
     }
-    // solid collision for own pieces that aren't merge-ready yet: they can be
-    // steered right up against each other (edges touching) but never overlap/
-    // clip into each other — full positional correction, not a soft nudge
     for (let i=0;i<pieces.length;i++){
       for (let j=i+1;j<pieces.length;j++){
         const a=pieces[i], b=pieces[j];
-        if (now >= a.mergeAt && now >= b.mergeAt) continue; // eligible to merge instead, skip pushing
+        if (now >= a.mergeAt && now >= b.mergeAt) continue;
         const dx=b.x-a.x, dy=b.y-a.y; const d=Math.hypot(dx,dy) || 0.001;
         const minDist = a.dispR+b.dispR;
         if (d < minDist) {
@@ -939,10 +1151,6 @@
 
   function updateBot(bot, dt, allBots){
     bot.dispR += (radiusFromMass(bot.mass)-bot.dispR)*Math.min(1,dt*6);
-    // FIX: bots used to only ever look at the player's pieces, so every bot
-    // on the map converged on you at once. Now they scan the player AND
-    // every other bot and go after whichever nearby target makes sense —
-    // so bots hunt and eat each other too, not just swarm the player.
     let nearestEnt=null, nd=Infinity;
     for (const p of pieces){ const d=Math.hypot(p.x-bot.x,p.y-bot.y); if (d<nd){nd=d; nearestEnt=p;} }
     for (const other of allBots){
@@ -980,15 +1188,12 @@
         const d = Math.hypot(piece.x-bot.x, piece.y-bot.y);
         const bigger = piece.mass >= bot.mass ? piece : bot;
         const smaller = piece.mass >= bot.mass ? bot : piece;
-        // the smaller blob's center has to be substantially inside the bigger one —
-        // just touching edges shouldn't trigger an eat, like agar.io
         const engulfed = d < bigger.dispR - smaller.dispR*EAT_OVERLAP;
         if (!engulfed) continue;
         if (piece.mass > bot.mass*EAT_MASS_RATIO) { piece.mass += bot.mass*0.6; bots[bi] = makeBot(bi+1, piece); break; }
         else if (bot.mass > piece.mass*EAT_MASS_RATIO) { pieces.splice(pi,1); if (pieces.length===0) { endGame(); return; } }
       }
     }
-    // bot vs bot: bots now eat each other, not just the player
     for (let i=bots.length-1; i>=0; i--){
       for (let j=i-1; j>=0; j--){
         const a=bots[i], b=bots[j];
@@ -1045,11 +1250,6 @@
     const targetScale = Math.max(0.5, Math.min(1.15, 1.2 - avgR/230));
     camScale += (targetScale-camScale)*0.05;
 
-    // FIX (map "reset" bug): smooth the camera center the same way camScale
-    // is smoothed above. Previously camX/camY were the raw weighted average
-    // of piece positions used immediately, with no easing — so losing a
-    // piece to a bot (which instantly changes that average) snapped the
-    // view straight to the new center in one frame instead of easing there.
     let targetCamX=0, targetCamY=0, wsum=0;
     pieces.forEach(p=>{ targetCamX+=p.x*p.mass; targetCamY+=p.y*p.mass; wsum+=p.mass; });
     targetCamX/=wsum; targetCamY/=wsum;
@@ -1060,13 +1260,6 @@
 
     ctx.fillStyle='#04070c'; ctx.fillRect(0,0,innerWidth,innerHeight);
 
-    // FIX: the grid was anchored to screen-center every frame, so it always
-    // sat glued directly under the player and never actually moved as you
-    // drove around — it looked "attached to you" instead of being part of
-    // the map. Anchoring it to a fixed world coordinate (the map center)
-    // and projecting that through worldToScreen makes it genuinely fixed
-    // relative to the map: it scrolls past you as you move, the same way
-    // the pellets and bots do.
     const gridAnchor = worldToScreen(WORLD/2, WORLD/2, camX, camY, camScale);
     const cx = gridAnchor.x, cy = gridAnchor.y;
     const ringStep = 90*camScale;
@@ -1104,8 +1297,6 @@
     const equippedColor = (SKIN_DB[profile.equippedSkin]||SKIN_DB.dead_star).color;
     pieces.forEach(p=>drawCircle(p, equippedColor, true, null));
 
-    // single name label under the whole player cluster (not per-piece),
-    // matching the reference screenshot's name row under the blobs
     let lowestY = -Infinity, avgX = 0;
     pieces.forEach(p=>{ const s=worldToScreen(p.x,p.y,camX,camY,camScale); avgX+=s.x;
       lowestY = Math.max(lowestY, s.y + p.dispR*camScale); });
@@ -1115,7 +1306,6 @@
     ctx.fillText(profile.name || displayName, avgX, lowestY + 22);
     ctx.shadowBlur=0;
 
-    // split cooldown UI
     const canSplit = pieces.some(p => p.mass >= MIN_MASS_TO_SPLIT);
     splitBtn.disabled = !canSplit || pieces.length>=MAX_PIECES || splitCooldownLeft>0;
     splitBtn.textContent = splitCooldownLeft>0 ? Math.ceil(splitCooldownLeft)+'s' : 'تقسیم';
@@ -1132,10 +1322,6 @@
       document.getElementById('hud-mass').textContent = Math.round(tm)+'kg';
       draw();
     } catch (e) {
-      // FIX: any unexpected error inside the loop used to kill
-      // requestAnimationFrame silently, leaving a black screen forever.
-      // Now we log it and safely return the player to the main menu
-      // instead of a dead canvas.
       console.error('Game loop error, returning to menu', e);
       running = false;
       bottomnav.style.display='flex';
