@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>سیاره‌خور - نسخه کامل</title>
+<title>سیاره‌خور</title>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
@@ -23,125 +23,178 @@
   .subtitle { color:#8a99ad; font-size:13px; margin-bottom:16px; text-align:center; }
 
   .topbar { display:flex; justify-content:space-between; align-items:center; width:100%; max-width:420px; margin-bottom:10px; }
-  .token-pill, .rank-pill, .level-pill { display:flex; align-items:center; gap:6px; background:#12161f; border:1px solid #24303f;
-    border-radius:999px; padding:6px 12px; font-weight:700; font-size:13px; }
+  .token-pill, .rank-pill { display:flex; align-items:center; gap:6px; background:#12161f; border:1px solid #24303f;
+    border-radius:999px; padding:8px 14px; font-weight:700; font-size:14px; }
   .token-coin { width:18px; height:18px; border-radius:50%; background:radial-gradient(circle at 35% 30%,#fff2a8,#e0a800); }
-  .level-badge { background:linear-gradient(135deg,#4fa8ff,#7ee787); border-radius:50%; width:24px; height:24px; display:flex; align-items:center; justify-content:center; font-size:12px; color:#000; font-weight:900; }
-
-  .btn { background:linear-gradient(135deg,#4fa8ff,#3d7fc9); color:#fff; border:none; border-radius:14px;
-    padding:14px 20px; font-size:16px; font-weight:700; width:100%; max-width:380px; box-shadow:0 6px 16px rgba(79,168,255,.3); cursor:pointer; }
-  .btn:active { transform:scale(.97); }
-  .btn.secondary { background:#161f2b; box-shadow:none; border:1px solid #2c3d52; color:#cfe0f2; }
-  .btn.sale { background:linear-gradient(135deg,#ff4444,#cc0000); box-shadow:0 6px 16px rgba(255,68,68,.3); }
-  .btn:disabled { opacity:.4; }
-
-  .online-indicator { display:flex; align-items:center; gap:6px; color:#7ee787; font-size:13px; }
-  .online-dot { width:8px; height:8px; border-radius:50%; background:#7ee787; animation:pulse-dot 1.5s infinite; }
-  @keyframes pulse-dot { 0%,100% { opacity:1; } 50% { opacity:0.3; } }
-
-  .sale-badge { background:linear-gradient(135deg,#ff4444,#cc0000); color:#fff; font-size:10px; font-weight:800; padding:2px 8px; border-radius:999px; position:absolute; top:-6px; right:-6px; }
 
   .modepick { display:flex; align-items:center; justify-content:center; gap:14px; margin:18px 0; width:100%; }
-  .mode-arrow { width:44px; height:44px; border-radius:50%; background:#12161f; border:1px solid #24303f; display:flex; align-items:center; justify-content:center; font-size:20px; color:#4fa8ff; cursor:pointer; }
-  .mode-card { width:200px; height:200px; border-radius:50%; background:radial-gradient(circle at 35% 30%,#1c2635,#090c11); border:2px solid #2a3a4d; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px; }
+  .mode-arrow { width:44px; height:44px; border-radius:50%; background:#12161f; border:1px solid #24303f;
+    display:flex; align-items:center; justify-content:center; font-size:20px; color:#4fa8ff; }
+  .mode-card { width:200px; height:200px; border-radius:50%; background:radial-gradient(circle at 35% 30%,#1c2635,#090c11);
+    border:2px solid #2a3a4d; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px; }
   .mode-card .emoji { font-size:52px; }
   .mode-card .modename { font-weight:800; font-size:16px; }
   .mode-card .modesub { font-size:11px; color:#7f93a8; }
   .mode-card.disabled { opacity:.45; }
 
-  /* ===== INVENTORY ===== */
-  .inv-container { width:100%; max-width:420px; padding:16px; }
-  .inv-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; width:100%; }
-  .inv-item { background:#0e131b; border:1px solid #22303f; border-radius:14px; padding:12px; text-align:center; position:relative; cursor:pointer; transition:all .3s; }
-  .inv-item .icon { font-size:32px; }
-  .inv-item .name { font-size:11px; font-weight:700; margin-top:4px; }
-  .inv-item .count { position:absolute; top:-6px; right:-6px; background:#4fa8ff; color:#fff; font-size:10px; font-weight:800; padding:2px 8px; border-radius:999px; }
-  .inv-item.equipped { border-color:#7ee787; box-shadow:0 0 20px rgba(126,231,135,0.2); }
-  .inv-item.locked { opacity:0.4; cursor:default; }
+  button.btn { background:linear-gradient(135deg,#4fa8ff,#3d7fc9); color:#fff; border:none; border-radius:14px;
+    padding:14px 20px; font-size:16px; font-weight:700; width:100%; max-width:380px; box-shadow:0 6px 16px rgba(79,168,255,.3); }
+  button.btn:active { transform:scale(.97); }
+  button.btn.secondary { background:#161f2b; box-shadow:none; border:1px solid #2c3d52; color:#cfe0f2; margin-top:10px; }
+  button.btn:disabled { opacity:.4; }
 
-  /* ===== DUEL ===== */
-  .duel-container { width:100%; max-width:420px; padding:16px; }
-  .duel-box { background:#0e131b; border:2px solid #ff4444; border-radius:18px; padding:24px; text-align:center; margin-top:10px; }
-  .duel-status { font-size:18px; color:#8a99ad; margin:12px 0; }
-  .duel-timer { font-size:48px; font-weight:900; color:#ff4444; margin:10px 0; }
-  .duel-btn { background:linear-gradient(135deg,#ff4444,#cc0000); color:#fff; border:none; border-radius:14px; padding:14px 32px; font-size:18px; font-weight:800; cursor:pointer; width:100%; max-width:280px; transition:all .2s; margin-top:10px; }
-  .duel-btn:active { transform:scale(.95); }
-  .duel-btn:disabled { opacity:.4; }
-  .duel-btn.searching { background:linear-gradient(135deg,#ff9d00,#ff6600); animation:pulse 1s infinite; }
-  @keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:.6; } }
-  .duel-opponent { display:flex; justify-content:center; align-items:center; gap:20px; margin:16px 0; }
-  .duel-player { text-align:center; }
-  .duel-player .avatar { width:60px; height:60px; border-radius:50%; background:radial-gradient(circle at 35% 30%, #fff6, #4a2f8a); display:flex; align-items:center; justify-content:center; font-size:30px; margin:0 auto 6px; border:2px solid #4a2f8a; }
-  .duel-player .name { font-size:14px; font-weight:700; }
-  .duel-player .mass { font-size:12px; color:#8a99ad; }
-  .duel-vs { font-size:28px; font-weight:900; color:#ff4444; }
+  .soon-box { display:flex; flex-direction:column; align-items:center; justify-content:center; height:100%; gap:10px; }
+  .soon-box .big { font-size:44px; }
 
-  /* ===== SHOP ===== */
-  .shop-container { width:100%; max-width:420px; padding:16px; }
-  .shop-item { display:flex; align-items:center; gap:12px; background:#0e131b; border:1px solid #22303f; border-radius:14px; padding:12px; margin-bottom:10px; }
-  .shop-item .icon { font-size:28px; }
-  .shop-item .info { flex:1; }
-  .shop-item .name { font-weight:700; font-size:14px; }
-  .shop-item .price { font-size:12px; color:#ffd766; }
-  .shop-item .buy-btn { background:linear-gradient(135deg,#ffd700,#ff9d00); color:#3a2400; border:none; border-radius:10px; padding:6px 14px; font-weight:800; font-size:12px; cursor:pointer; }
+  /* ===== Inventory screen (redesigned to match reference) ===== */
+  #screen-items { padding:0; align-items:stretch; }
+  .inv-topbar { display:flex; align-items:center; justify-content:space-between; padding:14px 16px; width:100%; }
+  .inv-close { display:flex; align-items:center; gap:6px; background:none; border:none; color:#fff; font-size:15px; font-weight:700; }
+  .inv-title { font-size:17px; font-weight:800; }
+  .inv-topbar-right { display:flex; align-items:center; gap:14px; color:#fff; font-size:18px; }
 
-  /* ===== LEAGUE ===== */
-  .league-container { width:100%; max-width:420px; padding:16px; }
-  .league-box { background:linear-gradient(160deg,#0a0d12,#141a24); border:1px solid #2a3a4d; border-radius:18px; padding:20px; text-align:center; margin-top:10px; }
-  .league-rank { font-size:48px; font-weight:900; background:linear-gradient(135deg,#ffd700,#ff6b6b); -webkit-background-clip:text; background-clip:text; color:transparent; }
-  .league-name { font-size:22px; font-weight:800; margin:4px 0; }
-  .league-season { font-size:14px; color:#8a99ad; }
+  .inv-summary { display:flex; align-items:center; justify-content:space-between; width:100%; max-width:460px;
+    margin:6px auto 18px; padding:0 20px; }
+  .inv-coin-pill { display:flex; align-items:center; gap:8px; background:#12161f; border:1px solid #24303f;
+    border-radius:999px; padding:9px 16px; font-weight:800; font-size:15px; }
+  .inv-avatar-ring { width:78px; height:78px; border-radius:50%; border:2.5px solid #fff; display:flex;
+    align-items:center; justify-content:center; font-size:34px; flex-shrink:0; }
+  .inv-avatar-wrap { display:flex; flex-direction:column; align-items:center; gap:6px; }
+  .inv-avatar-label { font-size:13px; color:#8a99ad; font-weight:700; }
+  .inv-icon-btn { width:46px; height:46px; border-radius:50%; background:#12161f; border:1px solid #24303f;
+    display:flex; align-items:center; justify-content:center; font-size:19px; color:#cfe0f2; }
+  .inv-icon-group { display:flex; align-items:center; gap:10px; }
 
-  /* ===== PROFILE ===== */
-  .profile-container { width:100%; max-width:420px; padding:16px; }
-  .profile-header { display:flex; align-items:center; gap:16px; background:#0e131b; border-radius:18px; padding:16px; border:1px solid #22303f; }
-  .profile-avatar { width:72px; height:72px; border-radius:50%; background:radial-gradient(circle at 35% 30%,#fff6,#4a2f8a); display:flex; align-items:center; justify-content:center; font-size:36px; border:3px solid #4fa8ff; }
-  .profile-info { flex:1; }
-  .profile-name { font-size:18px; font-weight:800; }
-  .profile-level { font-size:13px; color:#8a99ad; }
-  .profile-xp-bar { height:6px; background:#1c2634; border-radius:999px; margin-top:6px; overflow:hidden; }
-  .profile-xp-fill { height:100%; background:linear-gradient(90deg,#4fa8ff,#7ee787); border-radius:999px; }
-  .profile-stats { display:flex; gap:12px; margin-top:10px; }
-  .profile-stat { flex:1; background:#0e131b; border-radius:12px; padding:10px; text-align:center; border:1px solid #22303f; }
-  .profile-stat .num { font-size:20px; font-weight:800; }
-  .profile-stat .label { font-size:11px; color:#8a99ad; }
+  .inv-body { width:100%; max-width:460px; margin:0 auto; padding:0 16px 16px; }
 
-  .perk-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:12px; width:100%; }
-  .perk-item { background:#0e131b; border:1px solid #22303f; border-radius:14px; padding:12px; text-align:center; }
-  .perk-item .name { font-size:13px; font-weight:700; }
-  .perk-item .level { font-size:11px; color:#8a99ad; }
-  .perk-item .progress { height:4px; background:#1c2634; border-radius:999px; margin:6px 0; overflow:hidden; }
-  .perk-item .progress-fill { height:100%; background:linear-gradient(90deg,#4fa8ff,#7ee787); border-radius:999px; }
-  .perk-item .upgrade-btn { background:linear-gradient(135deg,#4fa8ff,#3d7fc9); border:none; border-radius:8px; color:#fff; font-weight:700; padding:4px 12px; font-size:11px; cursor:pointer; }
-  .perk-item .upgrade-btn:disabled { opacity:.4; }
+  .daily-card { background:#0e131b; border:1px solid #22303f; border-radius:18px; padding:16px; margin-bottom:14px; }
+  .daily-head { display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; }
+  .daily-head .daily-title { font-size:17px; font-weight:800; }
+  .daily-claimed-badge { background:#1b2330; color:#5c6b7d; font-size:11px; font-weight:800; padding:6px 12px; border-radius:999px; }
+  .daily-claim-btn { background:linear-gradient(135deg,#4fa8ff,#3d7fc9); color:#fff; font-size:11px; font-weight:800;
+    padding:6px 14px; border-radius:999px; border:none; }
+  .daily-row { display:flex; gap:8px; overflow-x:auto; }
+  .daily-day { flex-shrink:0; width:60px; height:60px; border-radius:14px; background:#141a24; border:1px solid #22303f;
+    display:flex; flex-direction:column; align-items:center; justify-content:center; font-size:20px; position:relative; }
+  .daily-day.done { background:#123023; border-color:#1f5c33; }
+  .daily-day.today { border-color:#4fa8ff; box-shadow:0 0 0 1px #4fa8ff inset; }
+  .daily-day .daily-reward { font-size:9px; color:#ffd766; font-weight:800; margin-top:2px; }
+  .daily-day .daily-check { position:absolute; top:3px; left:3px; width:16px; height:16px; border-radius:50%;
+    background:#2fbf6e; display:flex; align-items:center; justify-content:center; font-size:10px; }
 
-  /* ===== SETTINGS ===== */
-  .settings-container { width:100%; max-width:420px; padding:16px; }
-  .settings-item { display:flex; justify-content:space-between; align-items:center; padding:12px 0; border-bottom:1px solid #1c2634; }
-  .settings-item .label { font-size:14px; color:#cfe0f2; }
-  .settings-item .value { font-size:14px; color:#8a99ad; }
-  .toggle { width:44px; height:24px; background:#1c2634; border-radius:999px; position:relative; cursor:pointer; transition:all .3s; }
-  .toggle.active { background:#4fa8ff; }
-  .toggle .knob { width:18px; height:18px; background:#fff; border-radius:50%; position:absolute; top:3px; left:3px; transition:all .3s; }
-  .toggle.active .knob { left:23px; }
+  .acc-card { background:#0e131b; border:1px solid #22303f; border-radius:18px; margin-bottom:14px; overflow:hidden; }
+  .acc-head { display:flex; align-items:center; justify-content:space-between; padding:16px; cursor:pointer; }
+  .acc-head-left { display:flex; flex-direction:column; gap:6px; }
+  .acc-head-title { font-size:18px; font-weight:800; }
+  .acc-head-count { font-size:12px; color:#8a99ad; background:#161f2b; border-radius:999px; padding:4px 10px; width:fit-content; }
+  .acc-head-preview { display:flex; align-items:center; }
+  .acc-preview-avatar { width:52px; height:52px; border-radius:50%; margin-right:-14px; border:2px solid #0e131b; }
+  .acc-chevron { font-size:16px; color:#8a99ad; margin-right:10px; transition:transform .2s; flex-shrink:0; }
+  .acc-chevron.open { transform:rotate(180deg); }
+  .acc-body { max-height:0; overflow:hidden; transition:max-height .25s ease; padding:0 16px; }
+  .acc-body.open { max-height:640px; padding:0 16px 16px; overflow-y:auto; }
 
-  /* ===== BOTTOM NAV ===== */
-  #bottomnav { position:absolute; left:0; right:0; bottom:0; height:64px; display:flex; background:#0a0d12; border-top:1px solid #1c2530; z-index:20; }
-  .nav-btn { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px; color:#5c6b7d; font-size:9px; cursor:pointer; }
+  /* Items screen */
+  .section-title { align-self:flex-start; font-weight:800; font-size:15px; margin:14px 2px 8px; width:100%; max-width:420px; }
+  .skin-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; width:100%; max-width:420px; }
+  .skin-card { background:#0e131b; border:2px solid #22303f; border-radius:14px; padding:10px; text-align:center; position:relative; }
+  .skin-card.equipped { border-color:#7ee787; }
+  .skin-avatar { width:64px; height:64px; border-radius:50%; margin:0 auto 6px; }
+  .skin-tag { font-size:9px; font-weight:800; padding:2px 6px; border-radius:999px; display:inline-block; margin-top:4px; }
+  .skin-name { font-size:11px; font-weight:700; margin-top:2px; }
+  .skin-serial { font-size:9px; color:#5c6b7d; font-family:monospace; margin-top:3px; letter-spacing:.3px; }
+  .tag-starter { background:#2a3a4d; color:#9fc7ff; }
+  .tag-common { background:#1f5c33; color:#7ee787; }
+  .tag-rare { background:#1a4a7a; color:#7fd0ff; }
+  .tag-epic { background:#5a1f7a; color:#e0a8ff; }
+  .tag-legend { background:#7a5a10; color:#ffd766; }
+  .lock-overlay { position:absolute; inset:0; background:rgba(0,0,0,.55); border-radius:14px; display:flex;
+    align-items:center; justify-content:center; font-size:22px; }
+
+  .lootbox-card { background:linear-gradient(160deg,#141a24,#0d1218); border:1px solid #26364a; border-radius:18px;
+    padding:16px; width:100%; max-width:420px; display:flex; align-items:center; gap:14px; margin-bottom:10px; }
+  .lootbox-icon { width:64px; height:64px; border-radius:14px; background:linear-gradient(135deg,#3dd6ff,#4fa8ff);
+    display:flex; align-items:center; justify-content:center; font-size:30px; flex-shrink:0; }
+  .lootbox-info { flex:1; }
+  .lootbox-name { font-weight:800; font-size:15px; }
+  .lootbox-supply { font-size:11px; color:#8a99ad; margin-top:2px; }
+  .lootbox-buy { background:linear-gradient(135deg,#ffd700,#ff9d00); color:#3a2400; font-weight:800;
+    border:none; border-radius:10px; padding:8px 14px; font-size:13px; white-space:nowrap; }
+  .lootbox-buy:disabled, .lootbox-open-btn:disabled { opacity:.4; }
+
+  /* owned/unopened lootboxes list */
+  #lootbox-owned-list { width:100%; display:flex; flex-direction:column; gap:8px; }
+  .lootbox-owned-row { display:flex; align-items:center; gap:12px; background:#131a24; border:1px solid #22303f;
+    border-radius:14px; padding:10px 12px; }
+  .lootbox-owned-row .lootbox-icon { width:40px; height:40px; font-size:20px; border-radius:10px; }
+  .lootbox-owned-row .lootbox-owned-name { flex:1; font-size:13px; font-weight:700; }
+  .lootbox-open-btn { background:linear-gradient(135deg,#4fa8ff,#3d7fc9); border:none; border-radius:10px; color:#fff;
+    font-weight:700; padding:7px 14px; font-size:12px; }
+  .lootbox-transfer-btn { background:#161f2b; border:1px solid #2c3d52; border-radius:10px; color:#cfe0f2;
+    font-weight:700; padding:7px 10px; font-size:12px; }
+  .empty-hint { color:#5c6b7d; font-size:12px; padding:10px 2px; }
+
+  /* skin owned count badge */
+  .skin-owned-badge { position:absolute; top:6px; left:6px; background:rgba(79,168,255,.9); color:#fff;
+    font-size:10px; font-weight:800; padding:2px 7px; border-radius:999px; }
+
+  /* modals */
+  .modal-overlay { position:absolute; inset:0; z-index:30; background:rgba(0,0,0,.65); display:flex;
+    align-items:flex-end; justify-content:center; }
+  .modal-overlay.hidden { display:none; }
+  .modal-card { width:100%; max-width:460px; max-height:78vh; overflow-y:auto; background:#0c1017;
+    border:1px solid #24303f; border-radius:20px 20px 0 0; padding:18px; }
+  .modal-head { display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; font-weight:800; font-size:16px; }
+  .modal-head button { background:rgba(255,255,255,.08); border:none; color:#fff; border-radius:10px;
+    padding:6px 10px; font-size:13px; }
+  .skin-instance-row { display:flex; align-items:center; gap:10px; background:#131a24; border:1px solid #22303f;
+    border-radius:12px; padding:9px 12px; margin-bottom:8px; }
+  .skin-instance-row .instance-serial { flex:1; font-family:monospace; font-size:13px; font-weight:700; color:#ffd766; }
+  #transfer-target-input { width:100%; max-width:420px; background:#131a24; border:1px solid #2c3d52; border-radius:10px;
+    color:#fff; padding:12px 14px; font-size:14px; margin:10px 0; direction:ltr; text-align:left; }
+
+  /* Perks screen */
+  .perk-card { background:#0e131b; border:1px solid #22303f; border-radius:16px; padding:14px; width:100%; max-width:420px; margin-bottom:12px; }
+  .perk-head { display:flex; justify-content:space-between; align-items:center; margin-bottom:6px; }
+  .perk-name { font-weight:800; font-size:15px; }
+  .perk-level { font-size:12px; color:#8a99ad; }
+  .perk-bar-bg { height:8px; border-radius:999px; background:#1c2634; overflow:hidden; margin-bottom:10px; }
+  .perk-bar-fill { height:100%; background:linear-gradient(90deg,#4fa8ff,#7ee787); }
+  .perk-upgrade { display:flex; justify-content:space-between; align-items:center; }
+  .perk-cost { font-size:13px; color:#ffd766; font-weight:700; }
+  .perk-btn { background:linear-gradient(135deg,#4fa8ff,#3d7fc9); border:none; border-radius:10px; color:#fff;
+    font-weight:700; padding:8px 16px; font-size:13px; }
+  .perk-btn:disabled { opacity:.35; }
+
+  /* bottom nav */
+  #bottomnav { position:absolute; left:0; right:0; bottom:0; height:64px; display:flex;
+    background:#0a0d12; border-top:1px solid #1c2530; z-index:20; }
+  .nav-btn { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px;
+    color:#5c6b7d; font-size:10px; }
   .nav-btn.active { color:#4fa8ff; }
   .nav-btn .nav-icon { font-size:20px; }
 
-  /* ===== GAME ===== */
-  #back-btn { position:absolute; top:12px; left:12px; z-index:8; background:rgba(255,255,255,.08); border:none; color:#fff; border-radius:10px; padding:6px 10px; font-size:13px; cursor:pointer; }
-  #hud-mass { position:absolute; top:12px; right:12px; z-index:8; background:rgba(20,24,32,.85); border:1px solid #2a3648; border-radius:999px; padding:8px 14px; font-size:14px; font-weight:800; color:#cfe0f2; display:flex; align-items:center; gap:6px; }
-  #split-btn { position:absolute; bottom:26px; right:20px; width:78px; height:78px; border-radius:50%; background:rgba(79,168,255,.25); border:2px solid #4fa8ff; color:#fff; font-weight:800; font-size:13px; z-index:8; cursor:pointer; }
+  /* game screen */
+  #back-btn { position:absolute; top:12px; left:12px; z-index:8; background:rgba(255,255,255,.08); border:none;
+    color:#fff; border-radius:10px; padding:6px 10px; font-size:13px; }
+  #hud-mass-pill { position:absolute; top:12px; right:12px; z-index:8; background:rgba(20,24,32,.85);
+    border:1px solid #2a3648; border-radius:999px; padding:8px 14px; font-size:14px; font-weight:800;
+    color:#cfe0f2; display:flex; align-items:center; gap:6px; }
+
+  #split-btn { position:absolute; bottom:26px; right:20px; width:78px; height:78px; border-radius:50%;
+    background:rgba(79,168,255,.25); border:2px solid #4fa8ff; color:#fff; font-weight:800; font-size:13px; z-index:8; }
   #split-btn:disabled { opacity:.35; border-color:#48607a; }
-  #joystick-base { position:absolute; width:120px; height:120px; border-radius:50%; background:rgba(255,255,255,0.06); border:2px solid rgba(255,255,255,0.15); display:none; z-index:6; }
-  #joystick-knob { position:absolute; width:52px; height:52px; border-radius:50%; background:rgba(79,168,255,0.55); border:2px solid rgba(255,255,255,0.4); display:none; z-index:7; }
+  #joystick-base { position:absolute; width:120px; height:120px; border-radius:50%;
+    background:rgba(255,255,255,0.06); border:2px solid rgba(255,255,255,0.15); display:none; z-index:6; }
+  #joystick-knob { position:absolute; width:52px; height:52px; border-radius:50%;
+    background:rgba(79,168,255,0.55); border:2px solid rgba(255,255,255,0.4); display:none; z-index:7; }
 
   .go-mass { font-size:44px; font-weight:900; color:#7ee787; margin:8px 0; }
   .go-tokens { color:#ffd766; font-weight:700; margin-bottom:6px; }
   .go-best { color:#8a99ad; font-size:14px; margin-bottom:20px; }
+
+  /* loading overlay for play button while profile syncs */
+  #play-btn.loading { opacity:.6; }
 </style>
 </head>
 <body>
@@ -151,17 +204,10 @@
   <div class="screen" id="screen-home">
     <div class="topbar">
       <div class="token-pill"><div class="token-coin"></div><span id="home-tokens">0</span></div>
-      <div class="level-pill"><span class="level-badge" id="home-level">1</span> Lv.<span id="home-level-num">1</span></div>
       <div class="rank-pill">🏅 <span id="home-rank">1</span></div>
     </div>
     <h1 class="title">🪐 سیاره‌خور</h1>
     <p class="subtitle">دون‌ها رو بخور، بزرگ شو، مراقب سیاره‌های بزرگ‌تر باش</p>
-
-    <div style="display:flex; gap:16px; width:100%; max-width:380px; margin:8px 0;">
-      <div class="online-indicator"><span class="online-dot"></span> <span id="online-count">143</span> آنلاین</div>
-      <div style="flex:1;"></div>
-      <button class="btn" style="padding:6px 14px; font-size:12px; width:auto;" id="gift-btn">🎁 هدیه</button>
-    </div>
 
     <div class="modepick">
       <button class="mode-arrow" id="mode-prev">◀</button>
@@ -174,127 +220,132 @@
     </div>
 
     <button class="btn" id="play-btn">▶ شروع بازی</button>
-    <div style="display:flex; gap:8px; width:100%; max-width:380px; margin-top:8px;">
-      <button class="btn secondary" id="duel-menu-btn" style="padding:8px; font-size:13px;">⚔️ دوئل</button>
-      <button class="btn secondary" id="shop-menu-btn" style="padding:8px; font-size:13px;">🛒 فروشگاه</button>
-      <button class="btn secondary" id="league-menu-btn" style="padding:8px; font-size:13px;">🏆 لیگ</button>
-    </div>
-    <div style="display:flex; gap:8px; width:100%; max-width:380px; margin-top:4px;">
-      <button class="btn secondary" id="profile-menu-btn" style="padding:8px; font-size:13px;">👤 پروفایل</button>
-      <button class="btn secondary" id="inventory-menu-btn" style="padding:8px; font-size:13px;">🎒 آیتم‌ها</button>
-      <button class="btn secondary" id="settings-menu-btn" style="padding:8px; font-size:13px;">⚙️ تنظیمات</button>
-    </div>
-
-    <div style="margin-top:12px; background:#0e131b; border:1px solid #22303f; border-radius:14px; padding:12px; width:100%; max-width:380px; text-align:center; position:relative;">
-      <span style="font-size:14px; color:#8a99ad;">🎟️ فصل ۳ · جایزه <b style="color:#ffd766;">۱,۴۰۰</b></span>
-      <button class="btn sale" style="padding:6px 14px; font-size:12px; width:auto; margin-top:6px;">🌟 Premium</button>
-      <span class="sale-badge">تخفیف</span>
-    </div>
   </div>
 
-  <!-- DUEL -->
-  <div class="screen hidden" id="screen-duel">
-    <div class="duel-container">
-      <h1 class="title">⚔️ دوئل آنلاین</h1>
-      <p class="subtitle">با یک بازیکن واقعی مبارزه کن!</p>
-      <div class="duel-box">
-        <div id="duel-status" class="duel-status">🔍 در حال جستجوی حریف...</div>
-        <div id="duel-timer" class="duel-timer">⏳</div>
-        <div id="duel-opponent" style="display:none;" class="duel-opponent">
-          <div class="duel-player"><div class="avatar" id="duel-my-avatar">🪐</div><div class="name" id="duel-my-name">شما</div><div class="mass" id="duel-my-mass">۰kg</div></div>
-          <div class="duel-vs">⚔️</div>
-          <div class="duel-player"><div class="avatar" id="duel-enemy-avatar">👤</div><div class="name" id="duel-enemy-name">حریف</div><div class="mass" id="duel-enemy-mass">۰kg</div></div>
+  <!-- MARKET (soon) -->
+  <div class="screen hidden" id="screen-market">
+    <div class="soon-box"><div class="big">🛒</div><h1 class="title">مارکت</h1><p class="subtitle">به زودی...</p></div>
+  </div>
+
+  <!-- SOON -->
+  <div class="screen hidden" id="screen-soon">
+    <div class="soon-box"><div class="big">✨</div><h1 class="title">به زودی</h1><p class="subtitle">این بخش هنوز آماده نشده</p></div>
+  </div>
+
+  <!-- ITEMS / INVENTORY (redesigned) -->
+  <div class="screen hidden" id="screen-items">
+    <div class="inv-topbar">
+      <button class="inv-close" id="inv-close-btn">✕ بستن</button>
+      <div class="inv-title">اینونتوری</div>
+      <div class="inv-topbar-right"><span>⌄</span><span>⋮</span></div>
+    </div>
+
+    <div class="inv-summary">
+      <div class="inv-coin-pill">🪙 <span id="inv-tokens">0</span></div>
+      <div class="inv-avatar-wrap">
+        <div class="inv-avatar-ring" id="inv-avatar-ring">🪐</div>
+        <div class="inv-avatar-label"><span id="inv-bestmass">0</span> رکورد</div>
+      </div>
+      <div class="inv-icon-group">
+        <div class="inv-icon-btn" id="inv-add-btn">👤+</div>
+        <div class="inv-icon-btn" id="inv-settings-btn">⚙️</div>
+      </div>
+    </div>
+
+    <div class="inv-body">
+      <!-- Daily claim -->
+      <div class="daily-card">
+        <div class="daily-head">
+          <span class="daily-title">جایزه روزانه</span>
+          <button class="daily-claim-btn" id="daily-claim-btn">دریافت</button>
         </div>
-        <button class="duel-btn" id="duel-find-btn">🔍 پیدا کردن حریف</button>
-        <button class="duel-btn" id="duel-cancel-btn" style="background:#666;display:none;">❌ لغو</button>
-        <div class="duel-info" style="color:#5c6b7d;font-size:13px;margin-top:14px;line-height:1.8;">
-          💡 برنده <b style="color:#ffd766;">۱۰۰ توکن</b> جایزه میگیره
+        <div class="daily-row" id="daily-row"></div>
+      </div>
+
+      <!-- Skins accordion -->
+      <div class="acc-card">
+        <div class="acc-head" id="skins-acc-head">
+          <div class="acc-head-left">
+            <span class="acc-head-title">اسکین‌ها</span>
+            <span class="acc-head-count" id="skins-count">0 items</span>
+          </div>
+          <div style="display:flex; align-items:center;">
+            <div class="acc-head-preview" id="skins-preview"></div>
+            <span class="acc-chevron" id="skins-chevron">⌄</span>
+          </div>
         </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- SHOP -->
-  <div class="screen hidden" id="screen-shop">
-    <div class="shop-container">
-      <h1 class="title">🛒 فروشگاه</h1>
-      <p class="subtitle">با توکن‌ها آیتم بخر!</p>
-      <div id="shop-list">
-        <div class="shop-item"><div class="icon">📦</div><div class="info"><div class="name">لوت‌باکس</div><div class="price">🪙 ۵۰ توکن</div></div><button class="buy-btn" data-item="lootbox">خرید</button></div>
-        <div class="shop-item"><div class="icon">🎨</div><div class="info"><div class="name">اسکین رندوم</div><div class="price">🪙 ۱۰۰ توکن</div></div><button class="buy-btn" data-item="skin">خرید</button></div>
-        <div class="shop-item"><div class="icon">⚡</div><div class="info"><div class="name">ارتقا فوری</div><div class="price">🪙 ۲۰۰ توکن</div></div><button class="buy-btn" data-item="upgrade">خرید</button></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- LEAGUE -->
-  <div class="screen hidden" id="screen-league">
-    <div class="league-container">
-      <h1 class="title">🏆 لیگ‌ها</h1>
-      <p class="subtitle">رتبه خود را در بین بازیکنان پیدا کن</p>
-      <div class="league-box">
-        <div class="league-rank" id="league-rank">#۱,۴۷۲</div>
-        <div class="league-name" id="league-name">🌌 کهکشانی</div>
-        <div class="league-season">فصل ۳ · 🎁 <span id="league-reward">۱,۴۰۰</span></div>
-        <button class="btn secondary" style="padding:8px; font-size:13px; margin-top:12px;" id="lb-btn">🏆 جدول رهبران</button>
-      </div>
-      <div id="lb-list" style="width:100%;margin-top:12px;"></div>
-    </div>
-  </div>
-
-  <!-- PROFILE -->
-  <div class="screen hidden" id="screen-profile">
-    <div class="profile-container">
-      <h1 class="title">👤 پروفایل</h1>
-      <div class="profile-header">
-        <div class="profile-avatar" id="profile-avatar">🪐</div>
-        <div class="profile-info">
-          <div class="profile-name" id="profile-name">بازیکن</div>
-          <div class="profile-level" id="profile-level">لول ۱ · ۰ XP</div>
-          <div class="profile-xp-bar"><div class="profile-xp-fill" id="profile-xp-fill" style="width:0%;"></div></div>
-          <div style="font-size:11px; color:#5c6b7d; margin-top:2px;" id="profile-xp-text">۰ / ۱۰۰ XP</div>
+        <div class="acc-body" id="skins-acc-body">
+          <div class="skin-grid" id="skin-grid"></div>
         </div>
       </div>
-      <div class="profile-stats">
-        <div class="profile-stat"><div class="num" id="profile-tokens">۰</div><div class="label">🪙 توکن</div></div>
-        <div class="profile-stat"><div class="num" id="profile-games">۰</div><div class="label">🎮 بازی</div></div>
-        <div class="profile-stat"><div class="num" id="profile-wins">۰</div><div class="label">🏆 برد</div></div>
+
+      <!-- Lootboxes accordion -->
+      <div class="acc-card">
+        <div class="acc-head" id="lootbox-acc-head">
+          <div class="acc-head-left">
+            <span class="acc-head-title">لوت‌باکس‌ها</span>
+            <span class="acc-head-count" id="lootbox-count">0 items</span>
+          </div>
+          <div style="display:flex; align-items:center;">
+            <div class="acc-head-preview" id="lootbox-preview"></div>
+            <span class="acc-chevron" id="lootbox-chevron">⌄</span>
+          </div>
+        </div>
+        <div class="acc-body" id="lootbox-acc-body">
+          <div class="lootbox-card">
+            <div class="lootbox-icon">📦</div>
+            <div class="lootbox-info">
+              <div class="lootbox-name">Newer</div>
+              <div class="lootbox-supply" id="lootbox-supply">در حال بارگذاری...</div>
+            </div>
+            <button class="lootbox-buy" id="lootbox-buy-btn">🪙 50</button>
+          </div>
+          <div id="lootbox-owned-list"></div>
+        </div>
       </div>
-      <div class="perk-grid" id="perk-grid"></div>
     </div>
   </div>
 
-  <!-- INVENTORY -->
-  <div class="screen hidden" id="screen-inventory">
-    <div class="inv-container">
-      <h1 class="title">🎒 اینونتوری</h1>
-      <div class="topbar" style="margin-bottom:12px;">
-        <div class="token-pill">🪙 <span id="inv-tokens">0</span></div>
-        <button class="btn secondary" style="padding:4px 12px; font-size:11px; width:auto;" id="daily-claim-btn">🎁 دریافت</button>
-      </div>
-      <div class="inv-grid" id="skin-grid"></div>
-      <h2 style="font-size:16px; margin:16px 0 8px; width:100%; text-align:right;">📦 لوت‌باکس‌ها</h2>
-      <div class="inv-grid" id="lootbox-grid"></div>
+  <!-- SKIN DETAIL MODAL -->
+  <div class="modal-overlay hidden" id="skin-modal">
+    <div class="modal-card">
+      <div class="modal-head"><span id="skin-modal-title"></span><button id="skin-modal-close">✕</button></div>
+      <button class="btn" id="skin-modal-equip">استفاده از این اسکین</button>
+      <div class="section-title" style="margin-top:14px;">نسخه‌های من</div>
+      <div id="skin-modal-instances"></div>
     </div>
   </div>
 
-  <!-- SETTINGS -->
-  <div class="screen hidden" id="screen-settings">
-    <div class="settings-container">
-      <h1 class="title">⚙️ تنظیمات</h1>
-      <div class="settings-item"><span class="label">🌐 زبان</span><span class="value">فارسی</span></div>
-      <div class="settings-item"><span class="label">🫧 فیزیک ژله‌ای</span><div class="toggle active" onclick="this.classList.toggle('active')"><div class="knob"></div></div></div>
-      <div class="settings-item"><span class="label">🔲 نمایش حاشیه</span><div class="toggle" onclick="this.classList.toggle('active')"><div class="knob"></div></div></div>
-      <div class="settings-item"><span class="label">🧭 نمایش جهت</span><div class="toggle active" onclick="this.classList.toggle('active')"><div class="knob"></div></div></div>
-      <div class="settings-item"><span class="label">🎵 موسیقی منو</span><div class="toggle active" onclick="this.classList.toggle('active')"><div class="knob"></div></div></div>
-      <div class="settings-item"><span class="label">🎮 موسیقی بازی</span><div class="toggle" onclick="this.classList.toggle('active')"><div class="knob"></div></div></div>
-      <div class="settings-item"><span class="label">🔊 افکت‌ها</span><div class="toggle active" onclick="this.classList.toggle('active')"><div class="knob"></div></div></div>
-      <div class="settings-item"><span class="label">📐 نمایش گرید</span><div class="toggle active" onclick="this.classList.toggle('active')"><div class="knob"></div></div></div>
-      <div class="settings-item"><span class="label">⚡ حداکثر FPS</span><span class="value">۶۰</span></div>
-      <div class="settings-item"><span class="label">🤖 حرکت خودکار</span><div class="toggle" onclick="this.classList.toggle('active')"><div class="knob"></div></div></div>
-      <div style="margin-top:16px; padding-top:16px; border-top:1px solid #1c2634;">
-        <div style="font-size:12px; color:#5c6b7d;">نسخه: v1.8.9722</div>
-        <div style="font-size:12px; color:#5c6b7d;">UID: <span id="settings-uid">6879499219</span></div>
+  <!-- TRANSFER MODAL -->
+  <div class="modal-overlay hidden" id="transfer-modal">
+    <div class="modal-card">
+      <div class="modal-head"><span>انتقال آیتم</span><button id="transfer-modal-close">✕</button></div>
+      <p class="subtitle" id="transfer-item-label" style="margin-bottom:0;"></p>
+      <input type="text" id="transfer-target-input" placeholder="آیدی عددی تلگرام گیرنده" inputmode="numeric">
+      <p class="subtitle" style="margin-bottom:10px;">⚠️ این عمل قابل برگشت نیست؛ آیدی رو درست وارد کن.</p>
+      <button class="btn" id="transfer-confirm-btn">ارسال آیتم</button>
+    </div>
+  </div>
+
+  <!-- PERKS -->
+  <div class="screen hidden" id="screen-perks">
+    <h1 class="title">⚡ ارتقاها</h1>
+
+    <div class="perk-card">
+      <div class="perk-head"><span class="perk-name">کاهش کول‌داون تقسیم</span><span class="perk-level" id="perk-split-level">لول 0/50</span></div>
+      <div class="perk-bar-bg"><div class="perk-bar-fill" id="perk-split-bar" style="width:0%"></div></div>
+      <div class="perk-upgrade">
+        <span class="perk-cost" id="perk-split-cost">هزینه: 50 توکن</span>
+        <button class="perk-btn" id="perk-split-btn">ارتقا</button>
+      </div>
+    </div>
+
+    <div class="perk-card">
+      <div class="perk-head"><span class="perk-name">افزایش سرعت</span><span class="perk-level" id="perk-speed-level">لول 0/50</span></div>
+      <div class="perk-bar-bg"><div class="perk-bar-fill" id="perk-speed-bar" style="width:0%"></div></div>
+      <div class="perk-upgrade">
+        <span class="perk-cost" id="perk-speed-cost">هزینه: 50 توکن</span>
+        <button class="perk-btn" id="perk-speed-btn">ارتقا</button>
       </div>
     </div>
   </div>
@@ -302,17 +353,19 @@
   <!-- BOTTOM NAV -->
   <div id="bottomnav">
     <div class="nav-btn active" data-tab="home"><span class="nav-icon">🏠</span>خانه</div>
-    <div class="nav-btn" data-tab="duel"><span class="nav-icon">⚔️</span>دوئل</div>
-    <div class="nav-btn" data-tab="shop"><span class="nav-icon">🛒</span>فروشگاه</div>
-    <div class="nav-btn" data-tab="inventory"><span class="nav-icon">🎒</span>آیتم‌ها</div>
-    <div class="nav-btn" data-tab="profile"><span class="nav-icon">👤</span>پروفایل</div>
+    <div class="nav-btn" data-tab="market"><span class="nav-icon">🛒</span>مارکت</div>
+    <div class="nav-btn" data-tab="soon"><span class="nav-icon">✨</span>بزودی</div>
+    <div class="nav-btn" data-tab="items"><span class="nav-icon">🎒</span>آیتم‌ها</div>
+    <div class="nav-btn" data-tab="perks"><span class="nav-icon">⚡</span>ارتقا</div>
   </div>
 
   <!-- GAME -->
   <div class="screen hidden full" id="screen-game">
     <canvas id="board"></canvas>
+
     <button id="back-btn">✕ خروج</button>
-    <div id="hud-mass">🎒 <span id="hud-mass-num">0</span></div>
+    <div id="hud-mass-pill">🎒 <span id="hud-mass">0</span></div>
+
     <button id="split-btn">تقسیم</button>
     <div id="joystick-base"></div>
     <div id="joystick-knob"></div>
@@ -320,72 +373,94 @@
 
   <!-- GAME OVER -->
   <div class="screen hidden" id="screen-over" style="bottom:0;">
-    <h1 class="title">💥 بازی تمام شد!</h1>
+    <h1 class="title">بلعیده شدی! 💥</h1>
     <div class="go-mass" id="go-mass">0</div>
     <div class="go-tokens" id="go-tokens">+0 توکن</div>
-    <div class="go-best">بهترین رکورد: <b id="go-best">0</b></div>
-    <button class="btn" id="retry-btn">🔄 دوباره</button>
-    <button class="btn secondary" id="menu-btn">🏠 منو</button>
+    <div class="go-best">رکورد شما: <b id="go-best">0</b></div>
+    <button class="btn" id="retry-btn">🔁 دوباره بازی کن</button>
+    <button class="btn secondary" id="menu-btn">منوی اصلی</button>
   </div>
 
 </div>
 
 <script>
-(function() {
+(function () {
   const tg = window.Telegram && window.Telegram.WebApp;
   if (tg) { try { tg.ready(); tg.expand(); } catch(e){} }
 
-  // ===== USER =====
-  const LS = { get(k,d){ try{ return JSON.parse(localStorage.getItem(k))||d; }catch(e){return d;} }, set(k,v){ localStorage.setItem(k,JSON.stringify(v)); } };
-  let uid = LS.get('pe_uid', 'user_' + Date.now());
-  LS.set('pe_uid', uid);
-  let displayName = 'بازیکن';
-
-  // ===== SKIN DATABASE =====
-  const SKIN_DB = {
-    default: { name:'پیش‌فرض', rarity:'common', color:'#4fa8ff', emoji:'🪐', price:0 },
-    no_mouse: { name:'No Mouse', rarity:'common', color:'#7a4fd9', emoji:'🐭', price:50 },
-    duck: { name:'Duck', rarity:'common', color:'#f0d020', emoji:'🦆', price:50 },
-    falling_stars: { name:'Falling Stars', rarity:'rare', color:'#4a2f8a', emoji:'⭐', price:150 },
-    slime_resist: { name:'Slime Resist', rarity:'rare', color:'#2fbf6e', emoji:'🧪', price:150 },
-    when_lambo: { name:'When Lambo', rarity:'rare', color:'#ff6b6b', emoji:'🏎️', price:200 },
-    redacted: { name:'Redacted', rarity:'epic', color:'#ff4444', emoji:'🔴', price:500 },
-    higher: { name:'Higher', rarity:'epic', color:'#5a4fc9', emoji:'🚀', price:500 },
-    reputation: { name:'Reputation', rarity:'legend', color:'#ffd700', emoji:'👑', price:1000 }
+  /* ---------- identify user ---------- */
+  const LS = {
+    get(k,d){ try{ const v=localStorage.getItem(k); return v===null?d:JSON.parse(v); }catch(e){return d;} },
+    set(k,v){ try{ localStorage.setItem(k, JSON.stringify(v)); }catch(e){} }
   };
-
-  const LOOTBOX_POOL = {
-    common: ['no_mouse','duck'],
-    rare: ['falling_stars','slime_resist','when_lambo'],
-    epic: ['redacted','higher'],
-    legend: ['reputation']
-  };
-  const RARITY_WEIGHTS = { common:50, rare:30, epic:15, legend:5 };
-
-  // ===== PROFILE =====
-  function defaultProfile() {
-    return {
-      name: displayName,
-      tokens: 100,
-      xp: 0,
-      level: 1,
-      games: 0,
-      wins: 0,
-      bestMass: 0,
-      equippedSkin: 'default',
-      inventory: { skins: { default:1 }, lootboxes: [] },
-      perks: { freeze:0, shield:0, split:0, eject:0 },
-      dailyClaim: { last: null, streak: 0 }
-    };
+  let uid, displayName;
+  const tgUser = tg && tg.initDataUnsafe && tg.initDataUnsafe.user;
+  if (tgUser && tgUser.id) {
+    uid = 'tg_' + tgUser.id;
+    displayName = tgUser.first_name || 'بازیکن';
+  } else {
+    uid = LS.get('pe_local_uid', null);
+    if (!uid) { uid = 'local_' + Math.random().toString(36).slice(2,10); LS.set('pe_local_uid', uid); }
+    displayName = 'بازیکن';
   }
 
-  let profile = defaultProfile();
+  const SKIN_DB = {
+    dead_star:      { name:'Dead Star',        rarity:'starter', color:'#dfeaf2' },
+    no_mouse:       { name:'No Mouse',         rarity:'common',  color:'#7a4fd9' },
+    golden_bowl:    { name:'Golden Bowl',      rarity:'common',  color:'#caa23a' },
+    slime_resist:   { name:'Slime Resistance', rarity:'rare',    color:'#4a2f8a' },
+    when_lambo:     { name:'When Lambo',       rarity:'rare',    color:'#f0d020' },
+    higher:         { name:'Higher',           rarity:'rare',    color:'#5a4fc9' },
+    reputation:     { name:'Reputation',       rarity:'epic',    color:'#e8d060' },
+    collector_cap:  { name:'Collector',        rarity:'legend',  color:'#a86fff' },
+    triangle_nine:  { name:'Triangle 9',       rarity:'legend',  color:'#3dd6ff' },
+  };
+  const LOOTBOX_POOL = {
+    common: ['no_mouse','golden_bowl'],
+    rare: ['slime_resist','when_lambo','higher'],
+    epic: ['reputation'],
+    legend: ['collector_cap','triangle_nine']
+  };
+  const RARITY_WEIGHTS = { common:60, rare:25, epic:10, legend:5 };
+  const TAG_CLASS = { starter:'tag-starter', common:'tag-common', rare:'tag-rare', epic:'tag-epic', legend:'tag-legend' };
+  const TAG_LABEL = { starter:'شروع', common:'Common', rare:'Rare', epic:'Epic', legend:'Legend' };
+
+  // تابع کمکی برای ادغام عمیق (deep merge)
+  function deepMerge(target, source) {
+    const result = { ...target };
+    for (const key in source) {
+      if (source[key] && typeof source[key] === 'object' && !Array.isArray(source[key])) {
+        result[key] = deepMerge(target[key] || {}, source[key]);
+      } else {
+        result[key] = source[key];
+      }
+    }
+    return result;
+  }
+
+  function defaultProfile(){
+    return {
+      name: displayName,
+      tokens: 0,
+      bestMass: 0,
+      equippedSkin: 'dead_star',
+      perks: { splitCooldownLevel:0, speedLevel:0 },
+      inventory: { skins: {}, lootboxes: {} },
+      dailyClaim: { streak:0, lastClaimDay:null }
+    };
+  }
+  function ownsSkin(id){ return id==='dead_star' || !!(profile.inventory.skins[id] && Object.keys(profile.inventory.skins[id]).length); }
+  function skinCopies(id){ return id==='dead_star' ? 1 : Object.keys(profile.inventory.skins[id]||{}).length; }
+
+  // ====== مهم: پروفایل با یک آبجکت خالی شروع می‌شه، نه با مقادیر پیش‌فرض ======
+  let profile = { tokens: 0, bestMass: 0, perks: { splitCooldownLevel:0, speedLevel:0 }, inventory: { skins: {}, lootboxes: {} }, dailyClaim: { streak:0, lastClaimDay:null } };
+  let profileSynced = false;
   let db = null;
   let userRef = null;
+  let initialLoadDone = false;
 
-  // ===== FIREBASE =====
-  function initFirebase() {
-    const config = {
+  function initFirebase(){
+    const firebaseConfig = {
       apiKey: "AIzaSyDfvJCZQX8u6fzPRpBIh1BY0zHS6fx27Ro",
       authDomain: "planet-2fdf2.firebaseapp.com",
       databaseURL: "https://planet-2fdf2-default-rtdb.firebaseio.com",
@@ -395,867 +470,897 @@
       appId: "1:237872686307:web:9c670a134208bacbd651d6"
     };
     try {
-      if (typeof firebase === 'undefined') return false;
-      firebase.initializeApp(config);
+      if (typeof firebase === 'undefined') throw new Error('firebase SDK not loaded');
+      firebase.initializeApp(firebaseConfig);
       db = firebase.database();
       return true;
-    } catch(e) { return false; }
+    } catch (e) {
+      console.error('Firebase init failed, continuing in local-only mode', e);
+      db = null;
+      return false;
+    }
   }
 
-  function loadProfile() {
-    if (!initFirebase()) { renderAll(); return; }
+  // ====== اصلاح اصلی: تابع loadProfile به درستی داده‌ها را از دیتابیس می‌خواند و با داده‌های محلی ادغام می‌کند ======
+  function loadProfile(){
+    if (!initFirebase()) { 
+      profileSynced = true; 
+      initialLoadDone = true;
+      renderAll(); 
+      return; 
+    }
     userRef = db.ref('users/' + uid);
-    userRef.once('value').then(snap => {
-      if (!snap.exists()) {
-        userRef.set(profile);
-      } else {
-        const data = snap.val();
-        profile = Object.assign(defaultProfile(), data);
-        if (!profile.inventory) profile.inventory = { skins:{ default:1 }, lootboxes:[] };
-        if (!profile.perks) profile.perks = { freeze:0, shield:0, split:0, eject:0 };
-        if (!profile.dailyClaim) profile.dailyClaim = { last:null, streak:0 };
-      }
+
+    let settled = false;
+    const timeoutId = setTimeout(() => {
+      if (settled) return;
+      settled = true;
+      profileSynced = true;
+      initialLoadDone = true;
       renderAll();
-    }).catch(() => renderAll());
-  }
+    }, 6000);
 
-  function saveField(path, value) {
-    if (!db || !userRef) return;
-    userRef.child(path).set(value).catch(e => console.log('save error', e));
-  }
-
-  // ===== NAV =====
-  const screens = {};
-  document.querySelectorAll('.screen').forEach(s => screens[s.id] = s);
-  function showScreen(id) {
-    Object.values(screens).forEach(s => s.classList.add('hidden'));
-    if (screens[id]) screens[id].classList.remove('hidden');
-    if (id === 'screen-game') document.getElementById('bottomnav').style.display = 'none';
-    else document.getElementById('bottomnav').style.display = 'flex';
-  }
-
-  document.querySelectorAll('.nav-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      showScreen('screen-' + btn.dataset.tab);
-      if (btn.dataset.tab === 'inventory') renderInventory();
-      if (btn.dataset.tab === 'profile') renderProfile();
-      if (btn.dataset.tab === 'league') renderLeague();
-      if (btn.dataset.tab === 'shop') renderShop();
-    });
-  });
-
-  document.getElementById('duel-menu-btn').addEventListener('click', () => {
-    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-    document.querySelector('.nav-btn[data-tab="duel"]').classList.add('active');
-    showScreen('screen-duel');
-  });
-  document.getElementById('shop-menu-btn').addEventListener('click', () => {
-    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-    document.querySelector('.nav-btn[data-tab="shop"]').classList.add('active');
-    showScreen('screen-shop');
-    renderShop();
-  });
-  document.getElementById('league-menu-btn').addEventListener('click', () => {
-    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-    document.querySelector('.nav-btn[data-tab="home"]').classList.add('active');
-    showScreen('screen-league');
-    renderLeague();
-  });
-  document.getElementById('profile-menu-btn').addEventListener('click', () => {
-    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-    document.querySelector('.nav-btn[data-tab="profile"]').classList.add('active');
-    showScreen('screen-profile');
-    renderProfile();
-  });
-  document.getElementById('inventory-menu-btn').addEventListener('click', () => {
-    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-    document.querySelector('.nav-btn[data-tab="inventory"]').classList.add('active');
-    showScreen('screen-inventory');
-    renderInventory();
-  });
-  document.getElementById('settings-menu-btn').addEventListener('click', () => {
-    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-    document.querySelector('.nav-btn[data-tab="home"]').classList.add('active');
-    showScreen('screen-settings');
-    document.getElementById('settings-uid').textContent = uid.replace('user_','');
-  });
-
-  document.getElementById('lb-btn').addEventListener('click', renderLeaderboard);
-  document.getElementById('gift-btn').addEventListener('click', () => {
-    if (profile.tokens < 10) { notify('به ۱۰ توکن نیاز داری!'); return; }
-    profile.tokens -= 10;
-    saveField('tokens', profile.tokens);
-    notify('🎁 هدیه به یک بازیکن تصادفی ارسال شد!');
-    renderAll();
-  });
-
-  document.getElementById('daily-claim-btn').addEventListener('click', () => {
-    const today = new Date().toDateString();
-    if (profile.dailyClaim.last === today) { notify('امروز دریافت کردی!'); return; }
-    const reward = 10 + (profile.dailyClaim.streak || 0) * 2;
-    profile.tokens += reward;
-    profile.xp += 5;
-    profile.dailyClaim.last = today;
-    profile.dailyClaim.streak = (profile.dailyClaim.streak || 0) + 1;
-    saveField('tokens', profile.tokens);
-    saveField('xp', profile.xp);
-    saveField('dailyClaim', profile.dailyClaim);
-    notify(`🎁 ${reward} توکن + ۵ XP دریافت شد!`);
-    renderAll();
-  });
-
-  // ===== SHOP =====
-  function renderShop() {
-    document.querySelectorAll('.buy-btn').forEach(btn => {
-      btn.onclick = function() {
-        const item = this.dataset.item;
-        if (item === 'lootbox') {
-          if (profile.tokens < 50) { notify('توکن کافی نیست!'); return; }
-          profile.tokens -= 50;
-          profile.inventory.lootboxes.push({ type:'normal', acquired:Date.now() });
-          saveField('tokens', profile.tokens);
-          saveField('inventory', profile.inventory);
-          notify('📦 لوت‌باکس خریداری شد!');
-          renderAll();
-        } else if (item === 'skin') {
-          if (profile.tokens < 100) { notify('توکن کافی نیست!'); return; }
-          profile.tokens -= 100;
-          const roll = Math.random() * 100;
-          let acc=0, rarity='common';
-          for (const r of ['common','rare','epic','legend']) {
-            acc += RARITY_WEIGHTS[r];
-            if (roll <= acc) { rarity = r; break; }
-          }
-          const pool = LOOTBOX_POOL[rarity];
-          const skinId = pool[Math.floor(Math.random() * pool.length)];
-          profile.inventory.skins[skinId] = (profile.inventory.skins[skinId] || 0) + 1;
-          saveField('tokens', profile.tokens);
-          saveField('inventory', profile.inventory);
-          notify(`🎨 اسکین «${SKIN_DB[skinId].name}» (${rarity}) دریافت شد!`);
-          renderAll();
-        } else if (item === 'upgrade') {
-          if (profile.tokens < 200) { notify('توکن کافی نیست!'); return; }
-          profile.tokens -= 200;
-          const keys = ['freeze','shield','split','eject'];
-          const key = keys[Math.floor(Math.random() * keys.length)];
-          profile.perks[key] = (profile.perks[key] || 0) + 1;
-          saveField('tokens', profile.tokens);
-          saveField('perks', profile.perks);
-          notify(`⚡ ارتقا ${key} +۱ شد!`);
-          renderAll();
-        }
-      };
-    });
-  }
-
-  // ===== RENDER FUNCTIONS =====
-  function renderAll() {
-    document.getElementById('home-tokens').textContent = profile.tokens || 0;
-    document.getElementById('home-level').textContent = profile.level || 1;
-    document.getElementById('home-level-num').textContent = profile.level || 1;
-    document.getElementById('home-rank').textContent = Math.max(1, Math.floor((profile.bestMass||0)/50)+1);
-    document.getElementById('online-count').textContent = Math.floor(100 + Math.random() * 100);
-    renderProfile();
-    renderInventory();
-    renderLeague();
-  }
-
-  function renderProfile() {
-    document.getElementById('profile-name').textContent = profile.name || 'بازیکن';
-    document.getElementById('profile-level').textContent = `لول ${profile.level || 1} · ${profile.xp || 0} XP`;
-    const xpNeeded = profile.level * 100;
-    const pct = Math.min(100, ((profile.xp || 0) / xpNeeded) * 100);
-    document.getElementById('profile-xp-fill').style.width = pct + '%';
-    document.getElementById('profile-xp-text').textContent = `${profile.xp || 0} / ${xpNeeded} XP`;
-    document.getElementById('profile-tokens').textContent = profile.tokens || 0;
-    document.getElementById('profile-games').textContent = profile.games || 0;
-    document.getElementById('profile-wins').textContent = profile.wins || 0;
-    const skin = SKIN_DB[profile.equippedSkin] || SKIN_DB.default;
-    document.getElementById('profile-avatar').textContent = skin.emoji || '🪐';
-
-    const grid = document.getElementById('perk-grid');
-    grid.innerHTML = '';
-    const perks = ['freeze','shield','split','eject'];
-    const names = ['❄️ Freeze','🛡️ Shield','⚡ Split','💨 Eject'];
-    perks.forEach((key, i) => {
-      const lvl = profile.perks[key] || 0;
-      const div = document.createElement('div');
-      div.className = 'perk-item';
-      div.innerHTML = `
-        <div class="name">${names[i]}</div>
-        <div class="level">لول ${lvl}/50</div>
-        <div class="progress"><div class="progress-fill" style="width:${(lvl/50)*100}%;"></div></div>
-        <button class="upgrade-btn" data-perk="${key}">ارتقا ۵۰⭐</button>
-      `;
-      grid.appendChild(div);
-    });
-    grid.querySelectorAll('.upgrade-btn').forEach(btn => {
-      btn.addEventListener('click', function() {
-        const key = this.dataset.perk;
-        if (profile.tokens < 50) { notify('توکن کافی نیست!'); return; }
-        if ((profile.perks[key] || 0) >= 50) { notify('حداکثر لول!'); return; }
-        profile.tokens -= 50;
-        profile.perks[key] = (profile.perks[key] || 0) + 1;
-        saveField('tokens', profile.tokens);
-        saveField('perks', profile.perks);
-        renderProfile();
-        renderAll();
-      });
-    });
-  }
-
-  function renderInventory() {
-    document.getElementById('inv-tokens').textContent = profile.tokens || 0;
-    const grid = document.getElementById('skin-grid');
-    grid.innerHTML = '';
-    Object.keys(SKIN_DB).forEach(id => {
-      const skin = SKIN_DB[id];
-      const owned = profile.inventory.skins[id] || 0;
-      const div = document.createElement('div');
-      div.className = 'inv-item' + (profile.equippedSkin === id ? ' equipped' : '') + (owned === 0 ? ' locked' : '');
-      div.innerHTML = `
-        <div class="icon">${skin.emoji}</div>
-        <div class="name">${skin.name}</div>
-        ${owned > 0 ? `<div class="count">${owned}</div>` : ''}
-      `;
-      if (owned > 0) {
-        div.addEventListener('click', () => {
-          profile.equippedSkin = id;
-          saveField('equippedSkin', id);
-          renderInventory();
-          renderProfile();
-        });
-      }
-      grid.appendChild(div);
-    });
-
-    const lbGrid = document.getElementById('lootbox-grid');
-    lbGrid.innerHTML = '';
-    const boxes = profile.inventory.lootboxes || [];
-    if (boxes.length === 0) {
-      lbGrid.innerHTML = '<div style="grid-column:span 3;text-align:center;color:#5c6b7d;padding:20px;">هیچ لوت‌باکسی نداری</div>';
-    } else {
-      boxes.forEach((b, i) => {
-        const div = document.createElement('div');
-        div.className = 'inv-item';
-        div.innerHTML = `<div class="icon">📦</div><div class="name">لوت‌باکس</div><div class="count">${i+1}</div>`;
-        div.addEventListener('click', () => openLootbox(i));
-        lbGrid.appendChild(div);
-      });
-    }
-  }
-
-  function openLootbox(index) {
-    const boxes = profile.inventory.lootboxes || [];
-    if (index >= boxes.length) return;
-    const roll = Math.random() * 100;
-    let acc = 0, rarity = 'common';
-    for (const r of ['common','rare','epic','legend']) {
-      acc += RARITY_WEIGHTS[r];
-      if (roll <= acc) { rarity = r; break; }
-    }
-    const pool = LOOTBOX_POOL[rarity];
-    const skinId = pool[Math.floor(Math.random() * pool.length)];
-    profile.inventory.skins[skinId] = (profile.inventory.skins[skinId] || 0) + 1;
-    profile.inventory.lootboxes.splice(index, 1);
-    saveField('inventory', profile.inventory);
-    notify(`🎉 اسکین «${SKIN_DB[skinId].name}» (${rarity}) گرفتی!`);
-    renderInventory();
-  }
-
-  function renderLeague() {
-    const rank = Math.floor(100 + Math.random() * 5000);
-    document.getElementById('league-rank').textContent = '#' + rank.toLocaleString();
-    const leagues = ['🌌 کهکشانی', '⭐ ستاره‌ای', '🌙 ماه‌نورد', '☀️ خورشیدی'];
-    document.getElementById('league-name').textContent = leagues[Math.floor(Math.random() * leagues.length)];
-    document.getElementById('league-reward').textContent = (800 + Math.floor(Math.random() * 1200)).toLocaleString();
-  }
-
-  function renderLeaderboard() {
-    const list = document.getElementById('lb-list');
-    list.innerHTML = '';
-    const names = ['W_pang', 'StarLord', 'GalaxyKing', 'Cosmic', 'Nebula', 'Asteroid', 'Comet', 'Meteor', 'Orbit', 'Eclipse'];
-    for (let i = 0; i < 10; i++) {
-      const div = document.createElement('div');
-      div.style.cssText = 'display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid #1c2634;';
-      const rankClass = i === 0 ? 'color:#ffd700;' : i === 1 ? 'color:#c0c0c0;' : i === 2 ? 'color:#cd7f32;' : 'color:#8a99ad;';
-      div.innerHTML = `
-        <div style="font-size:16px;font-weight:900;width:30px;${rankClass}">${i+1}</div>
-        <div style="width:36px;height:36px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff6,#4a2f8a);display:flex;align-items:center;justify-content:center;font-size:18px;">${['🪐','⭐','🌙','☀️','💫','🌟','✨','🔥','💎','🌈'][i]}</div>
-        <div style="flex:1;"><div style="font-size:14px;font-weight:700;">${names[i]}</div><div style="font-size:12px;color:#8a99ad;">${(10000 - i * 800).toLocaleString()} امتیاز</div></div>
-      `;
-      list.appendChild(div);
-    }
-  }
-
-  // ===== DUEL SYSTEM =====
-  let duelSearching = false;
-  let duelMatchId = null;
-  let duelOpponent = null;
-  let duelInterval = null;
-
-  document.getElementById('duel-find-btn').addEventListener('click', findDuel);
-  document.getElementById('duel-cancel-btn').addEventListener('click', cancelDuel);
-
-  function findDuel() {
-    if (!db) { notify('اتصال به سرور برقرار نیست!'); return; }
-    if (duelSearching) return;
-    duelSearching = true;
-    const btn = document.getElementById('duel-find-btn');
-    btn.textContent = '🔍 در حال جستجو...';
-    btn.className = 'duel-btn searching';
-    btn.disabled = true;
-    document.getElementById('duel-cancel-btn').style.display = 'block';
-    document.getElementById('duel-status').innerHTML = '🔍 در حال جستجوی حریف...';
-    document.getElementById('duel-timer').textContent = '⏳';
-
-    const duelRef = db.ref('duelQueue');
-    const myData = { uid: uid, name: displayName, timestamp: firebase.database.ServerValue.TIMESTAMP };
-
-    duelRef.orderByChild('timestamp').limitToFirst(1).once('value').then(snap => {
-      const queue = snap.val() || {};
-      let found = null, foundKey = null;
-      for (const [key, data] of Object.entries(queue)) {
-        if (data.uid !== uid) { found = data; foundKey = key; break; }
-      }
-      if (found) {
-        duelMatchId = foundKey;
-        duelOpponent = found;
-        duelRef.child(foundKey).remove();
-        startDuelGame(found);
+    userRef.once('value').then(snap => {
+      if (settled) return;
+      settled = true;
+      clearTimeout(timeoutId);
+      
+      if (!snap.exists()) {
+        // کاربر جدید: یک پروفایل با مقادیر پیش‌فرض ایجاد کن
+        profile = defaultProfile();
+        userRef.set(profile).catch(e=>console.error('initial profile save failed', e));
       } else {
-        duelRef.push(myData).then(ref => {
-          duelMatchId = ref.key;
-          duelRef.on('child_added', (snap) => {
-            const data = snap.val();
-            if (data.uid !== uid && snap.key !== duelMatchId) {
-              duelOpponent = data;
-              duelRef.child(snap.key).remove();
-              duelRef.off('child_added');
-              startDuelGame(data);
-            }
-          });
-          let timeLeft = 30;
-          document.getElementById('duel-timer').textContent = timeLeft + 's';
-          const timer = setInterval(() => {
-            timeLeft--;
-            document.getElementById('duel-timer').textContent = timeLeft + 's';
-            if (timeLeft <= 0) {
-              clearInterval(timer);
-              duelRef.off('child_added');
-              cancelDuel();
-              notify('⏰ زمان جستجو تمام شد!');
-            }
-          }, 1000);
-          duelInterval = timer;
-        });
+        const remote = snap.val() || {};
+        // فقط داده‌هایی که در دیتابیس وجود دارند را با داده‌های محلی ادغام کن
+        // اما اگر داده‌ای در دیتابیس نبود، مقدار پیش‌فرض را نگه دار
+        profile = {
+          name: remote.name || displayName,
+          tokens: typeof remote.tokens === 'number' ? remote.tokens : 0,
+          bestMass: typeof remote.bestMass === 'number' ? remote.bestMass : 0,
+          equippedSkin: remote.equippedSkin || 'dead_star',
+          perks: remote.perks ? { ...remote.perks } : { splitCooldownLevel:0, speedLevel:0 },
+          inventory: remote.inventory ? { 
+            skins: remote.inventory.skins || {}, 
+            lootboxes: remote.inventory.lootboxes || {} 
+          } : { skins: {}, lootboxes: {} },
+          dailyClaim: remote.dailyClaim ? { ...remote.dailyClaim } : { streak:0, lastClaimDay:null }
+        };
+        // اطمینان از اینکه ساختارهای مورد نیاز وجود دارند
+        if (!profile.inventory.skins) profile.inventory.skins = {};
+        if (!profile.inventory.lootboxes) profile.inventory.lootboxes = {};
+        if (!profile.perks) profile.perks = { splitCooldownLevel:0, speedLevel:0 };
+        if (!profile.dailyClaim) profile.dailyClaim = { streak:0, lastClaimDay:null };
       }
-    }).catch(() => { cancelDuel(); notify('خطا در پیدا کردن حریف!'); });
-  }
-
-  function cancelDuel() {
-    duelSearching = false;
-    if (duelMatchId && db) db.ref('duelQueue/' + duelMatchId).remove();
-    if (duelInterval) { clearInterval(duelInterval); duelInterval = null; }
-    const btn = document.getElementById('duel-find-btn');
-    btn.textContent = '🔍 پیدا کردن حریف';
-    btn.className = 'duel-btn';
-    btn.disabled = false;
-    document.getElementById('duel-cancel-btn').style.display = 'none';
-    document.getElementById('duel-status').innerHTML = '🔍 جستجو لغو شد';
-    document.getElementById('duel-timer').textContent = '⏳';
-    document.getElementById('duel-opponent').style.display = 'none';
-    duelMatchId = null; duelOpponent = null;
-  }
-
-  function startDuelGame(opponent) {
-    duelSearching = false;
-    if (duelInterval) { clearInterval(duelInterval); duelInterval = null; }
-    document.getElementById('duel-status').innerHTML = `⚔️ حریف: ${opponent.name}`;
-    document.getElementById('duel-timer').textContent = '🎮';
-    document.getElementById('duel-opponent').style.display = 'flex';
-    document.getElementById('duel-enemy-name').textContent = opponent.name;
-    const btn = document.getElementById('duel-find-btn');
-    btn.textContent = '⚔️ شروع دوئل';
-    btn.className = 'duel-btn';
-    btn.disabled = false;
-    btn.onclick = () => {
-      isDuel = true;
-      duelOpponent = opponent;
-      duelMatchId = 'duel_' + Date.now();
-      db.ref('duelRooms/' + duelMatchId).set({ player1: uid, player2: opponent.uid, status: 'active' });
-      showScreen('screen-game');
-      document.getElementById('bottomnav').style.display = 'none';
-      startGame();
-    };
-    document.getElementById('duel-cancel-btn').style.display = 'none';
-    notify(`✅ حریف پیدا شد: ${opponent.name}!`);
-  }
-
-  function notify(msg) {
-    if (tg && tg.showAlert) tg.showAlert(msg);
-    else alert(msg);
-  }
-
-  // ===== GAME ENGINE =====
-  const canvas = document.getElementById('board');
-  const ctx = canvas.getContext('2d');
-  let running = false, lastT = null;
-  let pieces = [], pellets = [], bots = [];
-  let camScale = 1, smoothCamX = null, smoothCamY = null;
-  let splitCooldown = 0, maxMass = 0;
-  let isDuel = false;
-  let opponentPieces = [];
-  let opponentRef = null;
-
-  function fitCanvas() {
-    canvas.width = innerWidth * devicePixelRatio;
-    canvas.height = innerHeight * devicePixelRatio;
-    canvas.style.width = innerWidth + 'px';
-    canvas.style.height = innerHeight + 'px';
-    ctx.setTransform(devicePixelRatio, 0, 0, devicePixelRatio, 0, 0);
-  }
-  window.addEventListener('resize', fitCanvas);
-
-  const WORLD = 3000, PELLET_COUNT = 200, BOT_COUNT = 10;
-  const MIN_SPLIT = 30, MAX_PIECES = 16;
-  const EAT_RATIO = 1.25, EAT_OVERLAP = 0.7;
-
-  function radius(m) { return 8 + Math.sqrt(m) * 3.1; }
-  function speed(r) { return Math.max(40, 280 / (1 + r / 30)); }
-  function randPos() { return { x: 50 + Math.random() * (WORLD - 100), y: 50 + Math.random() * (WORLD - 100) }; }
-  function makePellet() { const p = randPos(); return { x: p.x, y: p.y, r: 4 + Math.random() * 3, color: `hsl(${Math.random()*360},80%,60%)` }; }
-
-  function startGame() {
-    fitCanvas();
-    pieces = [{ x: WORLD/2, y: WORLD/2, mass: 25, r: radius(25), vx: 0, vy: 0, mergeAt: 0 }];
-    pellets = []; for (let i = 0; i < PELLET_COUNT; i++) pellets.push(makePellet());
-    bots = [];
-    const colors = ['#ff5c5c','#ffd23d','#7ee787','#ff9d3d','#a86fff','#3dd6ff','#ff5cf0','#ff8080','#80ffcf','#c48bff'];
-    for (let i = 0; i < BOT_COUNT; i++) {
-      let p; do { p = randPos(); } while (Math.hypot(p.x - WORLD/2, p.y - WORLD/2) < 600);
-      bots.push({ x: p.x, y: p.y, mass: 12 + Math.random() * 16, r: radius(12 + Math.random() * 16),
-        color: colors[i % colors.length], name: '🤖' + (i+1), wander: { x:0, y:0 }, wanderT: 0 });
-    }
-    if (isDuel) {
-      bots = [];
-      opponentPieces = [];
-      if (opponentRef) opponentRef.off();
-      const roomRef = db.ref('duelRooms/' + duelMatchId);
-      opponentRef = roomRef.child('players/' + duelOpponent.uid);
-      opponentRef.on('value', (snap) => {
-        const data = snap.val();
-        if (data) opponentPieces = data.pieces || [];
-      });
-      roomRef.child('players/' + uid).set({ pieces: pieces.map(p => ({ x:p.x, y:p.y, mass:p.mass, r:p.r })) });
-    }
-    running = true; lastT = null; splitCooldown = 0; maxMass = 25;
-    smoothCamX = null; smoothCamY = null; camScale = 1;
-    document.getElementById('bottomnav').style.display = 'none';
-    showScreen('screen-game');
-    requestAnimationFrame(loop);
-  }
-
-  function totalMass() { return pieces.reduce((s, p) => s + p.mass, 0); }
-
-  function sendMyGameData() {
-    if (!isDuel || !db || !duelMatchId) return;
-    db.ref('duelRooms/' + duelMatchId + '/players/' + uid).update({
-      pieces: pieces.map(p => ({ x:p.x, y:p.y, mass:p.mass, r:p.r })),
-      totalMass: totalMass()
+      profileSynced = true;
+      initialLoadDone = true;
+      renderAll();
+    }).catch(err => {
+      if (settled) return;
+      settled = true;
+      clearTimeout(timeoutId);
+      console.error('Firebase read error, continuing in local-only mode', err);
+      profileSynced = true;
+      initialLoadDone = true;
+      renderAll();
     });
   }
 
-  // ===== CONTROLS =====
-  let joy = { active: false, dx: 0, dy: 0 };
-  const joyBase = document.getElementById('joystick-base'), joyKnob = document.getElementById('joystick-knob');
-  const MAXJOY = 55;
-  function joyStart(x, y) {
-    joy.active = true;
-    joyBase.style.display = 'block'; joyKnob.style.display = 'block';
-    joyBase.style.left = (x - 60) + 'px'; joyBase.style.top = (y - 60) + 'px';
-    joyKnob.style.left = (x - 26) + 'px'; joyKnob.style.top = (y - 26) + 'px';
-    joy.dx = 0; joy.dy = 0;
-  }
-  function joyMove(x, y) {
-    if (!joy.active) return;
-    let dx = x - parseFloat(joyBase.style.left) - 60;
-    let dy = y - parseFloat(joyBase.style.top) - 60;
-    const d = Math.hypot(dx, dy);
-    if (d > MAXJOY) { dx = dx/d * MAXJOY; dy = dy/d * MAXJOY; }
-    joy.dx = dx/MAXJOY; joy.dy = dy/MAXJOY;
-    joyKnob.style.left = (parseFloat(joyBase.style.left) + 60 + dx - 26) + 'px';
-    joyKnob.style.top = (parseFloat(joyBase.style.top) + 60 + dy - 26) + 'px';
-  }
-  function joyEnd() { joy.active = false; joy.dx = 0; joy.dy = 0; joyBase.style.display = 'none'; joyKnob.style.display = 'none'; }
-
-  canvas.addEventListener('touchstart', e => { const t = e.touches[0]; joyStart(t.clientX, t.clientY); }, { passive: true });
-  canvas.addEventListener('touchmove', e => { const t = e.touches[0]; joyMove(t.clientX, t.clientY); }, { passive: true });
-  canvas.addEventListener('touchend', joyEnd, { passive: true });
-  canvas.addEventListener('mousedown', e => joyStart(e.clientX, e.clientY));
-  window.addEventListener('mousemove', e => { if (joy.active) joyMove(e.clientX, e.clientY); });
-  window.addEventListener('mouseup', joyEnd);
-
-  let keys = {};
-  window.addEventListener('keydown', e => { keys[e.key] = true; if (e.key === ' ') { e.preventDefault(); doSplit(); } });
-  window.addEventListener('keyup', e => keys[e.key] = false);
-
-  function getDir() {
-    if (joy.active && (joy.dx || joy.dy)) return { x: joy.dx, y: joy.dy };
-    let x = 0, y = 0;
-    if (keys['ArrowUp'] || keys['w']) y = -1;
-    if (keys['ArrowDown'] || keys['s']) y = 1;
-    if (keys['ArrowLeft'] || keys['a']) x = -1;
-    if (keys['ArrowRight'] || keys['d']) x = 1;
-    const d = Math.hypot(x, y);
-    return d > 0 ? { x: x/d, y: y/d } : { x: 0, y: 0 };
-  }
-  let lastDir = { x: 0, y: -1 };
-
-  document.getElementById('split-btn').addEventListener('click', doSplit);
-  document.getElementById('split-btn').addEventListener('touchstart', e => { e.preventDefault(); doSplit(); }, { passive: false });
-
-  function doSplit() {
-    if (!running || splitCooldown > 0) return;
-    if (!pieces.some(p => p.mass >= MIN_SPLIT)) return;
-    if (pieces.length >= MAX_PIECES) return;
-    const dir = getDir();
-    if (dir.x || dir.y) lastDir = dir;
-    const d = lastDir.x || 0, dy = lastDir.y || -1;
-    const now = performance.now();
-    const snap = pieces.slice();
-    let split = false;
-    for (const p of snap) {
-      if (pieces.length >= MAX_PIECES || p.mass < MIN_SPLIT) continue;
-      split = true;
-      const half = p.mass / 2;
-      p.mass = half; p.r = radius(half);
-      p.mergeAt = now + (10 + half * 0.2) * 1000;
-      const spd = 200 + p.r * 2;
-      pieces.push({
-        x: p.x + d * p.r * 0.5, y: p.y + dy * p.r * 0.5,
-        mass: half, r: radius(half),
-        vx: d * spd, vy: dy * spd,
-        mergeAt: now + (10 + half * 0.2) * 1000
-      });
-    }
-    if (split) splitCooldown = 3;
-  }
-
-  function clamp(e) { e.x = Math.max(e.r || 10, Math.min(WORLD - (e.r || 10), e.x)); e.y = Math.max(e.r || 10, Math.min(WORLD - (e.r || 10), e.y)); }
-
-  function update(dt) {
-    const dir = getDir();
-    if (dir.x || dir.y) lastDir = dir;
-    const mult = 1 + (profile.perks.split || 0) * 0.02;
-    const fric = Math.pow(0.04, dt);
-    for (const p of pieces) {
-      const spd = speed(p.r) * mult;
-      p.vx = (p.vx || 0) * fric;
-      p.vy = (p.vy || 0) * fric;
-      p.x += (dir.x * spd + p.vx) * dt;
-      p.y += (dir.y * spd + p.vy) * dt;
-      clamp(p);
-      for (let i = pellets.length - 1; i >= 0; i--) {
-        const pel = pellets[i];
-        if (Math.hypot(pel.x - p.x, pel.y - p.y) < p.r) {
-          p.mass += 1.2; p.r = radius(p.mass);
-          pellets[i] = makePellet();
-        }
-      }
-    }
-    if (pieces.length > 1) {
-      let cx = 0, cy = 0, w = 0;
-      pieces.forEach(p => { cx += p.x * p.mass; cy += p.y * p.mass; w += p.mass; });
-      cx /= w; cy /= w;
-      const pull = 180 * dt;
-      pieces.forEach(p => {
-        const dx = cx - p.x, dy = cy - p.y;
-        const d = Math.hypot(dx, dy);
-        if (d > 5) { p.x += dx/d * Math.min(pull, d * 0.6); p.y += dy/d * Math.min(pull, d * 0.6); clamp(p); }
-      });
-    }
-    const now = performance.now();
-    for (let i = pieces.length - 1; i > 0; i--) {
-      for (let j = i - 1; j >= 0; j--) {
-        const a = pieces[i], b = pieces[j];
-        if (now < a.mergeAt || now < b.mergeAt) continue;
-        if (Math.hypot(a.x - b.x, a.y - b.y) < Math.max(a.r, b.r) * 0.5) {
-          b.mass += a.mass; b.r = radius(b.mass);
-          pieces.splice(i, 1); break;
-        }
-      }
-    }
-    for (const bot of bots) {
-      bot.r += (radius(bot.mass) - bot.r) * Math.min(1, dt * 6);
-      let nearest = null, nd = Infinity;
-      for (const p of pieces) { const d = Math.hypot(p.x - bot.x, p.y - bot.y); if (d < nd) { nd = d; nearest = p; } }
-      let dir2 = null;
-      if (nearest && nd < 400) {
-        if (bot.mass > nearest.mass * EAT_RATIO) dir2 = { x: (nearest.x - bot.x)/nd, y: (nearest.y - bot.y)/nd };
-        else if (nearest.mass > bot.mass * EAT_RATIO) dir2 = { x: (bot.x - nearest.x)/nd, y: (bot.y - nearest.y)/nd };
-      }
-      if (!dir2) {
-        let np = null, npd = Infinity;
-        for (const p of pellets) { const d = Math.hypot(p.x - bot.x, p.y - bot.y); if (d < 250 && d < npd) { npd = d; np = p; } }
-        if (np) dir2 = { x: (np.x - bot.x)/npd, y: (np.y - bot.y)/npd };
-      }
-      if (!dir2) {
-        bot.wanderT -= dt;
-        if (bot.wanderT <= 0) { const a = Math.random() * Math.PI * 2; bot.wander = { x: Math.cos(a), y: Math.sin(a) }; bot.wanderT = 1.5 + Math.random() * 2; }
-        dir2 = bot.wander;
-      }
-      const spd2 = speed(bot.r) * 0.7;
-      bot.x += dir2.x * spd2 * dt; bot.y += dir2.y * spd2 * dt; clamp(bot);
-      for (let i = pellets.length - 1; i >= 0; i--) {
-        const p = pellets[i];
-        if (Math.hypot(p.x - bot.x, p.y - bot.y) < bot.r) { bot.mass += 1; bot.r = radius(bot.mass); pellets[i] = makePellet(); }
-      }
-      if (bot.mass > 80) bot.mass *= (1 - 0.002 * dt);
-    }
-    for (let bi = bots.length - 1; bi >= 0; bi--) {
-      const bot = bots[bi];
-      for (let pi = pieces.length - 1; pi >= 0; pi--) {
-        const p = pieces[pi];
-        const d = Math.hypot(p.x - bot.x, p.y - bot.y);
-        const bigger = p.mass >= bot.mass ? p : bot;
-        const smaller = p.mass >= bot.mass ? bot : p;
-        if (d < bigger.r - smaller.r * EAT_OVERLAP) {
-          if (p.mass > bot.mass * EAT_RATIO) { p.mass += bot.mass * 0.5; p.r = radius(p.mass); bots.splice(bi, 1); break; }
-          else if (bot.mass > p.mass * EAT_RATIO) { pieces.splice(pi, 1); if (pieces.length === 0) { endGame(); return; } }
-        }
-      }
-    }
-    for (let i = bots.length - 1; i >= 0; i--) {
-      for (let j = i - 1; j >= 0; j--) {
-        const a = bots[i], b = bots[j];
-        const d = Math.hypot(a.x - b.x, a.y - b.y);
-        const bigger = a.mass >= b.mass ? a : b;
-        const smaller = a.mass >= b.mass ? b : a;
-        if (d < bigger.r - smaller.r * EAT_OVERLAP) {
-          if (a.mass > b.mass * EAT_RATIO) { a.mass += b.mass * 0.5; a.r = radius(a.mass); bots.splice(j, 1); break; }
-          else if (b.mass > a.mass * EAT_RATIO) { b.mass += a.mass * 0.5; b.r = radius(b.mass); bots.splice(i, 1); break; }
-        }
-      }
-    }
-    if (isDuel && opponentPieces.length > 0) {
-      for (const op of opponentPieces) {
-        for (let pi = pieces.length - 1; pi >= 0; pi--) {
-          const p = pieces[pi];
-          const d = Math.hypot(p.x - op.x, p.y - op.y);
-          const bigger = p.mass >= op.mass ? p : op;
-          const smaller = p.mass >= op.mass ? op : p;
-          if (d < bigger.r - smaller.r * EAT_OVERLAP) {
-            if (p.mass > op.mass * EAT_RATIO) {
-              p.mass += op.mass * 0.5; p.r = radius(p.mass);
-              const idx = opponentPieces.indexOf(op);
-              if (idx > -1) opponentPieces.splice(idx, 1);
-              if (opponentPieces.length === 0) { endDuel(true); return; }
-            } else if (op.mass > p.mass * EAT_RATIO) {
-              pieces.splice(pi, 1);
-              if (pieces.length === 0) { endDuel(false); return; }
-            }
-          }
-        }
-      }
-    }
-    if (splitCooldown > 0) splitCooldown = Math.max(0, splitCooldown - dt);
-    const tm = totalMass();
-    if (tm > maxMass) maxMass = tm;
-    document.getElementById('hud-mass-num').textContent = Math.round(tm) + 'kg';
-    if (isDuel) sendMyGameData();
-  }
-
-  function endDuel(won) {
-    running = false;
-    if (opponentRef) opponentRef.off();
-    if (won) {
-      profile.tokens = (profile.tokens || 0) + 100;
-      profile.wins = (profile.wins || 0) + 1;
-      saveField('tokens', profile.tokens);
-      saveField('wins', profile.wins);
-      notify('🎉 برنده شدی! +۱۰۰ توکن');
-    } else {
-      notify('💔 شکست خوردی!');
-    }
-    document.getElementById('go-mass').textContent = Math.round(maxMass);
-    document.getElementById('go-tokens').textContent = won ? '+۱۰۰ توکن 🏆' : '۰ توکن 😔';
-    document.getElementById('go-best').textContent = profile.bestMass;
-    document.getElementById('bottomnav').style.display = 'flex';
-    showScreen('screen-over');
-    renderAll();
-  }
-
-  function endGame() {
-    running = false;
-    if (isDuel) {
-      if (opponentRef) opponentRef.off();
-      endDuel(false);
+  // ====== تابع ذخیره‌سازی: فقط فیلد مشخص‌شده را آپدیت می‌کند، نه کل پروفایل را ======
+  function saveField(path, value){
+    if (!db || !userRef) {
+      // اگر دیتابیس وصل نیست، فقط در حافظه محلی ذخیره کن
+      console.log('Local-only save:', path, value);
       return;
     }
-    const mass = Math.round(maxMass);
-    const tokens = Math.floor(mass / 5);
-    profile.tokens = (profile.tokens || 0) + tokens;
-    profile.xp = (profile.xp || 0) + Math.floor(mass / 2);
-    profile.games = (profile.games || 0) + 1;
-    profile.bestMass = Math.max(profile.bestMass || 0, mass);
-    saveField('tokens', profile.tokens);
-    saveField('xp', profile.xp);
-    saveField('games', profile.games);
-    saveField('bestMass', profile.bestMass);
-    document.getElementById('go-mass').textContent = mass;
-    document.getElementById('go-tokens').textContent = '+' + tokens + ' توکن';
-    document.getElementById('go-best').textContent = profile.bestMass;
-    document.getElementById('bottomnav').style.display = 'flex';
-    showScreen('screen-over');
-    renderAll();
-  }
-
-  document.getElementById('back-btn').addEventListener('click', () => {
-    if (!running) return;
-    running = false;
-    if (isDuel && opponentRef) opponentRef.off();
-    document.getElementById('bottomnav').style.display = 'flex';
-    showScreen('screen-home');
-    notify('بازی متوقف شد');
-  });
-  document.getElementById('retry-btn').addEventListener('click', () => { isDuel = false; startGame(); });
-  document.getElementById('menu-btn').addEventListener('click', () => { isDuel = false; showScreen('screen-home'); });
-
-  function draw() {
-    const tm = totalMass();
-    const avgR = radius(tm / pieces.length);
-    const targetScale = Math.max(0.4, Math.min(1.2, 1.1 - avgR / 250));
-    camScale += (targetScale - camScale) * 0.05;
-    let cx = 0, cy = 0, w = 0;
-    pieces.forEach(p => { cx += p.x * p.mass; cy += p.y * p.mass; w += p.mass; });
-    cx /= w; cy /= w;
-    if (smoothCamX === null) { smoothCamX = cx; smoothCamY = cy; }
-    smoothCamX += (cx - smoothCamX) * 0.1;
-    smoothCamY += (cy - smoothCamY) * 0.1;
-
-    ctx.fillStyle = '#04070c';
-    ctx.fillRect(0, 0, innerWidth, innerHeight);
-
-    const anchor = { x: innerWidth/2 + (WORLD/2 - smoothCamX) * camScale, y: innerHeight/2 + (WORLD/2 - smoothCamY) * camScale };
-    const step = 80 * camScale;
-    let maxR2 = 0;
-    [[0,0],[innerWidth,0],[0,innerHeight],[innerWidth,innerHeight]].forEach(([x,y]) => {
-      maxR2 = Math.max(maxR2, Math.hypot(x - anchor.x, y - anchor.y));
+    userRef.child(path).set(value).catch(e => {
+      console.error('save error', path, e);
     });
-    ctx.strokeStyle = 'rgba(255,255,255,0.05)';
-    ctx.lineWidth = 1;
-    for (let r = step; r < maxR2 + step; r += step) {
-      ctx.beginPath(); ctx.arc(anchor.x, anchor.y, r, 0, Math.PI * 2); ctx.stroke();
-    }
-    for (let i = 0; i < 16; i++) {
-      const a = (i / 16) * Math.PI * 2;
-      ctx.beginPath(); ctx.moveTo(anchor.x, anchor.y);
-      ctx.lineTo(anchor.x + Math.cos(a) * (maxR2 + step), anchor.y + Math.sin(a) * (maxR2 + step));
-      ctx.stroke();
-    }
-
-    for (const p of pellets) {
-      const s = { x: innerWidth/2 + (p.x - smoothCamX) * camScale, y: innerHeight/2 + (p.y - smoothCamY) * camScale };
-      if (s.x < -20 || s.x > innerWidth + 20 || s.y < -20 || s.y > innerHeight + 20) continue;
-      ctx.fillStyle = p.color;
-      ctx.beginPath(); ctx.arc(s.x, s.y, p.r * camScale, 0, Math.PI * 2);
-      ctx.fill();
-    }
-
-    function drawCircle(e, color, isPlayer, name) {
-      const s = { x: innerWidth/2 + (e.x - smoothCamX) * camScale, y: innerHeight/2 + (e.y - smoothCamY) * camScale };
-      const rr = e.r * camScale;
-      const grad = ctx.createRadialGradient(s.x - rr * 0.3, s.y - rr * 0.3, rr * 0.1, s.x, s.y, rr);
-      grad.addColorStop(0, isPlayer ? '#8fd0ff' : '#ffffff55');
-      grad.addColorStop(1, color);
-      ctx.fillStyle = grad;
-      ctx.beginPath(); ctx.arc(s.x, s.y, rr, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.strokeStyle = 'rgba(255,255,255,0.2)';
-      ctx.lineWidth = 1.5;
-      ctx.stroke();
-      if (name) {
-        ctx.fillStyle = '#fff';
-        ctx.font = `${Math.max(10, 11 * camScale)}px sans-serif`;
-        ctx.textAlign = 'center';
-        ctx.shadowColor = 'rgba(0,0,0,0.8)';
-        ctx.shadowBlur = 4;
-        ctx.fillText(name, s.x, s.y + 4);
-        ctx.shadowBlur = 0;
-      }
-    }
-
-    for (const bot of bots) drawCircle(bot, bot.color, false, bot.name);
-    const skin = SKIN_DB[profile.equippedSkin] || SKIN_DB.default;
-    for (const p of pieces) drawCircle(p, skin.color, true, null);
-    if (isDuel && opponentPieces.length > 0) {
-      for (const p of opponentPieces) drawCircle(p, '#ff4444', false, duelOpponent ? duelOpponent.name : 'حریف');
-    }
-
-    let avgX = 0, minY = Infinity;
-    for (const p of pieces) {
-      const s = { x: innerWidth/2 + (p.x - smoothCamX) * camScale, y: innerHeight/2 + (p.y - smoothCamY) * camScale };
-      avgX += s.x;
-      minY = Math.min(minY, s.y - p.r * camScale);
-    }
-    avgX /= pieces.length;
-    ctx.fillStyle = '#fff';
-    ctx.font = '700 14px sans-serif';
-    ctx.textAlign = 'center';
-    ctx.shadowColor = 'rgba(0,0,0,0.8)';
-    ctx.shadowBlur = 4;
-    ctx.fillText(profile.name || 'بازیکن', avgX, minY - 10);
-    ctx.shadowBlur = 0;
-
-    const canSplit = pieces.some(p => p.mass >= MIN_SPLIT);
-    document.getElementById('split-btn').disabled = !canSplit || pieces.length >= MAX_PIECES || splitCooldown > 0;
-    document.getElementById('split-btn').textContent = splitCooldown > 0 ? Math.ceil(splitCooldown) + 's' : 'تقسیم';
   }
 
-  function loop(t) {
-    if (!running) return;
-    try {
-      if (!lastT) lastT = t;
-      const dt = Math.min(0.05, (t - lastT) / 1000);
-      lastT = t;
-      update(dt);
-      draw();
-    } catch (e) {
-      console.error('Game error', e);
-      running = false;
-      document.getElementById('bottomnav').style.display = 'flex';
-      showScreen('screen-home');
-      notify('خطا در بازی!');
+  // ====== تابع ذخیره‌سازی چندگانه (برای عملیات اتمی) ======
+  function saveMultiple(updates){
+    if (!db || !userRef) {
+      console.log('Local-only multi-save:', updates);
+      return Promise.resolve();
     }
-    requestAnimationFrame(loop);
+    return userRef.update(updates).catch(e => {
+      console.error('multi-save error', e);
+      throw e;
+    });
   }
 
-  // ===== MODE PICKER =====
+  /* ---------- screens / nav ---------- */
+  const screens = {};
+  document.querySelectorAll('.screen').forEach(s => screens[s.id]=s);
+  function showScreen(id){ Object.values(screens).forEach(s=>s.classList.add('hidden')); screens[id].classList.remove('hidden'); }
+  const bottomnav = document.getElementById('bottomnav');
+  document.querySelectorAll('.nav-btn').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      showScreen('screen-'+btn.dataset.tab);
+      if (btn.dataset.tab==='items') renderItems();
+      if (btn.dataset.tab==='perks') renderPerks();
+    });
+  });
+  document.getElementById('inv-close-btn').addEventListener('click', ()=>{
+    document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+    document.querySelector('.nav-btn[data-tab="home"]').classList.add('active');
+    showScreen('screen-home');
+  });
+  document.getElementById('inv-add-btn').addEventListener('click', ()=>notify('این بخش به زودی اضافه می‌شه.'));
+  document.getElementById('inv-settings-btn').addEventListener('click', ()=>{
+    document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+    document.querySelector('.nav-btn[data-tab="perks"]').classList.add('active');
+    showScreen('screen-perks'); renderPerks();
+  });
+
+  function renderAll(){
+    document.getElementById('home-tokens').textContent = profile.tokens || 0;
+    document.getElementById('home-rank').textContent = Math.max(1, Math.floor((profile.bestMass||0)/50)+1);
+    renderItems();
+    renderPerks();
+  }
+
+  /* ---------- game mode picker ---------- */
   const MODES = [
-    { id: 'ai', emoji: '🤖', name: 'هوش مصنوعی', sub: '۱۰ ربات حریف' },
-    { id: 'classic', emoji: '🌍', name: 'کلاسیک', sub: 'به زودی' },
+    { id:'ai', emoji:'🤖', name:'هوش مصنوعی', sub:'۱۰ ربات حریف', enabled:true },
+    { id:'classic', emoji:'🌍', name:'کلاسیک', sub:'به زودی', enabled:false },
   ];
   let modeIdx = 0;
-  function renderMode() {
+  function renderMode(){
     const m = MODES[modeIdx];
     document.getElementById('mode-emoji').textContent = m.emoji;
     document.getElementById('mode-name').textContent = m.name;
     document.getElementById('mode-sub').textContent = m.sub;
-    document.getElementById('play-btn').disabled = m.id === 'classic';
+    document.getElementById('mode-card').classList.toggle('disabled', !m.enabled);
+    document.getElementById('play-btn').disabled = !m.enabled;
   }
-  document.getElementById('mode-prev').addEventListener('click', () => { modeIdx = (modeIdx - 1 + MODES.length) % MODES.length; renderMode(); });
-  document.getElementById('mode-next').addEventListener('click', () => { modeIdx = (modeIdx + 1) % MODES.length; renderMode(); });
+  document.getElementById('mode-prev').addEventListener('click', ()=>{ modeIdx=(modeIdx-1+MODES.length)%MODES.length; renderMode(); });
+  document.getElementById('mode-next').addEventListener('click', ()=>{ modeIdx=(modeIdx+1)%MODES.length; renderMode(); });
   renderMode();
 
-  document.getElementById('play-btn').addEventListener('click', () => { isDuel = false; startGame(); });
+  document.getElementById('play-btn').addEventListener('click', ()=>{
+    if (!MODES[modeIdx].enabled) return;
+    if (!profileSynced) {
+      notify('در حال اتصال به سرور... بازی با تنظیمات پیش‌فرض شروع می‌شه.');
+    }
+    startGame();
+  });
 
-  // ===== START =====
+  /* ---------- items rendering ---------- */
+  function notify(msg){ if (tg && tg.showAlert) tg.showAlert(msg); else alert(msg); }
+
+  /* ----- accordion open/close (skins + lootboxes cards) ----- */
+  function wireAccordion(headId, bodyId, chevronId){
+    document.getElementById(headId).addEventListener('click', ()=>{
+      const body = document.getElementById(bodyId);
+      const chev = document.getElementById(chevronId);
+      const opening = !body.classList.contains('open');
+      body.classList.toggle('open', opening);
+      chev.classList.toggle('open', opening);
+    });
+  }
+  wireAccordion('skins-acc-head','skins-acc-body','skins-chevron');
+  wireAccordion('lootbox-acc-head','lootbox-acc-body','lootbox-chevron');
+
+  function renderSkinGrid(){
+    const grid = document.getElementById('skin-grid');
+    grid.innerHTML = '';
+    Object.keys(SKIN_DB).forEach(id=>{
+      const skin = SKIN_DB[id];
+      const owned = ownsSkin(id);
+      const copies = skinCopies(id);
+      const tag = id==='dead_star' ? 'starter' : skin.rarity;
+      const card = document.createElement('div');
+      card.className = 'skin-card' + (profile.equippedSkin===id ? ' equipped':'');
+      card.innerHTML = `
+        <div class="skin-avatar" style="background:radial-gradient(circle at 35% 30%, #fff6, ${skin.color})"></div>
+        ${copies>1 ? '<div class="skin-owned-badge">×'+copies+'</div>' : ''}
+        <div class="skin-name">${skin.name}</div>
+        <div class="skin-tag ${TAG_CLASS[tag]||'tag-common'}">${TAG_LABEL[tag]||tag}</div>
+        ${!owned ? '<div class="lock-overlay">🔒</div>' : ''}
+      `;
+      if (owned) card.addEventListener('click', ()=>openSkinModal(id));
+      grid.appendChild(card);
+    });
+
+    const ownedIds = Object.keys(SKIN_DB).filter(ownsSkin);
+    document.getElementById('skins-count').textContent = ownedIds.length + ' items';
+    const preview = document.getElementById('skins-preview');
+    preview.innerHTML = '';
+    ownedIds.slice(-4).forEach(id=>{
+      const dot = document.createElement('div');
+      dot.className = 'acc-preview-avatar';
+      dot.style.background = `radial-gradient(circle at 35% 30%, #fff6, ${SKIN_DB[id].color})`;
+      preview.appendChild(dot);
+    });
+  }
+
+  function renderOwnedLootboxes(){
+    const list = document.getElementById('lootbox-owned-list');
+    const boxes = Object.entries(profile.inventory.lootboxes||{});
+    document.getElementById('lootbox-count').textContent = boxes.length + ' items';
+    const preview = document.getElementById('lootbox-preview');
+    preview.innerHTML = '';
+    if (boxes.length) {
+      const dot = document.createElement('div');
+      dot.className = 'acc-preview-avatar';
+      dot.style.background = '#141a24'; dot.style.display='flex'; dot.style.alignItems='center';
+      dot.style.justifyContent='center'; dot.style.fontSize='22px'; dot.textContent='📦';
+      preview.appendChild(dot);
+    }
+    if (!boxes.length) { list.innerHTML = '<div class="empty-hint">لوت‌باکس بازنشده‌ای نداری.</div>'; return; }
+    list.innerHTML = '';
+    boxes.forEach(([key, box])=>{
+      const row = document.createElement('div');
+      row.className = 'lootbox-owned-row';
+      row.innerHTML = `
+        <div class="lootbox-icon">📦</div>
+        <div class="lootbox-owned-name">Newer</div>
+        <button class="lootbox-transfer-btn" data-key="${key}">انتقال</button>
+        <button class="lootbox-open-btn" data-key="${key}">باز کردن</button>
+      `;
+      row.querySelector('.lootbox-open-btn').addEventListener('click', ()=>openLootbox(key));
+      row.querySelector('.lootbox-transfer-btn').addEventListener('click', ()=>openTransferModal({ kind:'lootbox', key, box, label:'لوت‌باکس Newer (بازنشده)' }));
+      list.appendChild(row);
+    });
+  }
+
+  /* ----- daily claim ----- */
+  const DAILY_REWARDS = [10,15,20,30,40,60,100];
+  function todayKey(){ const d = new Date(); return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate(); }
+  function daysBetween(a,b){ return Math.round((b-a)/86400000); }
+  function renderDailyClaim(){
+    const dc = profile.dailyClaim || { streak:0, lastClaimDay:null };
+    const today = todayKey();
+    const claimedToday = dc.lastClaimDay === today;
+    const btn = document.getElementById('daily-claim-btn');
+    if (claimedToday) {
+      btn.textContent = 'دریافت شد'; btn.disabled = true; btn.classList.add('daily-claimed-badge');
+    } else {
+      btn.textContent = 'دریافت'; btn.disabled = false; btn.classList.remove('daily-claimed-badge');
+    }
+    const row = document.getElementById('daily-row');
+    row.innerHTML = '';
+    for (let i=1;i<=7;i++){
+      const day = document.createElement('div');
+      const isDone = i <= dc.streak && (i < dc.streak || claimedToday);
+      const isToday = claimedToday ? i === dc.streak : i === dc.streak+1;
+      day.className = 'daily-day' + (isDone?' done':'') + (isToday?' today':'');
+      day.innerHTML = `${isDone?'<span class="daily-check">✓</span>':''}<span>🎁</span><span class="daily-reward">${DAILY_REWARDS[i-1]}</span>`;
+      row.appendChild(day);
+    }
+  }
+  document.getElementById('daily-claim-btn').addEventListener('click', ()=>{
+    const dc = profile.dailyClaim || { streak:0, lastClaimDay:null };
+    const today = todayKey();
+    if (dc.lastClaimDay === today) return;
+    let streak = dc.streak || 0;
+    if (dc.lastClaimDay) {
+      const gap = daysBetween(new Date(dc.lastClaimDay), new Date(today));
+      streak = gap === 1 ? streak : 0;
+    }
+    streak = (streak % 7) + 1;
+    const reward = DAILY_REWARDS[streak-1];
+    profile.tokens = (profile.tokens||0) + reward;
+    profile.dailyClaim = { streak, lastClaimDay: today };
+    saveField('tokens', profile.tokens);
+    saveField('dailyClaim', profile.dailyClaim);
+    notify('+'+reward+' توکن گرفتی 🪙');
+    renderDailyClaim();
+    renderInvSummary();
+    document.getElementById('home-tokens').textContent = profile.tokens;
+  });
+
+  function renderInvSummary(){
+    document.getElementById('inv-tokens').textContent = profile.tokens||0;
+    document.getElementById('inv-bestmass').textContent = profile.bestMass||0;
+    const equipped = SKIN_DB[profile.equippedSkin]||SKIN_DB.dead_star;
+    document.getElementById('inv-avatar-ring').style.background = `radial-gradient(circle at 35% 30%, #fff6, ${equipped.color})`;
+  }
+
+  function renderItems(){
+    renderInvSummary();
+    renderDailyClaim();
+    renderSkinGrid();
+    renderOwnedLootboxes();
+    if (db) {
+      db.ref('lootboxSupply/newer').once('value').then(snap=>{
+        const d = snap.val() || { claimed:0, max:1000 };
+        document.getElementById('lootbox-supply').textContent = `${d.claimed}/${d.max} برداشته شده`;
+        document.getElementById('lootbox-buy-btn').disabled = d.claimed >= d.max;
+      }).catch(e=>console.error('lootbox supply read failed', e));
+    } else {
+      document.getElementById('lootbox-supply').textContent = 'اتصال به سرور برقرار نیست';
+      document.getElementById('lootbox-buy-btn').disabled = true;
+    }
+  }
+
+  /* ---------- skin detail modal ---------- */
+  const skinModal = document.getElementById('skin-modal');
+  function openSkinModal(id){
+    const skin = SKIN_DB[id];
+    document.getElementById('skin-modal-title').textContent = skin.name;
+    const equipBtn = document.getElementById('skin-modal-equip');
+    equipBtn.disabled = profile.equippedSkin===id;
+    equipBtn.textContent = profile.equippedSkin===id ? 'در حال استفاده' : 'استفاده از این اسکین';
+    equipBtn.onclick = ()=>{
+      profile.equippedSkin = id;
+      saveField('equippedSkin', id);
+      closeSkinModal();
+      renderItems();
+    };
+    const list = document.getElementById('skin-modal-instances');
+    if (id==='dead_star') {
+      list.innerHTML = '<div class="empty-hint">اسکین شروع — همه از اول دارنش، شماره‌ای نداره.</div>';
+    } else {
+      const instances = profile.inventory.skins[id] || {};
+      const keys = Object.keys(instances);
+      if (!keys.length) { list.innerHTML = '<div class="empty-hint">نسخه‌ای نداری.</div>'; }
+      else {
+        list.innerHTML = '';
+        keys.forEach(key=>{
+          const serial = instances[key];
+          const row = document.createElement('div');
+          row.className = 'skin-instance-row';
+          row.innerHTML = `<span class="instance-serial">تگ #${String(serial).padStart(4,'0')}</span>
+            <button class="lootbox-transfer-btn">انتقال</button>`;
+          row.querySelector('button').addEventListener('click', ()=>openTransferModal({
+            kind:'skin', skinId:id, key, serial, label: skin.name+' — تگ #'+String(serial).padStart(4,'0')
+          }));
+          list.appendChild(row);
+        });
+      }
+    }
+    skinModal.classList.remove('hidden');
+  }
+  function closeSkinModal(){ skinModal.classList.add('hidden'); }
+  document.getElementById('skin-modal-close').addEventListener('click', closeSkinModal);
+
+  /* ---------- transfer modal ---------- */
+  const transferModal = document.getElementById('transfer-modal');
+  let pendingTransfer = null;
+  function openTransferModal(item){
+    pendingTransfer = item;
+    document.getElementById('transfer-item-label').textContent = item.label;
+    document.getElementById('transfer-target-input').value = '';
+    transferModal.classList.remove('hidden');
+  }
+  function closeTransferModal(){ transferModal.classList.add('hidden'); pendingTransfer = null; }
+  document.getElementById('transfer-modal-close').addEventListener('click', closeTransferModal);
+
+  document.getElementById('transfer-confirm-btn').addEventListener('click', ()=>{
+    if (!pendingTransfer) return;
+    if (!db) { notify('اتصال به سرور برقرار نیست.'); return; }
+    const raw = document.getElementById('transfer-target-input').value.trim();
+    const digits = raw.replace(/[^0-9]/g,'');
+    if (!digits) { notify('آیدی عددی معتبر وارد کن.'); return; }
+    const targetUid = 'tg_' + digits;
+    if (targetUid === uid) { notify('نمی‌تونی برای خودت انتقال بدی.'); return; }
+
+    if (pendingTransfer.kind === 'skin') {
+      const { skinId, key, serial } = pendingTransfer;
+      const updates = {};
+      updates['inventory/skins/'+skinId+'/'+key] = null;
+      userRef.child('inventory/skins/'+skinId).push(serial)
+        .then(()=> userRef.update(updates))
+        .then(()=>{
+          delete profile.inventory.skins[skinId][key];
+          notify('اسکین با تگ #'+String(serial).padStart(4,'0')+' منتقل شد.');
+          closeTransferModal(); closeSkinModal(); renderItems();
+        })
+        .catch(e=>{ console.error('skin transfer failed', e); notify('انتقال ناموفق بود، دوباره امتحان کن.'); });
+    } else if (pendingTransfer.kind === 'lootbox') {
+      const { key, box } = pendingTransfer;
+      const updates = {};
+      updates['inventory/lootboxes/'+key] = null;
+      userRef.child('inventory/lootboxes').push(box)
+        .then(()=> userRef.update(updates))
+        .then(()=>{
+          delete profile.inventory.lootboxes[key];
+          notify('لوت‌باکس منتقل شد.');
+          closeTransferModal(); renderItems();
+        })
+        .catch(e=>{ console.error('lootbox transfer failed', e); notify('انتقال ناموفق بود، دوباره امتحان کن.'); });
+    }
+  });
+
+  const LOOTBOX_PRICE = 50;
+
+  function pickRandomSkin(){
+    const roll = Math.random()*100;
+    let acc=0, chosenRarity='common';
+    for (const r of ['common','rare','epic','legend']){
+      acc += RARITY_WEIGHTS[r];
+      if (roll <= acc) { chosenRarity = r; break; }
+    }
+    const pool = LOOTBOX_POOL[chosenRarity];
+    const skinId = pool[Math.floor(Math.random()*pool.length)];
+    return { skinId, rarity: chosenRarity };
+  }
+
+  document.getElementById('lootbox-buy-btn').addEventListener('click', ()=>{
+    if (!db) { notify('اتصال به سرور برقرار نیست.'); return; }
+    if ((profile.tokens||0) < LOOTBOX_PRICE) { notify('توکن کافی نداری! به '+LOOTBOX_PRICE+' توکن نیاز داری.'); return; }
+
+    const supplyRef = db.ref('lootboxSupply/newer');
+    supplyRef.transaction(current=>{
+      current = current || { claimed:0, max:1000 };
+      if (current.claimed >= current.max) return;
+      current.claimed += 1;
+      return current;
+    }, (err, committed, snap)=>{
+      if (err) { notify('خطا در بررسی موجودی، دوباره امتحان کن.'); return; }
+      if (!committed) { notify('لوت‌باکس Newer تموم شده! 😔'); renderItems(); return; }
+
+      profile.tokens -= LOOTBOX_PRICE;
+      saveField('tokens', profile.tokens);
+      document.getElementById('home-tokens').textContent = profile.tokens;
+
+      const boxData = { type:'newer', acquiredAt: Date.now() };
+      const pushRef = userRef.child('inventory/lootboxes').push();
+      pushRef.set(boxData).then(()=>{
+        profile.inventory.lootboxes[pushRef.key] = boxData;
+        notify('لوت‌باکس Newer به اینونتوریت اضافه شد! برو بازش کن 📦');
+        renderItems();
+      }).catch(e=>{ console.error('lootbox push failed', e); notify('خطا در ذخیره‌سازی، دوباره امتحان کن.'); });
+    });
+  });
+
+  function openLootbox(key){
+    if (!db) { notify('اتصال به سرور برقرار نیست.'); return; }
+    const box = profile.inventory.lootboxes[key];
+    if (!box) return;
+
+    const { skinId, rarity } = pickRandomSkin();
+    const instRef = userRef.child('inventory/skins/'+skinId).push();
+
+    function commitGrant(serial){
+      const safeSerial = (serial===null || serial===undefined) ? Date.now() : serial;
+      const updates = {};
+      updates['inventory/lootboxes/'+key] = null;
+      updates['inventory/skins/'+skinId+'/'+instRef.key] = safeSerial;
+      userRef.update(updates).then(()=>{
+        delete profile.inventory.lootboxes[key];
+        profile.inventory.skins[skinId] = profile.inventory.skins[skinId] || {};
+        profile.inventory.skins[skinId][instRef.key] = safeSerial;
+        notify('اسکین «'+SKIN_DB[skinId].name+'» ('+TAG_LABEL[rarity]+') — تگ #'+String(safeSerial).padStart(4,'0')+' گرفتی 🎉');
+        renderItems();
+      }).catch(e=>{ console.error('lootbox open failed', e); notify('خطا در باز کردن، دوباره امتحان کن.'); });
+    }
+
+    db.ref('skinClaims/'+skinId).transaction(current => (current||0) + 1, (err, committed, snap) => {
+      const serial = (!err && committed && snap && snap.exists()) ? snap.val() : null;
+      commitGrant(serial);
+    });
+  }
+
+  /* ---------- perks rendering ---------- */
+  const MAX_PERK_LEVEL = 50;
+  function perkCost(nextLevel){ return Math.round(50 * Math.pow(1.3, nextLevel-1)); }
+
+  function renderPerks(){
+    const sLvl = profile.perks.splitCooldownLevel || 0;
+    const spLvl = profile.perks.speedLevel || 0;
+    document.getElementById('perk-split-level').textContent = `لول ${sLvl}/${MAX_PERK_LEVEL}`;
+    document.getElementById('perk-split-bar').style.width = (sLvl/MAX_PERK_LEVEL*100)+'%';
+    document.getElementById('perk-speed-level').textContent = `لول ${spLvl}/${MAX_PERK_LEVEL}`;
+    document.getElementById('perk-speed-bar').style.width = (spLvl/MAX_PERK_LEVEL*100)+'%';
+
+    const splitMaxed = sLvl>=MAX_PERK_LEVEL, speedMaxed = spLvl>=MAX_PERK_LEVEL;
+    const sCost = splitMaxed?0:perkCost(sLvl+1), spCost = speedMaxed?0:perkCost(spLvl+1);
+    document.getElementById('perk-split-cost').textContent = splitMaxed?'حداکثر':'هزینه: '+sCost+' توکن';
+    document.getElementById('perk-speed-cost').textContent = speedMaxed?'حداکثر':'هزینه: '+spCost+' توکن';
+    document.getElementById('perk-split-btn').disabled = splitMaxed || (profile.tokens||0) < sCost;
+    document.getElementById('perk-speed-btn').disabled = speedMaxed || (profile.tokens||0) < spCost;
+  }
+
+  function tryUpgrade(kind){
+    const key = kind==='split' ? 'splitCooldownLevel' : 'speedLevel';
+    const lvl = profile.perks[key] || 0;
+    if (lvl >= MAX_PERK_LEVEL) return;
+    const cost = perkCost(lvl+1);
+    if ((profile.tokens||0) < cost) return;
+    profile.tokens -= cost;
+    profile.perks[key] = lvl+1;
+    saveField('tokens', profile.tokens);
+    saveField('perks/'+key, profile.perks[key]);
+    document.getElementById('home-tokens').textContent = profile.tokens;
+    renderPerks();
+  }
+  document.getElementById('perk-split-btn').addEventListener('click', ()=>tryUpgrade('split'));
+  document.getElementById('perk-speed-btn').addEventListener('click', ()=>tryUpgrade('speed'));
+
+  /* ================= GAME ENGINE ================= */
+  const canvas = document.getElementById('board');
+  const ctx = canvas.getContext('2d');
+  function fitCanvas(){ canvas.width = innerWidth*devicePixelRatio; canvas.height = innerHeight*devicePixelRatio;
+    canvas.style.width = innerWidth+'px'; canvas.style.height = innerHeight+'px';
+    ctx.setTransform(devicePixelRatio,0,0,devicePixelRatio,0,0); }
+  window.addEventListener('resize', fitCanvas);
+
+  const WORLD = 3000, PELLET_COUNT = 220, BOT_COUNT = 10;
+  const BOT_COLORS = ['#ff5c5c','#ffd23d','#7ee787','#ff9d3d','#a86fff','#3dd6ff','#ff5cf0','#ff8080','#80ffcf','#c48bff'];
+  const MIN_MASS_TO_SPLIT = 32;
+  const MAX_PIECES = 16;
+  const EAT_MASS_RATIO = 1.25;
+  const EAT_OVERLAP = 0.7;
+  const BASE_SPLIT_COOLDOWN = 5;
+
+  let pieces, bots, pellets, camScale, running, lastT, splitCooldownLeft, maxMassReached;
+  let smoothCamX = null, smoothCamY = null;
+
+  function radiusFromMass(m){ return 8 + Math.sqrt(m)*3.1; }
+  function baseSpeedFromRadius(r){ return Math.max(46, 320/(1+r/34)); }
+  function speedMultiplier(){ return 1 + (profile.perks.speedLevel||0)*0.02; }
+  function splitCooldownMax(){ return Math.max(0, BASE_SPLIT_COOLDOWN - (profile.perks.splitCooldownLevel||0)*0.1); }
+  function mergeTimeFor(mass){ return 12 + Math.min(40, mass*0.25); }
+  function splitLaunchSpeed(dispR){ return 260 + dispR*3.2; }
+
+  function randPos(){ return { x:40+Math.random()*(WORLD-80), y:40+Math.random()*(WORLD-80) }; }
+  function makePellet(){ const p=randPos(); return {x:p.x,y:p.y,r:5+Math.random()*3,color:`hsl(${Math.floor(Math.random()*360)},80%,60%)`}; }
+  function makeBot(idx, awayFrom){
+    let pos; do { pos = randPos(); } while (awayFrom && Math.hypot(pos.x-awayFrom.x,pos.y-awayFrom.y) < 500);
+    return { name:'AI '+idx, x:pos.x, y:pos.y, mass:14+Math.random()*14, color:BOT_COLORS[idx%BOT_COLORS.length],
+      wanderDir:{x:0,y:0}, wanderT:0, dispR:12 };
+  }
+
+  function startGame(){
+    fitCanvas();
+    pieces = [ { x:WORLD/2, y:WORLD/2, mass:22, dispR:radiusFromMass(22), vx:0, vy:0, mergeAt:0 } ];
+    bots = []; for (let i=1;i<=BOT_COUNT;i++) bots.push(makeBot(i, pieces[0]));
+    pellets = []; for (let i=0;i<PELLET_COUNT;i++) pellets.push(makePellet());
+    camScale = 1; running = true; lastT = null; splitCooldownLeft = 0; maxMassReached = 22;
+    smoothCamX = null; smoothCamY = null;
+    showScreen('screen-game'); bottomnav.style.display='none';
+    requestAnimationFrame(loop);
+  }
+
+  function totalMass(){ return pieces.reduce((s,p)=>s+p.mass, 0); }
+
+  /* controls */
+  let joy = { active:false, originX:0, originY:0, dx:0, dy:0 };
+  const joyBase = document.getElementById('joystick-base'), joyKnob = document.getElementById('joystick-knob');
+  const MAXJOY = 55;
+  function joyStart(x,y){ joy.active=true; joy.originX=x; joy.originY=y; joy.dx=0; joy.dy=0;
+    joyBase.style.display='block'; joyKnob.style.display='block';
+    joyBase.style.left=(x-60)+'px'; joyBase.style.top=(y-60)+'px';
+    joyKnob.style.left=(x-26)+'px'; joyKnob.style.top=(y-26)+'px'; }
+  function joyMove(x,y){ if(!joy.active) return; let dx=x-joy.originX, dy=y-joy.originY; const d=Math.hypot(dx,dy);
+    if (d>MAXJOY){ dx=dx/d*MAXJOY; dy=dy/d*MAXJOY; } joy.dx=dx/MAXJOY; joy.dy=dy/MAXJOY;
+    joyKnob.style.left=(joy.originX+dx-26)+'px'; joyKnob.style.top=(joy.originY+dy-26)+'px'; }
+  function joyEnd(){ joy.active=false; joy.dx=0; joy.dy=0; joyBase.style.display='none'; joyKnob.style.display='none'; }
+  canvas.addEventListener('touchstart', e=>{ const t=e.touches[0]; joyStart(t.clientX,t.clientY); }, {passive:true});
+  canvas.addEventListener('touchmove', e=>{ const t=e.touches[0]; joyMove(t.clientX,t.clientY); }, {passive:true});
+  canvas.addEventListener('touchend', joyEnd);
+  canvas.addEventListener('mousedown', e=>joyStart(e.clientX,e.clientY));
+  window.addEventListener('mousemove', e=>{ if(joy.active) joyMove(e.clientX,e.clientY); });
+  window.addEventListener('mouseup', joyEnd);
+
+  const keys = {};
+  window.addEventListener('keydown', e=>{ keys[e.key.toLowerCase()]=true; if (e.key===' ') { e.preventDefault(); doSplit(); } });
+  window.addEventListener('keyup', e=>keys[e.key.toLowerCase()]=false);
+  function keyboardDir(){ let x=0,y=0;
+    if (keys['arrowup']||keys['w']) y-=1; if (keys['arrowdown']||keys['s']) y+=1;
+    if (keys['arrowleft']||keys['a']) x-=1; if (keys['arrowright']||keys['d']) x+=1;
+    const d=Math.hypot(x,y); return d>0?{x:x/d,y:y/d}:{x:0,y:0}; }
+  function currentDir(){ return joy.active ? {x:joy.dx,y:joy.dy} : keyboardDir(); }
+  let lastDir = {x:0, y:-1};
+  function facingDir(){
+    const d = currentDir();
+    if (d.x||d.y) lastDir = d;
+    return (d.x||d.y) ? d : lastDir;
+  }
+
+  const splitBtn = document.getElementById('split-btn');
+  let splitTouchLock = false;
+  splitBtn.addEventListener('click', ()=>{
+    if (splitTouchLock) { splitTouchLock = false; return; }
+    doSplit();
+  });
+  splitBtn.addEventListener('touchstart', e=>{
+    e.preventDefault(); e.stopPropagation();
+    splitTouchLock = true;
+    doSplit();
+  }, {passive:false});
+  splitBtn.addEventListener('touchend', e=>{ e.preventDefault(); e.stopPropagation(); }, {passive:false});
+  function doSplit(){
+    if (!running) return;
+    if (splitCooldownLeft > 0) return;
+    if (!pieces.some(p => p.mass >= MIN_MASS_TO_SPLIT)) return;
+    if (pieces.length >= MAX_PIECES) return;
+    const dir = facingDir();
+    const dx = dir.x||0, dy = dir.y|| -1;
+    const now = performance.now();
+    const snapshot = pieces.slice();
+    let splitAny = false;
+    for (const piece of snapshot) {
+      if (pieces.length >= MAX_PIECES) break;
+      if (piece.mass < MIN_MASS_TO_SPLIT) continue;
+      splitAny = true;
+      const half = piece.mass/2;
+      piece.mass = half; piece.dispR = radiusFromMass(half);
+      piece.mergeAt = now + mergeTimeFor(half)*1000;
+      const launchSpd = splitLaunchSpeed(piece.dispR);
+      const nx = piece.x + dx*piece.dispR*0.6, ny = piece.y + dy*piece.dispR*0.6;
+      pieces.push({
+        x:nx, y:ny, mass:half, dispR:radiusFromMass(half),
+        vx: dx*launchSpd, vy: dy*launchSpd,
+        mergeAt: now + mergeTimeFor(half)*1000
+      });
+      piece.vx = (piece.vx||0) - dx*launchSpd*0.15;
+      piece.vy = (piece.vy||0) - dy*launchSpd*0.15;
+    }
+    if (splitAny) splitCooldownLeft = splitCooldownMax();
+  }
+
+  function clampWorld(e){ e.x=Math.max(e.dispR||8, Math.min(WORLD-(e.dispR||8), e.x)); e.y=Math.max(e.dispR||8, Math.min(WORLD-(e.dispR||8), e.y)); }
+
+  function updatePieces(dt){
+    const dir = currentDir();
+    if (dir.x||dir.y) lastDir = dir;
+    const mult = speedMultiplier();
+    const FRICTION_BASE = 0.045;
+    const frictionFactor = Math.pow(FRICTION_BASE, dt);
+    for (const p of pieces) {
+      const spd = baseSpeedFromRadius(p.dispR) * mult;
+      const steerVx = dir.x*spd, steerVy = dir.y*spd;
+      p.vx = (p.vx||0) * frictionFactor;
+      p.vy = (p.vy||0) * frictionFactor;
+      p.x += (steerVx + p.vx)*dt;
+      p.y += (steerVy + p.vy)*dt;
+      clampWorld(p);
+      for (let i=pellets.length-1;i>=0;i--){
+        const pel = pellets[i]; const d = Math.hypot(pel.x-p.x, pel.y-p.y);
+        if (d < p.dispR) { p.mass += 1.1; pellets[i] = makePellet(); }
+      }
+    }
+
+    if (pieces.length > 1) {
+      let cx=0, cy=0, wsum=0;
+      pieces.forEach(p=>{ cx+=p.x*p.mass; cy+=p.y*p.mass; wsum+=p.mass; });
+      cx/=wsum; cy/=wsum;
+      const COHESION_SPEED = 260;
+      pieces.forEach(p=>{
+        const dx=cx-p.x, dy=cy-p.y; const d=Math.hypot(dx,dy);
+        if (d < 6) return;
+        const nx=dx/d, ny=dy/d;
+        const pull = Math.min(COHESION_SPEED*dt, d*0.7);
+        p.x += nx*pull; p.y += ny*pull;
+        clampWorld(p);
+      });
+    }
+    const now = performance.now();
+    const PULL_SPEED = 420;
+    for (let i=0;i<pieces.length;i++){
+      for (let j=i+1;j<pieces.length;j++){
+        const a=pieces[i], b=pieces[j];
+        if (now < a.mergeAt || now < b.mergeAt) continue;
+        const dx=b.x-a.x, dy=b.y-a.y; const d=Math.hypot(dx,dy) || 0.001;
+        if (d < 4) continue;
+        const nx=dx/d, ny=dy/d;
+        const pull = Math.min(PULL_SPEED*dt, d*0.8);
+        a.x += nx*pull; a.y += ny*pull;
+        b.x -= nx*pull; b.y -= ny*pull;
+        clampWorld(a); clampWorld(b);
+      }
+    }
+    for (let i=pieces.length-1;i>0;i--){
+      for (let j=i-1;j>=0;j--){
+        const a=pieces[i], b=pieces[j];
+        if (now < a.mergeAt || now < b.mergeAt) continue;
+        const d = Math.hypot(a.x-b.x,a.y-b.y);
+        if (d < Math.max(a.dispR,b.dispR)*0.5) {
+          b.mass += a.mass; b.dispR = radiusFromMass(b.mass);
+          pieces.splice(i,1); break;
+        }
+      }
+    }
+    for (let i=0;i<pieces.length;i++){
+      for (let j=i+1;j<pieces.length;j++){
+        const a=pieces[i], b=pieces[j];
+        if (now >= a.mergeAt && now >= b.mergeAt) continue;
+        const dx=b.x-a.x, dy=b.y-a.y; const d=Math.hypot(dx,dy) || 0.001;
+        const minDist = a.dispR+b.dispR;
+        if (d < minDist) {
+          const overlap = (minDist-d)/2;
+          const nx=dx/d, ny=dy/d;
+          a.x -= nx*overlap; a.y -= ny*overlap;
+          b.x += nx*overlap; b.y += ny*overlap;
+          clampWorld(a); clampWorld(b);
+        }
+      }
+    }
+    pieces.forEach(p=>{ p.dispR += (radiusFromMass(p.mass)-p.dispR)*Math.min(1,dt*6); });
+  }
+
+  function updateBot(bot, dt, allBots){
+    bot.dispR += (radiusFromMass(bot.mass)-bot.dispR)*Math.min(1,dt*6);
+    let nearestEnt=null, nd=Infinity;
+    for (const p of pieces){ const d=Math.hypot(p.x-bot.x,p.y-bot.y); if (d<nd){nd=d; nearestEnt=p;} }
+    for (const other of allBots){
+      if (other===bot) continue;
+      const d=Math.hypot(other.x-bot.x,other.y-bot.y);
+      if (d<nd){ nd=d; nearestEnt=other; }
+    }
+    let dir=null;
+    if (nearestEnt && nd<420) {
+      if (bot.mass > nearestEnt.mass*EAT_MASS_RATIO) dir={x:(nearestEnt.x-bot.x)/nd,y:(nearestEnt.y-bot.y)/nd};
+      else if (nearestEnt.mass > bot.mass*EAT_MASS_RATIO) dir={x:(bot.x-nearestEnt.x)/nd,y:(bot.y-nearestEnt.y)/nd};
+    }
+    if (!dir) {
+      let np=null, npd=Infinity;
+      for (const p of pellets){ const d=Math.hypot(p.x-bot.x,p.y-bot.y); if(d<260 && d<npd){npd=d; np=p;} }
+      if (np) dir={x:(np.x-bot.x)/npd,y:(np.y-bot.y)/npd};
+    }
+    if (!dir) {
+      bot.wanderT -= dt;
+      if (bot.wanderT<=0){ const a=Math.random()*Math.PI*2; bot.wanderDir={x:Math.cos(a),y:Math.sin(a)}; bot.wanderT=1.5+Math.random()*2; }
+      dir = bot.wanderDir;
+    }
+    const spd = baseSpeedFromRadius(bot.dispR);
+    bot.x += dir.x*spd*dt; bot.y += dir.y*spd*dt; clampWorld(bot);
+    for (let i=pellets.length-1;i>=0;i--){ const p=pellets[i]; const d=Math.hypot(p.x-bot.x,p.y-bot.y);
+      if (d<bot.dispR){ bot.mass+=1.1; pellets[i]=makePellet(); } }
+    if (bot.mass>60) bot.mass *= (1-0.0015*dt);
+  }
+
+  function checkCollisions(){
+    for (let bi=bots.length-1; bi>=0; bi--){
+      const bot = bots[bi];
+      for (let pi=pieces.length-1; pi>=0; pi--){
+        const piece = pieces[pi];
+        const d = Math.hypot(piece.x-bot.x, piece.y-bot.y);
+        const bigger = piece.mass >= bot.mass ? piece : bot;
+        const smaller = piece.mass >= bot.mass ? bot : piece;
+        const engulfed = d < bigger.dispR - smaller.dispR*EAT_OVERLAP;
+        if (!engulfed) continue;
+        if (piece.mass > bot.mass*EAT_MASS_RATIO) { piece.mass += bot.mass*0.6; bots[bi] = makeBot(bi+1, piece); break; }
+        else if (bot.mass > piece.mass*EAT_MASS_RATIO) { pieces.splice(pi,1); if (pieces.length===0) { endGame(); return; } }
+      }
+    }
+    for (let i=bots.length-1; i>=0; i--){
+      for (let j=i-1; j>=0; j--){
+        const a=bots[i], b=bots[j];
+        const d = Math.hypot(a.x-b.x, a.y-b.y);
+        const bigger = a.mass >= b.mass ? a : b;
+        const smaller = a.mass >= b.mass ? b : a;
+        const engulfed = d < bigger.dispR - smaller.dispR*EAT_OVERLAP;
+        if (!engulfed) continue;
+        if (a.mass > b.mass*EAT_MASS_RATIO) { a.mass += b.mass*0.6; bots[j] = makeBot(j+1, a); }
+        else if (b.mass > a.mass*EAT_MASS_RATIO) { b.mass += a.mass*0.6; bots[i] = makeBot(i+1, b); break; }
+      }
+    }
+  }
+
+  function endGame(){
+    running = false;
+    const finalMass = Math.round(maxMassReached);
+    const earnedTokens = Math.floor(finalMass/5);
+    profile.tokens = (profile.tokens||0) + earnedTokens;
+    profile.bestMass = Math.max(profile.bestMass||0, finalMass);
+    saveField('tokens', profile.tokens);
+    saveField('bestMass', profile.bestMass);
+    document.getElementById('go-mass').textContent = finalMass;
+    document.getElementById('go-tokens').textContent = '+'+earnedTokens+' توکن';
+    document.getElementById('go-best').textContent = profile.bestMass;
+    document.getElementById('home-tokens').textContent = profile.tokens;
+    document.getElementById('home-rank').textContent = Math.max(1, Math.floor(profile.bestMass/50)+1);
+    bottomnav.style.display='flex';
+    showScreen('screen-over');
+  }
+  document.getElementById('back-btn').addEventListener('click', ()=>{
+    if (!running) return;
+    running = false;
+    const finalMass = Math.round(maxMassReached);
+    const earnedTokens = Math.floor(finalMass/5);
+    profile.tokens = (profile.tokens||0) + earnedTokens;
+    profile.bestMass = Math.max(profile.bestMass||0, finalMass);
+    saveField('tokens', profile.tokens);
+    saveField('bestMass', profile.bestMass);
+    document.getElementById('home-tokens').textContent = profile.tokens;
+    document.getElementById('home-rank').textContent = Math.max(1, Math.floor(profile.bestMass/50)+1);
+    bottomnav.style.display='flex';
+    showScreen('screen-home');
+    notify('+'+earnedTokens+' توکن گرفتی 🪙');
+  });
+  document.getElementById('retry-btn').addEventListener('click', startGame);
+  document.getElementById('menu-btn').addEventListener('click', ()=>showScreen('screen-home'));
+
+  function worldToScreen(x,y,camX,camY,scale){ return { x: innerWidth/2+(x-camX)*scale, y: innerHeight/2+(y-camY)*scale }; }
+
+  function draw(){
+    const totalM = totalMass();
+    const avgR = radiusFromMass(totalM/pieces.length);
+    const targetScale = Math.max(0.5, Math.min(1.15, 1.2 - avgR/230));
+    camScale += (targetScale-camScale)*0.05;
+
+    let targetCamX=0, targetCamY=0, wsum=0;
+    pieces.forEach(p=>{ targetCamX+=p.x*p.mass; targetCamY+=p.y*p.mass; wsum+=p.mass; });
+    targetCamX/=wsum; targetCamY/=wsum;
+    if (smoothCamX===null) { smoothCamX=targetCamX; smoothCamY=targetCamY; }
+    smoothCamX += (targetCamX-smoothCamX)*0.12;
+    smoothCamY += (targetCamY-smoothCamY)*0.12;
+    const camX = smoothCamX, camY = smoothCamY;
+
+    ctx.fillStyle='#04070c'; ctx.fillRect(0,0,innerWidth,innerHeight);
+
+    const gridAnchor = worldToScreen(WORLD/2, WORLD/2, camX, camY, camScale);
+    const cx = gridAnchor.x, cy = gridAnchor.y;
+    const ringStep = 90*camScale;
+    let maxR = 0;
+    [[0,0],[innerWidth,0],[0,innerHeight],[innerWidth,innerHeight]].forEach(([x,y])=>{
+      maxR = Math.max(maxR, Math.hypot(x-cx,y-cy));
+    });
+    maxR += ringStep;
+    ctx.strokeStyle='rgba(255,255,255,0.06)'; ctx.lineWidth=1;
+    for (let r=ringStep; r<maxR; r+=ringStep){
+      ctx.beginPath(); ctx.arc(cx,cy,r,0,Math.PI*2); ctx.stroke();
+    }
+    const spokes = 16;
+    for (let i=0;i<spokes;i++){
+      const ang = (i/spokes)*Math.PI*2;
+      ctx.beginPath(); ctx.moveTo(cx,cy); ctx.lineTo(cx+Math.cos(ang)*maxR, cy+Math.sin(ang)*maxR); ctx.stroke();
+    }
+
+    pellets.forEach(p=>{
+      const s=worldToScreen(p.x,p.y,camX,camY,camScale);
+      if (s.x<-20||s.x>innerWidth+20||s.y<-20||s.y>innerHeight+20) return;
+      ctx.fillStyle=p.color; ctx.beginPath(); ctx.arc(s.x,s.y,p.r*camScale,0,Math.PI*2); ctx.fill();
+    });
+
+    function drawCircle(e, color, isPlayer, name){
+      const s=worldToScreen(e.x,e.y,camX,camY,camScale); const rr=e.dispR*camScale;
+      const grad = ctx.createRadialGradient(s.x-rr*0.3,s.y-rr*0.3,rr*0.1,s.x,s.y,rr);
+      grad.addColorStop(0, isPlayer?'#8fd0ff':'#ffffff55'); grad.addColorStop(1, color);
+      ctx.fillStyle=grad; ctx.beginPath(); ctx.arc(s.x,s.y,rr,0,Math.PI*2); ctx.fill();
+      ctx.strokeStyle='rgba(255,255,255,0.25)'; ctx.lineWidth=2; ctx.stroke();
+      if (name) { ctx.fillStyle='#fff'; ctx.font=`${Math.max(11,12*camScale)}px sans-serif`; ctx.textAlign='center'; ctx.fillText(name, s.x, s.y+4); }
+    }
+
+    bots.forEach(b=>drawCircle(b, b.color, false, b.name));
+    const equippedColor = (SKIN_DB[profile.equippedSkin]||SKIN_DB.dead_star).color;
+    pieces.forEach(p=>drawCircle(p, equippedColor, true, null));
+
+    let lowestY = -Infinity, avgX = 0;
+    pieces.forEach(p=>{ const s=worldToScreen(p.x,p.y,camX,camY,camScale); avgX+=s.x;
+      lowestY = Math.max(lowestY, s.y + p.dispR*camScale); });
+    avgX /= pieces.length;
+    ctx.fillStyle='#fff'; ctx.font='700 14px sans-serif'; ctx.textAlign='center';
+    ctx.shadowColor='rgba(0,0,0,.8)'; ctx.shadowBlur=4;
+    ctx.fillText(profile.name || displayName, avgX, lowestY + 22);
+    ctx.shadowBlur=0;
+
+    const canSplit = pieces.some(p => p.mass >= MIN_MASS_TO_SPLIT);
+    splitBtn.disabled = !canSplit || pieces.length>=MAX_PIECES || splitCooldownLeft>0;
+    splitBtn.textContent = splitCooldownLeft>0 ? Math.ceil(splitCooldownLeft)+'s' : 'تقسیم';
+  }
+
+  function loop(t){
+    if (!running) return;
+    try {
+      if (!lastT) lastT=t; const dt=Math.min(0.05,(t-lastT)/1000); lastT=t;
+      updatePieces(dt); bots.forEach(b=>updateBot(b,dt,bots)); checkCollisions();
+      if (!running) return;
+      if (splitCooldownLeft>0) splitCooldownLeft=Math.max(0,splitCooldownLeft-dt);
+      const tm = totalMass(); if (tm>maxMassReached) maxMassReached=tm;
+      document.getElementById('hud-mass').textContent = Math.round(tm)+'kg';
+      draw();
+    } catch (e) {
+      console.error('Game loop error, returning to menu', e);
+      running = false;
+      bottomnav.style.display='flex';
+      showScreen('screen-home');
+      notify('یه خطای غیرمنتظره پیش اومد، به منو برگشتی.');
+      return;
+    }
+    requestAnimationFrame(loop);
+  }
+
   showScreen('screen-home');
   loadProfile();
 })();
 </script>
 </body>
-    </html>
+ </html>
