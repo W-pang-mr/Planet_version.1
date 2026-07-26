@@ -43,13 +43,12 @@
   button.btn.secondary { background:#161f2b; box-shadow:none; border:1px solid #2c3d52; color:#cfe0f2; margin-top:10px; }
   button.btn:disabled { opacity:.4; }
 
-  /* ===== Inventory screen ===== */
+  /* Inventory */
   #screen-items { padding:0; align-items:stretch; }
   .inv-topbar { display:flex; align-items:center; justify-content:space-between; padding:14px 16px; width:100%; }
   .inv-close { display:flex; align-items:center; gap:6px; background:none; border:none; color:#fff; font-size:15px; font-weight:700; }
   .inv-title { font-size:17px; font-weight:800; }
   .inv-topbar-right { display:flex; align-items:center; gap:14px; color:#fff; font-size:18px; }
-
   .inv-summary { display:flex; align-items:center; justify-content:space-between; width:100%; max-width:460px;
     margin:6px auto 18px; padding:0 20px; }
   .inv-coin-pill { display:flex; align-items:center; gap:8px; background:#12161f; border:1px solid #24303f;
@@ -61,7 +60,6 @@
   .inv-icon-btn { width:46px; height:46px; border-radius:50%; background:#12161f; border:1px solid #24303f;
     display:flex; align-items:center; justify-content:center; font-size:19px; color:#cfe0f2; }
   .inv-icon-group { display:flex; align-items:center; gap:10px; }
-
   .inv-body { width:100%; max-width:460px; margin:0 auto; padding:0 16px 16px; }
 
   .daily-card { background:#0e131b; border:1px solid #22303f; border-radius:18px; padding:16px; margin-bottom:14px; }
@@ -118,7 +116,6 @@
   .lootbox-buy { background:linear-gradient(135deg,#ffd700,#ff9d00); color:#3a2400; font-weight:800;
     border:none; border-radius:10px; padding:8px 14px; font-size:13px; white-space:nowrap; }
   .lootbox-buy:disabled, .lootbox-open-btn:disabled { opacity:.4; }
-
   #lootbox-owned-list { width:100%; display:flex; flex-direction:column; gap:8px; }
   .lootbox-owned-row { display:flex; align-items:center; gap:12px; background:#131a24; border:1px solid #22303f;
     border-radius:14px; padding:10px 12px; }
@@ -156,178 +153,44 @@
     font-weight:700; padding:8px 16px; font-size:13px; }
   .perk-btn:disabled { opacity:.35; }
 
-  /* ===== Convert styles ===== */
-  .convert-container {
-    width: 100%;
-    max-width: 420px;
-    padding: 16px;
-  }
-  .convert-box {
-    background: #0e131b;
-    border: 2px solid #ffd766;
-    border-radius: 18px;
-    padding: 24px;
-    text-align: center;
-    margin-top: 10px;
-  }
-  .convert-rate {
-    font-size: 18px;
-    color: #8a99ad;
-    margin: 16px 0;
-  }
-  .convert-rate b {
-    color: #ffd766;
-    font-size: 22px;
-  }
-  .convert-input {
-    width: 100%;
-    max-width: 200px;
-    background: #1a1f2a;
-    border: 2px solid #2a3a4d;
-    border-radius: 12px;
-    color: #fff;
-    padding: 12px 16px;
-    font-size: 20px;
-    font-weight: 700;
-    text-align: center;
-    margin: 10px auto;
-    display: block;
-    direction: ltr;
-  }
-  .convert-input:focus {
-    border-color: #4fa8ff;
-    outline: none;
-  }
-  .convert-result {
-    font-size: 24px;
-    font-weight: 800;
-    color: #7ee787;
-    margin: 12px 0;
-  }
-  .convert-btn {
-    background: linear-gradient(135deg, #ffd700, #ff9d00);
-    color: #3a2400;
-    border: none;
-    border-radius: 14px;
-    padding: 14px 32px;
-    font-size: 18px;
-    font-weight: 800;
-    cursor: pointer;
-    width: 100%;
-    max-width: 280px;
-    transition: all 0.2s;
-    margin-top: 10px;
-  }
-  .convert-btn:active { transform: scale(0.95); }
-  .convert-btn:disabled { opacity: 0.4; }
-  .convert-info {
-    color: #5c6b7d;
-    font-size: 13px;
-    margin-top: 14px;
-    line-height: 1.8;
-  }
-  .convert-info b { color: #ffd766; }
+  /* Convert */
+  .convert-container { width:100%; max-width:420px; padding:16px; }
+  .convert-box { background:#0e131b; border:2px solid #ffd766; border-radius:18px; padding:24px; text-align:center; margin-top:10px; }
+  .convert-rate { font-size:18px; color:#8a99ad; margin:16px 0; }
+  .convert-rate b { color:#ffd766; font-size:22px; }
+  .convert-input { width:100%; max-width:200px; background:#1a1f2a; border:2px solid #2a3a4d; border-radius:12px;
+    color:#fff; padding:12px 16px; font-size:20px; font-weight:700; text-align:center; margin:10px auto; display:block; direction:ltr; }
+  .convert-input:focus { border-color:#4fa8ff; outline:none; }
+  .convert-result { font-size:24px; font-weight:800; color:#7ee787; margin:12px 0; }
+  .convert-btn { background:linear-gradient(135deg,#ffd700,#ff9d00); color:#3a2400; border:none; border-radius:14px;
+    padding:14px 32px; font-size:18px; font-weight:800; cursor:pointer; width:100%; max-width:280px; transition:all 0.2s; margin-top:10px; }
+  .convert-btn:active { transform:scale(0.95); }
+  .convert-btn:disabled { opacity:0.4; }
+  .convert-info { color:#5c6b7d; font-size:13px; margin-top:14px; line-height:1.8; }
+  .convert-info b { color:#ffd766; }
 
-  /* ===== Duel styles ===== */
-  .duel-container {
-    width: 100%;
-    max-width: 420px;
-    padding: 16px;
-  }
-  .duel-box {
-    background: #0e131b;
-    border: 2px solid #ff4444;
-    border-radius: 18px;
-    padding: 24px;
-    text-align: center;
-    margin-top: 10px;
-  }
-  .duel-status {
-    font-size: 18px;
-    color: #8a99ad;
-    margin: 12px 0;
-  }
-  .duel-status b { color: #ffd766; }
-  .duel-timer {
-    font-size: 48px;
-    font-weight: 900;
-    color: #ff4444;
-    margin: 10px 0;
-  }
-  .duel-btn {
-    background: linear-gradient(135deg, #ff4444, #cc0000);
-    color: #fff;
-    border: none;
-    border-radius: 14px;
-    padding: 14px 32px;
-    font-size: 18px;
-    font-weight: 800;
-    cursor: pointer;
-    width: 100%;
-    max-width: 280px;
-    transition: all 0.2s;
-    margin-top: 10px;
-  }
-  .duel-btn:active { transform: scale(0.95); }
-  .duel-btn:disabled { opacity: 0.4; }
-  .duel-btn.searching { background: linear-gradient(135deg, #ff9d00, #ff6600); animation: pulse 1s infinite; }
+  /* Duel */
+  .duel-container { width:100%; max-width:420px; padding:16px; }
+  .duel-box { background:#0e131b; border:2px solid #ff4444; border-radius:18px; padding:24px; text-align:center; margin-top:10px; }
+  .duel-status { font-size:18px; color:#8a99ad; margin:12px 0; }
+  .duel-status b { color:#ffd766; }
+  .duel-timer { font-size:48px; font-weight:900; color:#ff4444; margin:10px 0; }
+  .duel-btn { background:linear-gradient(135deg,#ff4444,#cc0000); color:#fff; border:none; border-radius:14px;
+    padding:14px 32px; font-size:18px; font-weight:800; cursor:pointer; width:100%; max-width:280px; transition:all 0.2s; margin-top:10px; }
+  .duel-btn:active { transform:scale(0.95); }
+  .duel-btn:disabled { opacity:0.4; }
+  .duel-btn.searching { background:linear-gradient(135deg,#ff9d00,#ff6600); animation:pulse 1s infinite; }
   @keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:0.6; } }
-  .duel-info {
-    color: #5c6b7d;
-    font-size: 13px;
-    margin-top: 14px;
-    line-height: 1.8;
-  }
-  .duel-info b { color: #ffd766; }
-  .duel-opponent {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 20px;
-    margin: 16px 0;
-  }
-  .duel-player {
-    text-align: center;
-  }
-  .duel-player .avatar {
-    width: 60px;
-    height: 60px;
-    border-radius: 50%;
-    background: radial-gradient(circle at 35% 30%, #fff6, #4a2f8a);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 30px;
-    margin: 0 auto 6px;
-    border: 2px solid #4a2f8a;
-  }
-  .duel-player .name {
-    font-size: 14px;
-    font-weight: 700;
-  }
-  .duel-player .mass {
-    font-size: 12px;
-    color: #8a99ad;
-  }
-  .duel-vs {
-    font-size: 28px;
-    font-weight: 900;
-    color: #ff4444;
-  }
-  .duel-winner {
-    color: #7ee787;
-    font-size: 20px;
-    font-weight: 800;
-    margin-top: 10px;
-  }
-  .duel-loser {
-    color: #ff4444;
-    font-size: 20px;
-    font-weight: 800;
-    margin-top: 10px;
-  }
+  .duel-info { color:#5c6b7d; font-size:13px; margin-top:14px; line-height:1.8; }
+  .duel-info b { color:#ffd766; }
+  .duel-opponent { display:flex; justify-content:center; align-items:center; gap:20px; margin:16px 0; }
+  .duel-player { text-align:center; }
+  .duel-player .avatar { width:60px; height:60px; border-radius:50%; background:radial-gradient(circle at 35% 30%, #fff6, #4a2f8a);
+    display:flex; align-items:center; justify-content:center; font-size:30px; margin:0 auto 6px; border:2px solid #4a2f8a; }
+  .duel-player .name { font-size:14px; font-weight:700; }
+  .duel-player .mass { font-size:12px; color:#8a99ad; }
+  .duel-vs { font-size:28px; font-weight:900; color:#ff4444; }
 
-  /* bottom nav */
   #bottomnav { position:absolute; left:0; right:0; bottom:0; height:64px; display:flex;
     background:#0a0d12; border-top:1px solid #1c2530; z-index:20; }
   .nav-btn { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px;
@@ -335,7 +198,6 @@
   .nav-btn.active { color:#4fa8ff; }
   .nav-btn .nav-icon { font-size:20px; }
 
-  /* game screen */
   #back-btn { position:absolute; top:12px; left:12px; z-index:8; background:rgba(255,255,255,.08); border:none;
     color:#fff; border-radius:10px; padding:6px 10px; font-size:13px; }
   #hud-mass-pill { position:absolute; top:12px; right:12px; z-index:8; background:rgba(20,24,32,.85);
@@ -357,7 +219,6 @@
 <body>
 <div id="app">
 
-  <!-- HOME -->
   <div class="screen" id="screen-home">
     <div class="topbar">
       <div class="token-pill"><div class="token-coin"></div><span id="home-tokens">0</span></div>
@@ -365,7 +226,6 @@
     </div>
     <h1 class="title">🪐 سیاره‌خور</h1>
     <p class="subtitle">دون‌ها رو بخور، بزرگ شو، مراقب سیاره‌های بزرگ‌تر باش</p>
-
     <div class="modepick">
       <button class="mode-arrow" id="mode-prev">◀</button>
       <div class="mode-card" id="mode-card">
@@ -375,95 +235,55 @@
       </div>
       <button class="mode-arrow" id="mode-next">▶</button>
     </div>
-
     <button class="btn" id="play-btn">▶ شروع بازی</button>
     <button class="btn secondary" id="duel-btn" style="margin-top:10px;">⚔️ دوئل آنلاین</button>
   </div>
 
-  <!-- CONVERT -->
   <div class="screen hidden" id="screen-convert">
     <div class="convert-container">
       <h1 class="title">🔄 تبدیل توکن</h1>
       <p class="subtitle">توکن‌های خود را به پلنت کوین تبدیل کن!</p>
-
       <div class="convert-box">
         <div style="display:flex; justify-content:space-around; margin-bottom:16px;">
-          <div>
-            <div style="color:#8a99ad; font-size:13px;">توکن</div>
-            <div style="font-size:28px; font-weight:800; color:#ffd766;" id="convert-tokens">0</div>
-          </div>
+          <div><div style="color:#8a99ad; font-size:13px;">توکن</div><div style="font-size:28px; font-weight:800; color:#ffd766;" id="convert-tokens">0</div></div>
           <div style="display:flex; align-items:center; font-size:30px;">➜</div>
-          <div>
-            <div style="color:#8a99ad; font-size:13px;">پلنت کوین</div>
-            <div style="font-size:28px; font-weight:800; color:#7ee787;" id="convert-coins">0</div>
-          </div>
+          <div><div style="color:#8a99ad; font-size:13px;">پلنت کوین</div><div style="font-size:28px; font-weight:800; color:#7ee787;" id="convert-coins">0</div></div>
         </div>
-
-        <div class="convert-rate">
-          نرخ تبدیل: <b>۵۰۰ توکن</b> = <b>۱۰ پلنت کوین</b>
-        </div>
-
+        <div class="convert-rate">نرخ تبدیل: <b>۵۰۰ توکن</b> = <b>۱۰ پلنت کوین</b></div>
         <input type="number" class="convert-input" id="convert-input" placeholder="تعداد توکن" min="500" step="500" value="500">
-
         <div class="convert-result" id="convert-result">۱۰ پلنت کوین</div>
-
         <button class="convert-btn" id="convert-btn">🔄 تبدیل کن</button>
-
-        <div class="convert-info">
-          💡 حداقل تبدیل: <b>۵۰۰ توکن</b><br>
-          🪐 پلنت کوین برای خرید <b>لوت‌باکس</b> استفاده میشه
-        </div>
+        <div class="convert-info">💡 حداقل تبدیل: <b>۵۰۰ توکن</b><br>🪐 پلنت کوین برای خرید <b>لوت‌باکس</b> استفاده میشه</div>
       </div>
     </div>
   </div>
 
-  <!-- DUEL -->
   <div class="screen hidden" id="screen-duel">
     <div class="duel-container">
       <h1 class="title">⚔️ دوئل آنلاین</h1>
       <p class="subtitle">با یک بازیکن واقعی مبارزه کن!</p>
-
       <div class="duel-box" id="duel-box">
         <div id="duel-status" class="duel-status">🔍 در حال جستجوی حریف...</div>
         <div id="duel-timer" class="duel-timer">⏳</div>
-        
         <div id="duel-opponent" style="display:none;" class="duel-opponent">
-          <div class="duel-player">
-            <div class="avatar" id="duel-my-avatar">🪐</div>
-            <div class="name" id="duel-my-name">شما</div>
-            <div class="mass" id="duel-my-mass">۰kg</div>
-          </div>
+          <div class="duel-player"><div class="avatar" id="duel-my-avatar">🪐</div><div class="name" id="duel-my-name">شما</div><div class="mass" id="duel-my-mass">۰kg</div></div>
           <div class="duel-vs">⚔️</div>
-          <div class="duel-player">
-            <div class="avatar" id="duel-enemy-avatar">👤</div>
-            <div class="name" id="duel-enemy-name">حریف</div>
-            <div class="mass" id="duel-enemy-mass">۰kg</div>
-          </div>
+          <div class="duel-player"><div class="avatar" id="duel-enemy-avatar">👤</div><div class="name" id="duel-enemy-name">حریف</div><div class="mass" id="duel-enemy-mass">۰kg</div></div>
         </div>
-
         <div id="duel-result" style="display:none;"></div>
-
         <button class="duel-btn" id="duel-find-btn">🔍 پیدا کردن حریف</button>
         <button class="duel-btn" id="duel-cancel-btn" style="background:#666;display:none;">❌ لغو</button>
-
-        <div class="duel-info">
-          💡 قوانین دوئل:<br>
-          • هر دو بازیکن در یک مپ قرار میگیرن<br>
-          • تا زمانی که یکی دیگری رو نخوره بازی ادامه داره<br>
-          • برنده <b>۱۰۰ توکن</b> جایزه میگیره 🪙
-        </div>
+        <div class="duel-info">💡 قوانین دوئل:<br>• هر دو بازیکن در یک مپ قرار میگیرن<br>• تا زمانی که یکی دیگری رو نخوره بازی ادامه داره<br>• برنده <b>۱۰۰ توکن</b> جایزه میگیره 🪙</div>
       </div>
     </div>
   </div>
 
-  <!-- ITEMS -->
   <div class="screen hidden" id="screen-items">
     <div class="inv-topbar">
       <button class="inv-close" id="inv-close-btn">✕ بستن</button>
       <div class="inv-title">اینونتوری</div>
       <div class="inv-topbar-right"><span>⌄</span><span>⋮</span></div>
     </div>
-
     <div class="inv-summary">
       <div class="inv-coin-pill">🪙 <span id="inv-tokens">0</span></div>
       <div class="inv-avatar-wrap">
@@ -475,38 +295,24 @@
         <div class="inv-icon-btn" id="inv-settings-btn">⚙️</div>
       </div>
     </div>
-
     <div class="inv-body">
       <div class="daily-card">
-        <div class="daily-head">
-          <span class="daily-title">جایزه روزانه</span>
-          <button class="daily-claim-btn" id="daily-claim-btn">دریافت</button>
-        </div>
+        <div class="daily-head"><span class="daily-title">جایزه روزانه</span><button class="daily-claim-btn" id="daily-claim-btn">دریافت</button></div>
         <div class="daily-row" id="daily-row"></div>
       </div>
-
       <div class="acc-card">
         <div class="acc-head" id="skins-acc-head">
-          <div class="acc-head-left">
-            <span class="acc-head-title">اسکین‌ها</span>
-            <span class="acc-head-count" id="skins-count">0 items</span>
-          </div>
+          <div class="acc-head-left"><span class="acc-head-title">اسکین‌ها</span><span class="acc-head-count" id="skins-count">0 items</span></div>
           <div style="display:flex; align-items:center;">
             <div class="acc-head-preview" id="skins-preview"></div>
             <span class="acc-chevron" id="skins-chevron">⌄</span>
           </div>
         </div>
-        <div class="acc-body" id="skins-acc-body">
-          <div class="skin-grid" id="skin-grid"></div>
-        </div>
+        <div class="acc-body" id="skins-acc-body"><div class="skin-grid" id="skin-grid"></div></div>
       </div>
-
       <div class="acc-card">
         <div class="acc-head" id="lootbox-acc-head">
-          <div class="acc-head-left">
-            <span class="acc-head-title">لوت‌باکس‌ها</span>
-            <span class="acc-head-count" id="lootbox-count">0 items</span>
-          </div>
+          <div class="acc-head-left"><span class="acc-head-title">لوت‌باکس‌ها</span><span class="acc-head-count" id="lootbox-count">0 items</span></div>
           <div style="display:flex; align-items:center;">
             <div class="acc-head-preview" id="lootbox-preview"></div>
             <span class="acc-chevron" id="lootbox-chevron">⌄</span>
@@ -515,10 +321,7 @@
         <div class="acc-body" id="lootbox-acc-body">
           <div class="lootbox-card">
             <div class="lootbox-icon">📦</div>
-            <div class="lootbox-info">
-              <div class="lootbox-name">Newer</div>
-              <div class="lootbox-supply" id="lootbox-supply">در حال بارگذاری...</div>
-            </div>
+            <div class="lootbox-info"><div class="lootbox-name">Newer</div><div class="lootbox-supply" id="lootbox-supply">در حال بارگذاری...</div></div>
             <button class="lootbox-buy" id="lootbox-buy-btn">🪐 ۵</button>
           </div>
           <div id="lootbox-owned-list"></div>
@@ -527,7 +330,6 @@
     </div>
   </div>
 
-  <!-- SKIN DETAIL MODAL -->
   <div class="modal-overlay hidden" id="skin-modal">
     <div class="modal-card">
       <div class="modal-head"><span id="skin-modal-title"></span><button id="skin-modal-close">✕</button></div>
@@ -537,7 +339,6 @@
     </div>
   </div>
 
-  <!-- TRANSFER MODAL -->
   <div class="modal-overlay hidden" id="transfer-modal">
     <div class="modal-card">
       <div class="modal-head"><span>انتقال آیتم</span><button id="transfer-modal-close">✕</button></div>
@@ -548,28 +349,20 @@
     </div>
   </div>
 
-  <!-- PERKS -->
   <div class="screen hidden" id="screen-perks">
     <h1 class="title">⚡ ارتقاها</h1>
     <div class="perk-card">
       <div class="perk-head"><span class="perk-name">کاهش کول‌داون تقسیم</span><span class="perk-level" id="perk-split-level">لول 0/50</span></div>
       <div class="perk-bar-bg"><div class="perk-bar-fill" id="perk-split-bar" style="width:0%"></div></div>
-      <div class="perk-upgrade">
-        <span class="perk-cost" id="perk-split-cost">هزینه: 50 توکن</span>
-        <button class="perk-btn" id="perk-split-btn">ارتقا</button>
-      </div>
+      <div class="perk-upgrade"><span class="perk-cost" id="perk-split-cost">هزینه: 50 توکن</span><button class="perk-btn" id="perk-split-btn">ارتقا</button></div>
     </div>
     <div class="perk-card">
       <div class="perk-head"><span class="perk-name">افزایش سرعت</span><span class="perk-level" id="perk-speed-level">لول 0/50</span></div>
       <div class="perk-bar-bg"><div class="perk-bar-fill" id="perk-speed-bar" style="width:0%"></div></div>
-      <div class="perk-upgrade">
-        <span class="perk-cost" id="perk-speed-cost">هزینه: 50 توکن</span>
-        <button class="perk-btn" id="perk-speed-btn">ارتقا</button>
-      </div>
+      <div class="perk-upgrade"><span class="perk-cost" id="perk-speed-cost">هزینه: 50 توکن</span><button class="perk-btn" id="perk-speed-btn">ارتقا</button></div>
     </div>
   </div>
 
-  <!-- BOTTOM NAV -->
   <div id="bottomnav">
     <div class="nav-btn active" data-tab="home"><span class="nav-icon">🏠</span>خانه</div>
     <div class="nav-btn" data-tab="convert"><span class="nav-icon">🔄</span>تبدیل</div>
@@ -578,7 +371,6 @@
     <div class="nav-btn" data-tab="perks"><span class="nav-icon">⚡</span>ارتقا</div>
   </div>
 
-  <!-- GAME -->
   <div class="screen hidden full" id="screen-game">
     <canvas id="board"></canvas>
     <button id="back-btn">✕ خروج</button>
@@ -588,7 +380,6 @@
     <div id="joystick-knob"></div>
   </div>
 
-  <!-- GAME OVER -->
   <div class="screen hidden" id="screen-over" style="bottom:0;">
     <h1 class="title">بلعیده شدی! 💥</h1>
     <div class="go-mass" id="go-mass">0</div>
@@ -605,7 +396,6 @@
   const tg = window.Telegram && window.Telegram.WebApp;
   if (tg) { try { tg.ready(); tg.expand(); } catch(e){} }
 
-  /* ---------- identify user ---------- */
   const LS = {
     get(k,d){ try{ const v=localStorage.getItem(k); return v===null?d:JSON.parse(v); }catch(e){return d;} },
     set(k,v){ try{ localStorage.setItem(k, JSON.stringify(v)); }catch(e){} }
@@ -666,7 +456,6 @@
   let db = null;
   let userRef = null;
 
-  // ===== DUEL VARIABLES =====
   let duelSearching = false;
   let duelMatchId = null;
   let duelOpponent = null;
@@ -695,10 +484,7 @@
   }
 
   function saveField(path, value){
-    if (!db || !userRef) {
-      console.log('Local-only save:', path, value);
-      return;
-    }
+    if (!db || !userRef) return;
     userRef.child(path).set(value).catch(e => console.error('save error', path, e));
   }
 
@@ -758,7 +544,6 @@
     });
   }
 
-  /* ---------- screens / nav ---------- */
   const screens = {};
   document.querySelectorAll('.screen').forEach(s => screens[s.id]=s);
   function showScreen(id){ Object.values(screens).forEach(s=>s.classList.add('hidden')); screens[id].classList.remove('hidden'); }
@@ -793,7 +578,6 @@
     renderConvert();
   }
 
-  /* ---------- game mode picker ---------- */
   const MODES = [
     { id:'ai', emoji:'🤖', name:'هوش مصنوعی', sub:'۱۰ ربات حریف', enabled:true },
     { id:'classic', emoji:'🌍', name:'کلاسیک', sub:'به زودی', enabled:false },
@@ -827,7 +611,6 @@
 
   function notify(msg){ if (tg && tg.showAlert) tg.showAlert(msg); else alert(msg); }
 
-  /* ===== CONVERT ===== */
   function renderConvert(){
     document.getElementById('convert-tokens').textContent = profile.tokens || 0;
     document.getElementById('convert-coins').textContent = profile.planetCoins || 0;
@@ -872,7 +655,6 @@
     updateConvertResult();
   });
 
-  /* ===== ITEMS ===== */
   function wireAccordion(headId, bodyId, chevronId){
     document.getElementById(headId).addEventListener('click', ()=>{
       const body = document.getElementById(bodyId);
@@ -948,7 +730,6 @@
     });
   }
 
-  /* ----- daily claim ----- */
   const DAILY_REWARDS = [10,15,20,30,40,60,100];
   function todayKey(){ const d = new Date(); return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate(); }
   function daysBetween(a,b){ return Math.round((b-a)/86400000); }
@@ -1033,7 +814,6 @@
     return { skinId, rarity: chosenRarity };
   }
 
-  /* ----- buy lootbox with planet coins ----- */
   document.getElementById('lootbox-buy-btn').addEventListener('click', ()=>{
     if (!db) { notify('اتصال به سرور برقرار نیست.'); return; }
     if ((profile.planetCoins||0) < LOOTBOX_PRICE) { 
@@ -1093,7 +873,6 @@
     });
   }
 
-  /* ===== SKIN MODAL ===== */
   const skinModal = document.getElementById('skin-modal');
   function openSkinModal(id){
     const skin = SKIN_DB[id];
@@ -1134,7 +913,6 @@
   function closeSkinModal(){ skinModal.classList.add('hidden'); }
   document.getElementById('skin-modal-close').addEventListener('click', closeSkinModal);
 
-  /* ===== TRANSFER MODAL ===== */
   const transferModal = document.getElementById('transfer-modal');
   let pendingTransfer = null;
   function openTransferModal(item){
@@ -1182,7 +960,6 @@
     }
   });
 
-  /* ===== PERKS ===== */
   const MAX_PERK_LEVEL = 50;
   function perkCost(nextLevel){ return Math.round(50 * Math.pow(1.3, nextLevel-1)); }
 
@@ -1219,7 +996,7 @@
   document.getElementById('perk-split-btn').addEventListener('click', ()=>tryUpgrade('split'));
   document.getElementById('perk-speed-btn').addEventListener('click', ()=>tryUpgrade('speed'));
 
-  /* ================= DUEL SYSTEM ================= */
+  // ================= DUEL SYSTEM (FIXED) =================
   document.getElementById('duel-find-btn').addEventListener('click', findDuel);
   document.getElementById('duel-cancel-btn').addEventListener('click', cancelDuel);
 
@@ -1240,11 +1017,12 @@
     const myData = {
       uid: uid,
       name: displayName,
-      timestamp: Date.now(),
+      timestamp: firebase.database.ServerValue.TIMESTAMP,
       skin: profile.equippedSkin || 'dead_star'
     };
 
-    duelRef.once('value').then(snap => {
+    // اول چک کن کسی در صف هست
+    duelRef.orderByChild('timestamp').limitToFirst(1).once('value').then(snap => {
       const queue = snap.val() || {};
       let foundOpponent = null;
       let foundKey = null;
@@ -1258,36 +1036,29 @@
       }
 
       if (foundOpponent) {
+        // حریف پیدا شد!
         duelMatchId = foundKey;
         duelOpponent = foundOpponent;
         duelRef.child(foundKey).remove();
         startDuelGame(foundOpponent);
       } else {
+        // اضافه کردن خودم به صف
         duelRef.push(myData).then(ref => {
           duelMatchId = ref.key;
-          const watcher = duelRef.on('child_removed', (snap) => {
-            if (snap.key === duelMatchId) {
-              duelRef.off('child_removed');
-              duelRef.once('value').then(s => {
-                const q = s.val() || {};
-                let opponent = null;
-                for (const [key, data] of Object.entries(q)) {
-                  if (data.uid !== uid) {
-                    opponent = data;
-                    break;
-                  }
-                }
-                if (opponent) {
-                  duelOpponent = opponent;
-                  startDuelGame(opponent);
-                } else {
-                  cancelDuel();
-                  notify('خطا در پیدا کردن حریف!');
-                }
-              });
+          
+          // گوش دادن به تغییرات صف
+          duelRef.on('child_added', (snap) => {
+            const data = snap.val();
+            if (data.uid !== uid && snap.key !== duelMatchId) {
+              // حریف جدید اضافه شد
+              duelOpponent = data;
+              duelRef.child(snap.key).remove();
+              duelRef.off('child_added');
+              startDuelGame(data);
             }
           });
 
+          // تایمر 30 ثانیه
           let timeLeft = 30;
           document.getElementById('duel-timer').textContent = timeLeft + 's';
           const timer = setInterval(() => {
@@ -1295,7 +1066,7 @@
             document.getElementById('duel-timer').textContent = timeLeft + 's';
             if (timeLeft <= 0) {
               clearInterval(timer);
-              duelRef.off('child_removed');
+              duelRef.off('child_added');
               cancelDuel();
               notify('⏰ زمان جستجو به پایان رسید!');
             }
@@ -1327,6 +1098,9 @@
     document.getElementById('duel-status').innerHTML = '🔍 جستجو لغو شد';
     document.getElementById('duel-timer').textContent = '⏳';
     document.getElementById('duel-opponent').style.display = 'none';
+    if (db && duelMatchId) {
+      db.ref('duelQueue/' + duelMatchId).remove();
+    }
     duelMatchId = null;
     duelOpponent = null;
   }
@@ -1350,6 +1124,14 @@
     btn.onclick = () => {
       isDuel = true;
       duelOpponent = opponent;
+      // ایجاد room برای دوئل
+      duelMatchId = 'duel_' + Date.now();
+      db.ref('duelRooms/' + duelMatchId).set({
+        player1: uid,
+        player2: opponent.uid,
+        status: 'active',
+        startTime: Date.now()
+      });
       showScreen('screen-game');
       bottomnav.style.display = 'none';
       startGame();
@@ -1359,7 +1141,7 @@
     notify(`✅ حریف پیدا شد: ${opponent.name}!\nبرای شروع دوئل دکمه رو بزن.`);
   }
 
-  /* ================= GAME ENGINE ================= */
+  // ================= GAME ENGINE =================
   const canvas = document.getElementById('board');
   const ctx = canvas.getContext('2d');
   let pieces, pellets, camScale, running, lastT, maxMassReached;
@@ -1418,13 +1200,20 @@
       opponentPieces = [];
       opponentMass = 22;
       if (opponentRef) opponentRef.off();
-      opponentRef = db.ref('duelGames/' + duelMatchId + '/' + duelOpponent.uid);
+      const roomRef = db.ref('duelRooms/' + duelMatchId);
+      opponentRef = roomRef.child('players/' + duelOpponent.uid);
       opponentRef.on('value', (snap) => {
         const data = snap.val();
         if (data) {
           opponentPieces = data.pieces || [];
           opponentMass = data.totalMass || 22;
         }
+      });
+      // ثبت خودم در room
+      roomRef.child('players/' + uid).set({
+        pieces: pieces.map(p => ({ x:p.x, y:p.y, mass:p.mass, dispR:p.dispR })),
+        totalMass: 22,
+        timestamp: Date.now()
       });
     }
     
@@ -1440,14 +1229,14 @@
   function sendMyGameData() {
     if (!isDuel || !db || !duelMatchId) return;
     const totalM = totalMass();
-    db.ref('duelGames/' + duelMatchId + '/' + uid).set({
+    db.ref('duelRooms/' + duelMatchId + '/players/' + uid).update({
       pieces: pieces.map(p => ({ x:p.x, y:p.y, mass:p.mass, dispR:p.dispR })),
       totalMass: totalM,
       timestamp: Date.now()
-    }).catch(e => console.error('send game data error', e));
+    });
   }
 
-  /* controls */
+  // controls
   let joy = { active:false, originX:0, originY:0, dx:0, dy:0 };
   const joyBase = document.getElementById('joystick-base'), joyKnob = document.getElementById('joystick-knob');
   const MAXJOY = 55;
