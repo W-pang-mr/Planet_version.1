@@ -376,6 +376,7 @@
     <h1 class="title">بلعیده شدی! 💥</h1>
     <div class="go-mass" id="go-mass">0</div>
     <div class="go-tokens" id="go-tokens">+0 توکن</div>
+    <div class="go-tokens" id="go-eaten" style="display:none;color:#ff8080;"></div>
     <div class="go-best">رکورد شما: <b id="go-best">0</b></div>
     <button class="btn" id="retry-btn">🔁 دوباره بازی کن</button>
     <button class="btn secondary" id="menu-btn">منوی اصلی</button>
@@ -990,7 +991,7 @@
 
   let pieces, bots, pellets, camScale, running, lastT, splitCooldownLeft, maxMassReached;
   let smoothCamX = null, smoothCamY = null;
-  let currentMode = 'ai', otherPlayers = {}, worldPlayersRef = null, myWorldRef = null, lastSyncTime = 0;
+  let currentMode = 'ai', otherPlayers = {}, worldPlayersRef = null, myWorldRef = null, lastSyncTime = 0, eatenNoticeRef = null;
 
   function radiusFromMass(m){ return 8 + Math.sqrt(m)*3.1; }
   function baseSpeedFromRadius(r){ return Math.max(46, 320/(1+r/34)); }
@@ -1027,12 +1028,25 @@
         };
       });
     });
+    eatenNoticeRef = db.ref('world/eatenNotice/' + uid);
+    eatenNoticeRef.set(null);
+    eatenNoticeRef.on('value', snap=>{
+      if (snap.exists() && running && currentMode==='classic') handleEatenByOther(snap.val());
+    });
     return true;
   }
   function leaveWorld(){
     if (worldPlayersRef) { worldPlayersRef.off(); worldPlayersRef=null; }
     if (myWorldRef) { myWorldRef.remove(); myWorldRef=null; }
+    if (eatenNoticeRef) { eatenNoticeRef.off(); eatenNoticeRef.set(null); eatenNoticeRef=null; }
     otherPlayers = {};
+  }
+  function handleEatenByOther(info){
+    if (!running) return;
+    running = false;
+    leaveWorld();
+    pieces = [];
+    endGame(info && info.by);
   }
   function syncOwnPosition(now){
     if (!myWorldRef) return;
@@ -1045,6 +1059,31 @@
       name: profile.name || displayName,
       color: (SKIN_DB[profile.equippedSkin]||SKIN_DB.dead_star).color
     });
+  }
+  function checkCollisionsClassic(){
+    if (!db) return;
+    for (const victimUid of Object.keys(otherPlayers)){
+      const op = otherPlayers[victimUid];
+      if (!op) continue;
+      for (let pi=pieces.length-1; pi>=0; pi--){
+        const piece = pieces[pi];
+        const d = Math.hypot(piece.x-op.x, piece.y-op.y);
+        const bigger = piece.mass >= op.mass ? piece : op;
+        const smaller = piece.mass >= op.mass ? op : piece;
+        const engulfed = d < bigger.dispR - smaller.dispR*EAT_OVERLAP;
+        if (!engulfed) continue;
+        if (piece.mass > op.mass*EAT_MASS_RATIO) {
+          piece.mass += op.mass*0.6;
+          db.ref('world/players/'+victimUid).remove();
+          db.ref('world/eatenNotice/'+victimUid).set({ by: profile.name||displayName, at: Date.now() });
+          delete otherPlayers[victimUid];
+          break;
+        } else if (op.mass > piece.mass*EAT_MASS_RATIO) {
+          pieces.splice(pi,1);
+          if (pieces.length===0) { running=false; leaveWorld(); endGame(op.name); return; }
+        }
+      }
+    }
   }
 
   function startGame(){
@@ -1281,7 +1320,7 @@
     }
   }
 
-  function endGame(){
+  function endGame(eatenBy){
     running = false;
     if (currentMode === 'classic') leaveWorld();
     const finalMass = Math.round(maxMassReached);
@@ -1295,6 +1334,9 @@
     document.getElementById('go-best').textContent = profile.bestMass;
     document.getElementById('home-tokens').textContent = profile.tokens;
     document.getElementById('home-rank').textContent = Math.max(1, Math.floor(profile.bestMass/50)+1);
+    const eatenEl = document.getElementById('go-eaten');
+    if (eatenBy) { eatenEl.textContent = 'توسط '+eatenBy+' خورده شدی'; eatenEl.style.display='block'; }
+    else { eatenEl.style.display='none'; }
     bottomnav.style.display='flex';
     showScreen('screen-over');
   }
@@ -1393,7 +1435,7 @@
       if (!lastT) lastT=t; const dt=Math.min(0.05,(t-lastT)/1000); lastT=t;
       updatePieces(dt);
       if (currentMode === 'ai') { bots.forEach(b=>updateBot(b,dt,bots)); checkCollisions(); }
-      else { syncOwnPosition(t); }
+      else { syncOwnPosition(t); checkCollisionsClassic(); }
       if (!running) return;
       if (splitCooldownLeft>0) splitCooldownLeft=Math.max(0,splitCooldownLeft-dt);
       const tm = totalMass(); if (tm>maxMassReached) maxMassReached=tm;
@@ -1415,4 +1457,4 @@
 })();
 </script>
 </body>
- </html>
+</html>
