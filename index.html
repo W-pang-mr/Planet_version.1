@@ -46,7 +46,7 @@
   .soon-box { display:flex; flex-direction:column; align-items:center; justify-content:center; height:100%; gap:10px; }
   .soon-box .big { font-size:44px; }
 
-  /* ===== Inventory screen (redesigned to match reference) ===== */
+  /* ===== Inventory screen ===== */
   #screen-items { padding:0; align-items:stretch; }
   .inv-topbar { display:flex; align-items:center; justify-content:space-between; padding:14px 16px; width:100%; }
   .inv-close { display:flex; align-items:center; gap:6px; background:none; border:none; color:#fff; font-size:15px; font-weight:700; }
@@ -94,15 +94,20 @@
   .acc-body { max-height:0; overflow:hidden; transition:max-height .25s ease; padding:0 16px; }
   .acc-body.open { max-height:640px; padding:0 16px 16px; overflow-y:auto; }
 
-  /* Items screen */
   .section-title { align-self:flex-start; font-weight:800; font-size:15px; margin:14px 2px 8px; width:100%; max-width:420px; }
   .skin-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; width:100%; max-width:420px; }
-  .skin-card { background:#0e131b; border:2px solid #22303f; border-radius:14px; padding:10px; text-align:center; position:relative; }
-  .skin-card.equipped { border-color:#7ee787; }
-  .skin-avatar { width:64px; height:64px; border-radius:50%; margin:0 auto 6px; }
+  
+  /* ===== انیمیشن‌های کارت اسکین ===== */
+  .skin-card { background:#0e131b; border:2px solid #22303f; border-radius:14px; padding:10px; text-align:center; 
+    position:relative; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); cursor:pointer; overflow:hidden; }
+  .skin-card:hover { transform:translateY(-5px) scale(1.03); box-shadow:0 10px 30px rgba(0,0,0,0.5); border-color:#4fa8ff; }
+  .skin-card.equipped { border-color:#7ee787; box-shadow:0 0 20px rgba(126,231,135,0.3); animation:equipped-pulse 2s ease-in-out infinite; }
+  
+  @keyframes equipped-pulse { 0%,100% { box-shadow:0 0 20px rgba(126,231,135,0.3); } 50% { box-shadow:0 0 40px rgba(126,231,135,0.6); } }
+  
+  .skin-avatar { width:64px; height:64px; border-radius:50%; margin:0 auto 6px; object-fit:cover; background:#141a24; }
   .skin-tag { font-size:9px; font-weight:800; padding:2px 6px; border-radius:999px; display:inline-block; margin-top:4px; }
   .skin-name { font-size:11px; font-weight:700; margin-top:2px; }
-  .skin-serial { font-size:9px; color:#5c6b7d; font-family:monospace; margin-top:3px; letter-spacing:.3px; }
   .tag-starter { background:#2a3a4d; color:#9fc7ff; }
   .tag-common { background:#1f5c33; color:#7ee787; }
   .tag-rare { background:#1a4a7a; color:#7fd0ff; }
@@ -110,6 +115,8 @@
   .tag-legend { background:#7a5a10; color:#ffd766; }
   .lock-overlay { position:absolute; inset:0; background:rgba(0,0,0,.55); border-radius:14px; display:flex;
     align-items:center; justify-content:center; font-size:22px; }
+  .skin-owned-badge { position:absolute; top:6px; left:6px; background:rgba(79,168,255,.9); color:#fff;
+    font-size:10px; font-weight:800; padding:2px 7px; border-radius:999px; }
 
   .lootbox-card { background:linear-gradient(160deg,#141a24,#0d1218); border:1px solid #26364a; border-radius:18px;
     padding:16px; width:100%; max-width:420px; display:flex; align-items:center; gap:14px; margin-bottom:10px; }
@@ -121,9 +128,6 @@
   .lootbox-buy { background:linear-gradient(135deg,#ffd700,#ff9d00); color:#3a2400; font-weight:800;
     border:none; border-radius:10px; padding:8px 14px; font-size:13px; white-space:nowrap; }
   .lootbox-buy:disabled, .lootbox-open-btn:disabled { opacity:.4; }
-
-  /* owned/unopened lootboxes list */
-  #lootbox-owned-list { width:100%; display:flex; flex-direction:column; gap:8px; }
   .lootbox-owned-row { display:flex; align-items:center; gap:12px; background:#131a24; border:1px solid #22303f;
     border-radius:14px; padding:10px 12px; }
   .lootbox-owned-row .lootbox-icon { width:40px; height:40px; font-size:20px; border-radius:10px; }
@@ -133,10 +137,6 @@
   .lootbox-transfer-btn { background:#161f2b; border:1px solid #2c3d52; border-radius:10px; color:#cfe0f2;
     font-weight:700; padding:7px 10px; font-size:12px; }
   .empty-hint { color:#5c6b7d; font-size:12px; padding:10px 2px; }
-
-  /* skin owned count badge */
-  .skin-owned-badge { position:absolute; top:6px; left:6px; background:rgba(79,168,255,.9); color:#fff;
-    font-size:10px; font-weight:800; padding:2px 7px; border-radius:999px; }
 
   /* modals */
   .modal-overlay { position:absolute; inset:0; z-index:30; background:rgba(0,0,0,.65); display:flex;
@@ -193,8 +193,21 @@
   .go-tokens { color:#ffd766; font-weight:700; margin-bottom:6px; }
   .go-best { color:#8a99ad; font-size:14px; margin-bottom:20px; }
 
-  /* loading overlay for play button while profile syncs */
-  #play-btn.loading { opacity:.6; }
+  /* ===== انیمیشن باز شدن لوت‌باکس ===== */
+  .lootbox-open-animation { position:fixed; inset:0; z-index:100; background:rgba(0,0,0,0.85);
+    display:flex; align-items:center; justify-content:center; flex-direction:column; }
+  .lootbox-open-animation.hidden { display:none; }
+  .lootbox-container { text-align:center; animation:lootbox-pop 0.6s cubic-bezier(0.34,1.56,0.64,1); }
+  @keyframes lootbox-pop { 0% { transform:scale(0) rotate(-20deg); opacity:0; } 100% { transform:scale(1) rotate(0deg); opacity:1; } }
+  .lootbox-box { font-size:80px; animation:lootbox-shake 0.5s ease-in-out; }
+  @keyframes lootbox-shake { 0%,100% { transform:rotate(0deg); } 25% { transform:rotate(-15deg) scale(1.1); } 75% { transform:rotate(15deg) scale(1.1); } }
+  .lootbox-sparkles { position:absolute; inset:0; background:radial-gradient(circle at center, rgba(255,215,0,0.3), transparent 70%);
+    animation:sparkle-pulse 1s ease-in-out infinite; pointer-events:none; }
+  @keyframes sparkle-pulse { 0%,100% { opacity:0.3; transform:scale(1); } 50% { opacity:1; transform:scale(1.2); } }
+  .lootbox-result { margin-top:20px; font-size:24px; font-weight:800; color:#fff; }
+  .lootbox-result .skin-emoji { font-size:60px; display:block; margin-bottom:10px; }
+  .lootbox-result .skin-name { font-size:28px; background:linear-gradient(90deg,#ffd700,#ff6b6b); -webkit-background-clip:text; background-clip:text; color:transparent; }
+  .lootbox-result .skin-rarity { font-size:16px; color:#8a99ad; margin-top:5px; }
 </style>
 </head>
 <body>
@@ -222,7 +235,7 @@
     <button class="btn" id="play-btn">▶ شروع بازی</button>
   </div>
 
-  <!-- MARKET (soon) -->
+  <!-- MARKET -->
   <div class="screen hidden" id="screen-market">
     <div class="soon-box"><div class="big">🛒</div><h1 class="title">مارکت</h1><p class="subtitle">به زودی...</p></div>
   </div>
@@ -232,7 +245,7 @@
     <div class="soon-box"><div class="big">✨</div><h1 class="title">به زودی</h1><p class="subtitle">این بخش هنوز آماده نشده</p></div>
   </div>
 
-  <!-- ITEMS / INVENTORY (redesigned) -->
+  <!-- ITEMS -->
   <div class="screen hidden" id="screen-items">
     <div class="inv-topbar">
       <button class="inv-close" id="inv-close-btn">✕ بستن</button>
@@ -253,7 +266,6 @@
     </div>
 
     <div class="inv-body">
-      <!-- Daily claim -->
       <div class="daily-card">
         <div class="daily-head">
           <span class="daily-title">جایزه روزانه</span>
@@ -262,7 +274,6 @@
         <div class="daily-row" id="daily-row"></div>
       </div>
 
-      <!-- Skins accordion -->
       <div class="acc-card">
         <div class="acc-head" id="skins-acc-head">
           <div class="acc-head-left">
@@ -279,7 +290,6 @@
         </div>
       </div>
 
-      <!-- Lootboxes accordion -->
       <div class="acc-card">
         <div class="acc-head" id="lootbox-acc-head">
           <div class="acc-head-left">
@@ -330,7 +340,6 @@
   <!-- PERKS -->
   <div class="screen hidden" id="screen-perks">
     <h1 class="title">⚡ ارتقاها</h1>
-
     <div class="perk-card">
       <div class="perk-head"><span class="perk-name">کاهش کول‌داون تقسیم</span><span class="perk-level" id="perk-split-level">لول 0/50</span></div>
       <div class="perk-bar-bg"><div class="perk-bar-fill" id="perk-split-bar" style="width:0%"></div></div>
@@ -339,7 +348,6 @@
         <button class="perk-btn" id="perk-split-btn">ارتقا</button>
       </div>
     </div>
-
     <div class="perk-card">
       <div class="perk-head"><span class="perk-name">افزایش سرعت</span><span class="perk-level" id="perk-speed-level">لول 0/50</span></div>
       <div class="perk-bar-bg"><div class="perk-bar-fill" id="perk-speed-bar" style="width:0%"></div></div>
@@ -362,10 +370,8 @@
   <!-- GAME -->
   <div class="screen hidden full" id="screen-game">
     <canvas id="board"></canvas>
-
     <button id="back-btn">✕ خروج</button>
     <div id="hud-mass-pill">🎒 <span id="hud-mass">0</span></div>
-
     <button id="split-btn">تقسیم</button>
     <div id="joystick-base"></div>
     <div id="joystick-knob"></div>
@@ -379,6 +385,19 @@
     <div class="go-best">رکورد شما: <b id="go-best">0</b></div>
     <button class="btn" id="retry-btn">🔁 دوباره بازی کن</button>
     <button class="btn secondary" id="menu-btn">منوی اصلی</button>
+  </div>
+
+  <!-- LOOTBOX OPEN ANIMATION -->
+  <div class="lootbox-open-animation hidden" id="lootbox-animation">
+    <div class="lootbox-container">
+      <div class="lootbox-sparkles"></div>
+      <div class="lootbox-box">📦</div>
+      <div class="lootbox-result">
+        <span class="skin-emoji" id="lootbox-skin-emoji">🌟</span>
+        <div class="skin-name" id="lootbox-skin-name">اسکین جدید</div>
+        <div class="skin-rarity" id="lootbox-skin-rarity">نادر</div>
+      </div>
+    </div>
   </div>
 
 </div>
@@ -404,17 +423,73 @@
     displayName = 'بازیکن';
   }
 
+  /* ===== SKIN DATABASE WITH IMAGES ===== */
   const SKIN_DB = {
-    dead_star:      { name:'Dead Star',        rarity:'starter', color:'#dfeaf2' },
-    no_mouse:       { name:'No Mouse',         rarity:'common',  color:'#7a4fd9' },
-    golden_bowl:    { name:'Golden Bowl',      rarity:'common',  color:'#caa23a' },
-    slime_resist:   { name:'Slime Resistance', rarity:'rare',    color:'#4a2f8a' },
-    when_lambo:     { name:'When Lambo',       rarity:'rare',    color:'#f0d020' },
-    higher:         { name:'Higher',           rarity:'rare',    color:'#5a4fc9' },
-    reputation:     { name:'Reputation',       rarity:'epic',    color:'#e8d060' },
-    collector_cap:  { name:'Collector',        rarity:'legend',  color:'#a86fff' },
-    triangle_nine:  { name:'Triangle 9',       rarity:'legend',  color:'#3dd6ff' },
+    dead_star: { 
+      name:'Dead Star', 
+      rarity:'starter', 
+      emoji: '💀', 
+      color:'#dfeaf2',
+      image: 'https://i.ibb.co/WNMrZSkT/Image-to-PDF-1.png'
+    },
+    no_mouse: { 
+      name:'No Mouse', 
+      rarity:'common',  
+      emoji: '🐭', 
+      color:'#7a4fd9',
+      image: 'https://i.ibb.co/KpCDbz4q/Image-to-PDF-2.jpg'
+    },
+    golden_bowl: { 
+      name:'Golden Bowl', 
+      rarity:'common',  
+      emoji: '🥣', 
+      color:'#caa23a',
+      image: 'https://i.ibb.co/DDP8G4rS/Image-to-PDF-3.jpg'
+    },
+    slime_resist: { 
+      name:'Slime Resistance', 
+      rarity:'rare',    
+      emoji: '🧪', 
+      color:'#4a2f8a',
+      image: 'https://i.ibb.co/4nKMLsVp/Image-to-PDF-4.jpg'
+    },
+    when_lambo: { 
+      name:'When Lambo', 
+      rarity:'rare',    
+      emoji: '🏎️', 
+      color:'#f0d020',
+      image: 'https://i.ibb.co/KcFc6kfq/Image-to-PDF-5.jpg'
+    },
+    higher: { 
+      name:'Higher', 
+      rarity:'rare',    
+      emoji: '🚀', 
+      color:'#5a4fc9',
+      image: ''
+    },
+    reputation: { 
+      name:'Reputation', 
+      rarity:'epic',    
+      emoji: '👑', 
+      color:'#e8d060',
+      image: ''
+    },
+    collector_cap: { 
+      name:'Collector', 
+      rarity:'legend',  
+      emoji: '🎩', 
+      color:'#a86fff',
+      image: 'https://i.ibb.co/QjDyg0d9/Collector-cap.jpg'
+    },
+    triangle_nine: { 
+      name:'Triangle 9', 
+      rarity:'legend',  
+      emoji: '🔺', 
+      color:'#3dd6ff',
+      image: ''
+    },
   };
+
   const LOOTBOX_POOL = {
     common: ['no_mouse','golden_bowl'],
     rare: ['slime_resist','when_lambo','higher'],
@@ -425,19 +500,7 @@
   const TAG_CLASS = { starter:'tag-starter', common:'tag-common', rare:'tag-rare', epic:'tag-epic', legend:'tag-legend' };
   const TAG_LABEL = { starter:'شروع', common:'Common', rare:'Rare', epic:'Epic', legend:'Legend' };
 
-  // تابع کمکی برای ادغام عمیق (deep merge)
-  function deepMerge(target, source) {
-    const result = { ...target };
-    for (const key in source) {
-      if (source[key] && typeof source[key] === 'object' && !Array.isArray(source[key])) {
-        result[key] = deepMerge(target[key] || {}, source[key]);
-      } else {
-        result[key] = source[key];
-      }
-    }
-    return result;
-  }
-
+  /* ===== PROFILE ===== */
   function defaultProfile(){
     return {
       name: displayName,
@@ -449,15 +512,12 @@
       dailyClaim: { streak:0, lastClaimDay:null }
     };
   }
-  function ownsSkin(id){ return id==='dead_star' || !!(profile.inventory.skins[id] && Object.keys(profile.inventory.skins[id]).length); }
-  function skinCopies(id){ return id==='dead_star' ? 1 : Object.keys(profile.inventory.skins[id]||{}).length; }
 
-  // ====== مهم: پروفایل با یک آبجکت خالی شروع می‌شه، نه با مقادیر پیش‌فرض ======
-  let profile = { tokens: 0, bestMass: 0, perks: { splitCooldownLevel:0, speedLevel:0 }, inventory: { skins: {}, lootboxes: {} }, dailyClaim: { streak:0, lastClaimDay:null } };
+  let profile = defaultProfile();
   let profileSynced = false;
   let db = null;
   let userRef = null;
-  let initialLoadDone = false;
+  let pendingSaves = [];
 
   function initFirebase(){
     const firebaseConfig = {
@@ -475,28 +535,69 @@
       db = firebase.database();
       return true;
     } catch (e) {
-      console.error('Firebase init failed, continuing in local-only mode', e);
+      console.error('Firebase init failed', e);
       db = null;
       return false;
     }
   }
 
-  // ====== اصلاح اصلی: تابع loadProfile به درستی داده‌ها را از دیتابیس می‌خواند و با داده‌های محلی ادغام می‌کند ======
+  function saveField(path, value){
+    // Always save to localStorage as backup
+    try {
+      const backup = JSON.parse(localStorage.getItem('pe_backup_' + uid) || '{}');
+      backup[path] = value;
+      localStorage.setItem('pe_backup_' + uid, JSON.stringify(backup));
+    } catch(e) {}
+
+    if (db && userRef) {
+      userRef.child(path).set(value).catch(e => {
+        console.error('save error', path, e);
+        pendingSaves.push({ path, value });
+      });
+    } else {
+      pendingSaves.push({ path, value });
+    }
+  }
+
+  function processPendingSaves(){
+    if (!db || !userRef || pendingSaves.length === 0) return;
+    const saves = [...pendingSaves];
+    pendingSaves = [];
+    saves.forEach(({ path, value }) => {
+      userRef.child(path).set(value).catch(e => {
+        console.error('save error (pending)', path, e);
+        pendingSaves.push({ path, value });
+      });
+    });
+  }
+
   function loadProfile(){
-    if (!initFirebase()) { 
-      profileSynced = true; 
-      initialLoadDone = true;
-      renderAll(); 
-      return; 
+    if (!initFirebase()) {
+      // Load from localStorage backup
+      try {
+        const backup = JSON.parse(localStorage.getItem('pe_backup_' + uid) || '{}');
+        if (backup.tokens !== undefined) profile.tokens = backup.tokens;
+        if (backup.bestMass !== undefined) profile.bestMass = backup.bestMass;
+      } catch(e) {}
+      profileSynced = true;
+      renderAll();
+      return;
     }
     userRef = db.ref('users/' + uid);
+
+    // Load from localStorage backup first
+    try {
+      const backup = JSON.parse(localStorage.getItem('pe_backup_' + uid) || '{}');
+      if (backup.tokens !== undefined) profile.tokens = backup.tokens;
+      if (backup.bestMass !== undefined) profile.bestMass = backup.bestMass;
+    } catch(e) {}
 
     let settled = false;
     const timeoutId = setTimeout(() => {
       if (settled) return;
       settled = true;
       profileSynced = true;
-      initialLoadDone = true;
+      processPendingSaves();
       renderAll();
     }, 6000);
 
@@ -504,70 +605,43 @@
       if (settled) return;
       settled = true;
       clearTimeout(timeoutId);
-      
+
       if (!snap.exists()) {
-        // کاربر جدید: یک پروفایل با مقادیر پیش‌فرض ایجاد کن
-        profile = defaultProfile();
-        userRef.set(profile).catch(e=>console.error('initial profile save failed', e));
+        userRef.set(profile).catch(e=>console.error('initial save failed', e));
       } else {
         const remote = snap.val() || {};
-        // فقط داده‌هایی که در دیتابیس وجود دارند را با داده‌های محلی ادغام کن
-        // اما اگر داده‌ای در دیتابیس نبود، مقدار پیش‌فرض را نگه دار
-        profile = {
-          name: remote.name || displayName,
-          tokens: typeof remote.tokens === 'number' ? remote.tokens : 0,
-          bestMass: typeof remote.bestMass === 'number' ? remote.bestMass : 0,
-          equippedSkin: remote.equippedSkin || 'dead_star',
-          perks: remote.perks ? { ...remote.perks } : { splitCooldownLevel:0, speedLevel:0 },
-          inventory: remote.inventory ? { 
-            skins: remote.inventory.skins || {}, 
-            lootboxes: remote.inventory.lootboxes || {} 
-          } : { skins: {}, lootboxes: {} },
-          dailyClaim: remote.dailyClaim ? { ...remote.dailyClaim } : { streak:0, lastClaimDay:null }
-        };
-        // اطمینان از اینکه ساختارهای مورد نیاز وجود دارند
+        profile.name = remote.name || displayName;
+        profile.tokens = typeof remote.tokens === 'number' ? remote.tokens : profile.tokens;
+        profile.bestMass = typeof remote.bestMass === 'number' ? remote.bestMass : profile.bestMass;
+        profile.equippedSkin = remote.equippedSkin || 'dead_star';
+        profile.perks = remote.perks ? { ...remote.perks } : { splitCooldownLevel:0, speedLevel:0 };
+        profile.inventory = remote.inventory ? { 
+          skins: remote.inventory.skins || {}, 
+          lootboxes: remote.inventory.lootboxes || {} 
+        } : { skins: {}, lootboxes: {} };
+        profile.dailyClaim = remote.dailyClaim ? { ...remote.dailyClaim } : { streak:0, lastClaimDay:null };
+        
         if (!profile.inventory.skins) profile.inventory.skins = {};
         if (!profile.inventory.lootboxes) profile.inventory.lootboxes = {};
         if (!profile.perks) profile.perks = { splitCooldownLevel:0, speedLevel:0 };
         if (!profile.dailyClaim) profile.dailyClaim = { streak:0, lastClaimDay:null };
       }
       profileSynced = true;
-      initialLoadDone = true;
+      processPendingSaves();
       renderAll();
     }).catch(err => {
       if (settled) return;
       settled = true;
       clearTimeout(timeoutId);
-      console.error('Firebase read error, continuing in local-only mode', err);
+      console.error('Firebase read error', err);
       profileSynced = true;
-      initialLoadDone = true;
+      processPendingSaves();
       renderAll();
     });
   }
 
-  // ====== تابع ذخیره‌سازی: فقط فیلد مشخص‌شده را آپدیت می‌کند، نه کل پروفایل را ======
-  function saveField(path, value){
-    if (!db || !userRef) {
-      // اگر دیتابیس وصل نیست، فقط در حافظه محلی ذخیره کن
-      console.log('Local-only save:', path, value);
-      return;
-    }
-    userRef.child(path).set(value).catch(e => {
-      console.error('save error', path, e);
-    });
-  }
-
-  // ====== تابع ذخیره‌سازی چندگانه (برای عملیات اتمی) ======
-  function saveMultiple(updates){
-    if (!db || !userRef) {
-      console.log('Local-only multi-save:', updates);
-      return Promise.resolve();
-    }
-    return userRef.update(updates).catch(e => {
-      console.error('multi-save error', e);
-      throw e;
-    });
-  }
+  function ownsSkin(id){ return id==='dead_star' || !!(profile.inventory.skins[id] && Object.keys(profile.inventory.skins[id]).length); }
+  function skinCopies(id){ return id==='dead_star' ? 1 : Object.keys(profile.inventory.skins[id]||{}).length; }
 
   /* ---------- screens / nav ---------- */
   const screens = {};
@@ -622,16 +696,13 @@
 
   document.getElementById('play-btn').addEventListener('click', ()=>{
     if (!MODES[modeIdx].enabled) return;
-    if (!profileSynced) {
-      notify('در حال اتصال به سرور... بازی با تنظیمات پیش‌فرض شروع می‌شه.');
-    }
+    if (!profileSynced) notify('در حال اتصال به سرور...');
     startGame();
   });
 
-  /* ---------- items rendering ---------- */
   function notify(msg){ if (tg && tg.showAlert) tg.showAlert(msg); else alert(msg); }
 
-  /* ----- accordion open/close (skins + lootboxes cards) ----- */
+  /* ----- accordion ----- */
   function wireAccordion(headId, bodyId, chevronId){
     document.getElementById(headId).addEventListener('click', ()=>{
       const body = document.getElementById(bodyId);
@@ -644,6 +715,7 @@
   wireAccordion('skins-acc-head','skins-acc-body','skins-chevron');
   wireAccordion('lootbox-acc-head','lootbox-acc-body','lootbox-chevron');
 
+  /* ----- render functions ----- */
   function renderSkinGrid(){
     const grid = document.getElementById('skin-grid');
     grid.innerHTML = '';
@@ -655,7 +727,10 @@
       const card = document.createElement('div');
       card.className = 'skin-card' + (profile.equippedSkin===id ? ' equipped':'');
       card.innerHTML = `
-        <div class="skin-avatar" style="background:radial-gradient(circle at 35% 30%, #fff6, ${skin.color})"></div>
+        <img class="skin-avatar" src="${skin.image || ''}" 
+          onerror="this.style.display='none'" 
+          style="${skin.image ? '' : 'display:none;'}background:radial-gradient(circle at 35% 30%, #fff6, ${skin.color})">
+        <div class="skin-avatar" style="${skin.image ? 'display:none;' : ''}background:radial-gradient(circle at 35% 30%, #fff6, ${skin.color});display:flex;align-items:center;justify-content:center;font-size:32px;">${skin.emoji}</div>
         ${copies>1 ? '<div class="skin-owned-badge">×'+copies+'</div>' : ''}
         <div class="skin-name">${skin.name}</div>
         <div class="skin-tag ${TAG_CLASS[tag]||'tag-common'}">${TAG_LABEL[tag]||tag}</div>
@@ -672,7 +747,17 @@
     ownedIds.slice(-4).forEach(id=>{
       const dot = document.createElement('div');
       dot.className = 'acc-preview-avatar';
-      dot.style.background = `radial-gradient(circle at 35% 30%, #fff6, ${SKIN_DB[id].color})`;
+      const skin = SKIN_DB[id];
+      if (skin.image) {
+        dot.style.background = `url(${skin.image}) center/cover`;
+      } else {
+        dot.style.background = `radial-gradient(circle at 35% 30%, #fff6, ${skin.color})`;
+        dot.textContent = skin.emoji;
+        dot.style.display = 'flex';
+        dot.style.alignItems = 'center';
+        dot.style.justifyContent = 'center';
+        dot.style.fontSize = '20px';
+      }
       preview.appendChild(dot);
     });
   }
@@ -711,6 +796,7 @@
   const DAILY_REWARDS = [10,15,20,30,40,60,100];
   function todayKey(){ const d = new Date(); return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate(); }
   function daysBetween(a,b){ return Math.round((b-a)/86400000); }
+  
   function renderDailyClaim(){
     const dc = profile.dailyClaim || { streak:0, lastClaimDay:null };
     const today = todayKey();
@@ -732,6 +818,7 @@
       row.appendChild(day);
     }
   }
+
   document.getElementById('daily-claim-btn').addEventListener('click', ()=>{
     const dc = profile.dailyClaim || { streak:0, lastClaimDay:null };
     const today = todayKey();
@@ -757,7 +844,13 @@
     document.getElementById('inv-tokens').textContent = profile.tokens||0;
     document.getElementById('inv-bestmass').textContent = profile.bestMass||0;
     const equipped = SKIN_DB[profile.equippedSkin]||SKIN_DB.dead_star;
-    document.getElementById('inv-avatar-ring').style.background = `radial-gradient(circle at 35% 30%, #fff6, ${equipped.color})`;
+    if (equipped.image) {
+      document.getElementById('inv-avatar-ring').style.background = `url(${equipped.image}) center/cover`;
+      document.getElementById('inv-avatar-ring').textContent = '';
+    } else {
+      document.getElementById('inv-avatar-ring').style.background = `radial-gradient(circle at 35% 30%, #fff6, ${equipped.color})`;
+      document.getElementById('inv-avatar-ring').textContent = equipped.emoji || '🪐';
+    }
   }
 
   function renderItems(){
@@ -777,7 +870,7 @@
     }
   }
 
-  /* ---------- skin detail modal ---------- */
+  /* ---------- skin modal ---------- */
   const skinModal = document.getElementById('skin-modal');
   function openSkinModal(id){
     const skin = SKIN_DB[id];
@@ -908,6 +1001,36 @@
     });
   });
 
+  /* ===== LOOTBOX OPEN WITH ANIMATION ===== */
+  function showLootboxAnimation(skinId, rarity) {
+    return new Promise((resolve) => {
+      const el = document.getElementById('lootbox-animation');
+      const skin = SKIN_DB[skinId];
+      document.getElementById('lootbox-skin-emoji').textContent = skin.emoji || '🌟';
+      document.getElementById('lootbox-skin-name').textContent = skin.name;
+      document.getElementById('lootbox-skin-rarity').textContent = TAG_LABEL[rarity] || rarity;
+      
+      // Set rarity color
+      const rarityColors = {
+        starter: '#9fc7ff',
+        common: '#7ee787',
+        rare: '#7fd0ff',
+        epic: '#e0a8ff',
+        legend: '#ffd766'
+      };
+      document.getElementById('lootbox-skin-name').style.background = 
+        `linear-gradient(90deg, ${rarityColors[rarity] || '#fff'}, ${rarityColors[rarity] || '#fff'})`;
+      
+      el.classList.remove('hidden');
+      
+      // Auto close after 3 seconds
+      setTimeout(() => {
+        el.classList.add('hidden');
+        resolve();
+      }, 3000);
+    });
+  }
+
   function openLootbox(key){
     if (!db) { notify('اتصال به سرور برقرار نیست.'); return; }
     const box = profile.inventory.lootboxes[key];
@@ -921,10 +1044,14 @@
       const updates = {};
       updates['inventory/lootboxes/'+key] = null;
       updates['inventory/skins/'+skinId+'/'+instRef.key] = safeSerial;
-      userRef.update(updates).then(()=>{
+      userRef.update(updates).then(async () => {
         delete profile.inventory.lootboxes[key];
         profile.inventory.skins[skinId] = profile.inventory.skins[skinId] || {};
         profile.inventory.skins[skinId][instRef.key] = safeSerial;
+        
+        // Show animation
+        await showLootboxAnimation(skinId, rarity);
+        
         notify('اسکین «'+SKIN_DB[skinId].name+'» ('+TAG_LABEL[rarity]+') — تگ #'+String(safeSerial).padStart(4,'0')+' گرفتی 🎉');
         renderItems();
       }).catch(e=>{ console.error('lootbox open failed', e); notify('خطا در باز کردن، دوباره امتحان کن.'); });
@@ -936,7 +1063,7 @@
     });
   }
 
-  /* ---------- perks rendering ---------- */
+  /* ---------- perks ---------- */
   const MAX_PERK_LEVEL = 50;
   function perkCost(nextLevel){ return Math.round(50 * Math.pow(1.3, nextLevel-1)); }
 
@@ -1065,6 +1192,7 @@
     doSplit();
   }, {passive:false});
   splitBtn.addEventListener('touchend', e=>{ e.preventDefault(); e.stopPropagation(); }, {passive:false});
+
   function doSplit(){
     if (!running) return;
     if (splitCooldownLeft > 0) return;
@@ -1250,6 +1378,7 @@
     bottomnav.style.display='flex';
     showScreen('screen-over');
   }
+
   document.getElementById('back-btn').addEventListener('click', ()=>{
     if (!running) return;
     running = false;
@@ -1265,10 +1394,90 @@
     showScreen('screen-home');
     notify('+'+earnedTokens+' توکن گرفتی 🪙');
   });
+
   document.getElementById('retry-btn').addEventListener('click', startGame);
   document.getElementById('menu-btn').addEventListener('click', ()=>showScreen('screen-home'));
 
   function worldToScreen(x,y,camX,camY,scale){ return { x: innerWidth/2+(x-camX)*scale, y: innerHeight/2+(y-camY)*scale }; }
+
+  /* ===== DRAW FUNCTION WITH SKIN IMAGES ===== */
+  function drawCircle(e, color, isPlayer, name, skinId) {
+    const s = worldToScreen(e.x, e.y, camX, camY, camScale);
+    const rr = e.dispR * camScale;
+    const skin = skinId ? SKIN_DB[skinId] : null;
+
+    // Draw base circle with gradient
+    const grad = ctx.createRadialGradient(s.x-rr*0.3, s.y-rr*0.3, rr*0.1, s.x, s.y, rr);
+    grad.addColorStop(0, isPlayer ? '#8fd0ff' : '#ffffff55');
+    grad.addColorStop(1, color);
+    ctx.fillStyle = grad;
+    ctx.beginPath();
+    ctx.arc(s.x, s.y, rr, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Skin effect for player
+    if (isPlayer && skin) {
+      // Try to draw image if available
+      if (skin.image) {
+        const img = new Image();
+        img.crossOrigin = 'anonymous';
+        img.src = skin.image;
+        img.onload = function() {
+          const size = rr * 1.2;
+          ctx.save();
+          ctx.beginPath();
+          ctx.arc(s.x, s.y, size/2, 0, Math.PI * 2);
+          ctx.clip();
+          ctx.drawImage(img, s.x - size/2, s.y - size/2, size, size);
+          ctx.restore();
+        };
+        img.onerror = function() {
+          // Fallback to emoji
+          ctx.font = `${Math.max(14, rr * 0.7)}px sans-serif`;
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.shadowColor = 'rgba(0,0,0,0.9)';
+          ctx.shadowBlur = 10;
+          ctx.fillStyle = '#fff';
+          ctx.fillText(skin.emoji || '🪐', s.x, s.y + 2);
+          ctx.shadowBlur = 0;
+        };
+      }
+      
+      // Always show emoji as fallback (until image loads)
+      ctx.font = `${Math.max(14, rr * 0.5)}px sans-serif`;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.shadowColor = 'rgba(0,0,0,0.9)';
+      ctx.shadowBlur = 10;
+      ctx.fillStyle = '#fff';
+      ctx.fillText(skin.emoji || '🪐', s.x, s.y + 2);
+      ctx.shadowBlur = 0;
+
+      // Legendary glow effect
+      if (skin.rarity === 'legend') {
+        ctx.shadowColor = 'rgba(255,215,0,0.4)';
+        ctx.shadowBlur = 30;
+        ctx.strokeStyle = 'rgba(255,215,0,0.2)';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.arc(s.x, s.y, rr + 4, 0, Math.PI * 2);
+        ctx.stroke();
+        ctx.shadowBlur = 0;
+      }
+    }
+
+    // Show name
+    if (name) {
+      ctx.fillStyle = '#fff';
+      ctx.font = `${Math.max(11, 12*camScale)}px sans-serif`;
+      ctx.textAlign = 'center';
+      ctx.shadowColor = 'rgba(0,0,0,0.8)';
+      ctx.shadowBlur = 4;
+      ctx.fillText(name, s.x, s.y + rr + 18);
+      ctx.shadowBlur = 0;
+    }
+  }
 
   function draw(){
     const totalM = totalMass();
@@ -1310,18 +1519,9 @@
       ctx.fillStyle=p.color; ctx.beginPath(); ctx.arc(s.x,s.y,p.r*camScale,0,Math.PI*2); ctx.fill();
     });
 
-    function drawCircle(e, color, isPlayer, name){
-      const s=worldToScreen(e.x,e.y,camX,camY,camScale); const rr=e.dispR*camScale;
-      const grad = ctx.createRadialGradient(s.x-rr*0.3,s.y-rr*0.3,rr*0.1,s.x,s.y,rr);
-      grad.addColorStop(0, isPlayer?'#8fd0ff':'#ffffff55'); grad.addColorStop(1, color);
-      ctx.fillStyle=grad; ctx.beginPath(); ctx.arc(s.x,s.y,rr,0,Math.PI*2); ctx.fill();
-      ctx.strokeStyle='rgba(255,255,255,0.25)'; ctx.lineWidth=2; ctx.stroke();
-      if (name) { ctx.fillStyle='#fff'; ctx.font=`${Math.max(11,12*camScale)}px sans-serif`; ctx.textAlign='center'; ctx.fillText(name, s.x, s.y+4); }
-    }
-
     bots.forEach(b=>drawCircle(b, b.color, false, b.name));
-    const equippedColor = (SKIN_DB[profile.equippedSkin]||SKIN_DB.dead_star).color;
-    pieces.forEach(p=>drawCircle(p, equippedColor, true, null));
+    const equippedSkin = profile.equippedSkin || 'dead_star';
+    pieces.forEach(p=>drawCircle(p, (SKIN_DB[equippedSkin]||SKIN_DB.dead_star).color, true, null, equippedSkin));
 
     let lowestY = -Infinity, avgX = 0;
     pieces.forEach(p=>{ const s=worldToScreen(p.x,p.y,camX,camY,camScale); avgX+=s.x;
