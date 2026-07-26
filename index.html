@@ -1294,7 +1294,7 @@
     showScreen('screen-over');
   }
 
-  document.getElementById('back-btn').addEventListener('click', ()=>{
+  document.getElementById('back-btn').addEventListener('click', function(){
     if (!running) return;
     running = false;
     const finalMass = Math.round(maxMassReached);
@@ -1311,17 +1311,17 @@
   });
 
   document.getElementById('retry-btn').addEventListener('click', startGame);
-  document.getElementById('menu-btn').addEventListener('click', ()=>showScreen('screen-home'));
+  document.getElementById('menu-btn').addEventListener('click', function(){
+    showScreen('screen-home');
+  });
 
   function worldToScreen(x,y,camX,camY,scale){ return { x: innerWidth/2+(x-camX)*scale, y: innerHeight/2+(y-camY)*scale }; }
 
-  /* ===== DRAW FUNCTION - FIXED (NO IMAGE LOADING) ===== */
   function drawCircle(e, color, isPlayer, name, skinId) {
     const s = worldToScreen(e.x, e.y, camX, camY, camScale);
     const rr = e.dispR * camScale;
     const skin = skinId ? SKIN_DB[skinId] : null;
 
-    // Draw base circle with gradient
     const grad = ctx.createRadialGradient(s.x-rr*0.3, s.y-rr*0.3, rr*0.1, s.x, s.y, rr);
     grad.addColorStop(0, isPlayer ? '#8fd0ff' : '#ffffff55');
     grad.addColorStop(1, color);
@@ -1333,7 +1333,6 @@
     ctx.lineWidth = 1.5;
     ctx.stroke();
 
-    // Show EMOJI on player (no image loading to avoid errors)
     if (isPlayer && skin) {
       const emojiSize = Math.max(16, rr * 0.8);
       ctx.font = `${emojiSize}px sans-serif`;
@@ -1345,7 +1344,6 @@
       ctx.fillText(skin.emoji || '🪐', s.x, s.y + 2);
       ctx.shadowBlur = 0;
       
-      // Legendary glow effect
       if (skin.rarity === 'legend') {
         ctx.shadowColor = 'rgba(255,215,0,0.3)';
         ctx.shadowBlur = 25;
@@ -1358,7 +1356,6 @@
       }
     }
 
-    // Show name
     if (name) {
       ctx.fillStyle = '#fff';
       ctx.font = `${Math.max(11, 12*camScale)}px sans-serif`;
@@ -1454,4 +1451,4 @@
 })();
 </script>
 </body>
-</html>
+ </html>
