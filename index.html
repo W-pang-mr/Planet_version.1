@@ -425,6 +425,19 @@
   const TAG_CLASS = { starter:'tag-starter', common:'tag-common', rare:'tag-rare', epic:'tag-epic', legend:'tag-legend' };
   const TAG_LABEL = { starter:'شروع', common:'Common', rare:'Rare', epic:'Epic', legend:'Legend' };
 
+  // تابع کمکی برای ادغام عمیق (deep merge) - این مشکل اصلی نمایش صفر برای توکن‌ها را حل می‌کند
+  function deepMerge(target, source) {
+    const result = { ...target };
+    for (const key in source) {
+      if (source[key] && typeof source[key] === 'object' && !Array.isArray(source[key])) {
+        result[key] = deepMerge(target[key] || {}, source[key]);
+      } else {
+        result[key] = source[key];
+      }
+    }
+    return result;
+  }
+
   // Inventory model:
   //   inventory.skins[skinId] = { <pushKey>: serialNumber, ... }  — one
   //     entry per numbered copy the player owns (a duplicate pull now
@@ -492,7 +505,11 @@
   let userRef = null;
 
   function loadProfile(){
-    if (!initFirebase()) { profileSynced = true; renderAll(); return; }
+    if (!initFirebase()) { 
+      profileSynced = true; 
+      renderAll(); 
+      return; 
+    }
     userRef = db.ref('users/' + uid);
 
     // Safety net: if Firebase never responds (blocked domain, bad network),
@@ -510,17 +527,27 @@
       if (settled) return; // timeout already fired, ignore late response for now
       settled = true;
       clearTimeout(timeoutId);
+      
       if (!snap.exists()) {
+        // کاربر جدید است، پروفایل پیش‌فرض را در دیتابیس ذخیره کن
         userRef.set(profile).catch(e=>console.error('initial profile save failed', e));
       } else {
         const remote = snap.val() || {};
-        profile = Object.assign(defaultProfile(), remote);
+        // ادغام عمیق: مقادیر دیتابیس را با پروفایل پیش‌فرض ترکیب کن
+        profile = deepMerge(defaultProfile(), remote);
+        
+        // اطمینان از وجود ساختارهای مورد نیاز
         if (!profile.inventory) profile.inventory = { skins:{}, lootboxes:{} };
         if (!profile.inventory.skins) profile.inventory.skins = {};
         if (!profile.inventory.lootboxes) profile.inventory.lootboxes = {};
         if (!profile.perks) profile.perks = { splitCooldownLevel:0, speedLevel:0 };
         if (!profile.equippedSkin) profile.equippedSkin = 'dead_star';
         if (!profile.dailyClaim) profile.dailyClaim = { streak:0, lastClaimDay:null };
+        
+        // اگر توکن‌ها و سایر مقادیر عددی به درستی از دیتابیس آمده‌اند، آنها را حفظ کن
+        // اما اگر به هر دلیلی NaN یا undefined هستند، مقدار پیش‌فرض را بگذار
+        profile.tokens = typeof profile.tokens === 'number' ? profile.tokens : 0;
+        profile.bestMass = typeof profile.bestMass === 'number' ? profile.bestMass : 0;
       }
       profileSynced = true;
       renderAll();
