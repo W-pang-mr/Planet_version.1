@@ -7,6 +7,16 @@
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<script>
+const SKIN_IMAGES = {
+  triangle_nine: "assets/triangle_nine.jpg",
+  collector_cap: "assets/collector_cap.jpg",
+  reputation: "assets/reputation.jpg",
+  higher: "assets/higher.jpg",
+  beach_ghosts: "assets/beach_ghosts.jpg",
+  slime_resist: "assets/slime_resist.jpg",
+};
+</script>
 <style>
   * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; margin:0; padding:0; }
   html, body { height:100%; overflow:hidden; background:#000; color:#fff;
@@ -46,12 +56,23 @@
   .soon-box { display:flex; flex-direction:column; align-items:center; justify-content:center; height:100%; gap:10px; }
   .soon-box .big { font-size:44px; }
 
-  /* Items screen */
-  .section-title { align-self:flex-start; font-weight:800; font-size:15px; margin:14px 2px 8px; width:100%; max-width:420px; }
+  /* Items screen - summary cards */
+  .summary-card { width:100%; max-width:420px; background:#0e131b; border:1px solid #22303f; border-radius:16px;
+    padding:16px; margin-bottom:14px; display:flex; align-items:center; justify-content:space-between; }
+  .summary-left .summary-title { font-weight:800; font-size:17px; }
+  .summary-left .summary-count { font-size:12px; color:#8a99ad; background:#1c2634; padding:2px 10px; border-radius:999px; display:inline-block; margin-top:6px; }
+  .summary-previews { display:flex; }
+  .preview-circle { width:52px; height:52px; border-radius:50%; border:2px solid #000; margin-right:-16px;
+    background-size:cover; background-position:center; }
+  .summary-arrow { font-size:20px; color:#5c6b7d; margin-right:8px; }
+
+  .back-row { display:flex; align-items:center; width:100%; max-width:420px; margin-bottom:10px; }
+  .back-row button { background:#12161f; border:1px solid #24303f; color:#cfe0f2; border-radius:10px; padding:8px 14px; font-size:13px; }
+
   .skin-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; width:100%; max-width:420px; }
   .skin-card { background:#0e131b; border:2px solid #22303f; border-radius:14px; padding:10px; text-align:center; position:relative; }
   .skin-card.equipped { border-color:#7ee787; }
-  .skin-avatar { width:64px; height:64px; border-radius:50%; margin:0 auto 6px; }
+  .skin-avatar { width:64px; height:64px; border-radius:50%; margin:0 auto 6px; background-size:cover; background-position:center; }
   .skin-tag { font-size:9px; font-weight:800; padding:2px 6px; border-radius:999px; display:inline-block; margin-top:4px; }
   .skin-name { font-size:11px; font-weight:700; margin-top:2px; }
   .tag-starter { background:#2a3a4d; color:#9fc7ff; }
@@ -62,15 +83,30 @@
   .lock-overlay { position:absolute; inset:0; background:rgba(0,0,0,.55); border-radius:14px; display:flex;
     align-items:center; justify-content:center; font-size:22px; }
 
+  /* skin detail screen */
+  .skin-detail-avatar { width:180px; height:180px; border-radius:50%; margin:20px auto 14px; background-size:cover; background-position:center;
+    border:3px solid #2a3a4d; box-shadow:0 0 30px rgba(79,168,255,.15); }
+  .skin-detail-tag { display:inline-block; padding:5px 16px; border-radius:999px; font-weight:800; font-size:13px; margin-bottom:10px; }
+  .skin-detail-name { font-size:22px; font-weight:800; margin-bottom:6px; }
+  .skin-detail-desc { color:#8a99ad; font-size:13px; text-align:center; max-width:320px; margin-bottom:20px; }
+
   .lootbox-card { background:linear-gradient(160deg,#141a24,#0d1218); border:1px solid #26364a; border-radius:18px;
-    padding:16px; width:100%; max-width:420px; display:flex; align-items:center; gap:14px; }
+    padding:16px; width:100%; max-width:420px; display:flex; align-items:center; gap:14px; margin-bottom:12px; }
   .lootbox-icon { width:64px; height:64px; border-radius:14px; background:linear-gradient(135deg,#3dd6ff,#4fa8ff);
-    display:flex; align-items:center; justify-content:center; font-size:30px; }
+    display:flex; align-items:center; justify-content:center; font-size:30px; flex-shrink:0; }
   .lootbox-info { flex:1; }
   .lootbox-name { font-weight:800; font-size:15px; }
   .lootbox-supply { font-size:11px; color:#8a99ad; margin-top:2px; }
   .lootbox-buy { background:linear-gradient(135deg,#ffd700,#ff9d00); color:#3a2400; font-weight:800;
     border:none; border-radius:10px; padding:8px 14px; font-size:13px; white-space:nowrap; }
+  .lootbox-open { background:linear-gradient(135deg,#7ee787,#3fae5c); color:#053014; font-weight:800;
+    border:none; border-radius:10px; padding:8px 14px; font-size:13px; white-space:nowrap; }
+
+  .reveal-overlay { position:fixed; inset:0; background:rgba(0,0,0,.85); z-index:50; display:flex;
+    flex-direction:column; align-items:center; justify-content:center; gap:16px; }
+  .reveal-circle { width:160px; height:160px; border-radius:50%; background-size:cover; background-position:center;
+    animation: revealPop .5s ease; box-shadow:0 0 40px rgba(255,215,0,.4); }
+  @keyframes revealPop { from{transform:scale(0.3); opacity:0;} to{transform:scale(1); opacity:1;} }
 
   /* Perks screen */
   .perk-card { background:#0e131b; border:1px solid #22303f; border-radius:16px; padding:14px; width:100%; max-width:420px; margin-bottom:12px; }
@@ -93,11 +129,17 @@
   .nav-btn.active { color:#4fa8ff; }
   .nav-btn .nav-icon { font-size:20px; }
 
-  /* game screen */
-  #hud { position:absolute; top:14px; left:14px; right:14px; display:flex; justify-content:space-between;
-    font-size:14px; color:#cfe0f2; pointer-events:none; z-index:5; }
-  #hud b { color:#4fa8ff; }
-  #back-btn { position:absolute; top:12px; left:12px; z-index:8; background:rgba(255,255,255,.08); border:none;
+  /* game screen HUD */
+  #hud-top { position:absolute; top:14px; left:14px; right:14px; display:flex; justify-content:space-between;
+    align-items:flex-start; z-index:5; pointer-events:none; }
+  .hud-pill { display:flex; align-items:center; gap:6px; background:rgba(10,14,20,.7); border:1px solid rgba(255,255,255,.12);
+    border-radius:999px; padding:8px 14px; font-weight:700; font-size:14px; backdrop-filter: blur(4px); }
+  #hud-leaderboard { display:flex; flex-direction:column; gap:6px; align-items:flex-end; }
+  .lb-avatar-row { display:flex; align-items:center; gap:6px; background:rgba(10,14,20,.55); border-radius:999px; padding:3px 10px 3px 3px; }
+  .lb-avatar { width:26px; height:26px; border-radius:50%; background-size:cover; background-position:center; border:1px solid rgba(255,255,255,.3); }
+  .lb-mass { font-size:11px; font-weight:700; }
+
+  #back-btn { position:absolute; top:70px; left:12px; z-index:8; background:rgba(255,255,255,.08); border:none;
     color:#fff; border-radius:10px; padding:6px 10px; font-size:13px; }
   #split-btn { position:absolute; bottom:26px; right:20px; width:78px; height:78px; border-radius:50%;
     background:rgba(79,168,255,.25); border:2px solid #4fa8ff; color:#fff; font-weight:800; font-size:13px; z-index:8; }
@@ -147,21 +189,61 @@
     <div class="soon-box"><div class="big">✨</div><h1 class="title">به زودی</h1><p class="subtitle">این بخش هنوز آماده نشده</p></div>
   </div>
 
-  <!-- ITEMS -->
+  <!-- ITEMS: summary -->
   <div class="screen hidden" id="screen-items">
     <h1 class="title">🎒 آیتم‌ها</h1>
-    <div class="section-title">اسکین‌ها</div>
-    <div class="skin-grid" id="skin-grid"></div>
+    <div class="summary-card" id="card-skins">
+      <div class="summary-left">
+        <div class="summary-title">اسکین‌ها</div>
+        <div class="summary-count" id="skins-count">0 items</div>
+      </div>
+      <div style="display:flex; align-items:center;">
+        <div class="summary-previews" id="skins-preview"></div>
+        <div class="summary-arrow">‹</div>
+      </div>
+    </div>
+    <div class="summary-card" id="card-lootboxes">
+      <div class="summary-left">
+        <div class="summary-title">لوت‌باکس‌ها</div>
+        <div class="summary-count" id="lootboxes-count">0 items</div>
+      </div>
+      <div style="display:flex; align-items:center;">
+        <div class="summary-previews"><div class="preview-circle" style="background:linear-gradient(135deg,#3dd6ff,#4fa8ff); display:flex; align-items:center; justify-content:center; font-size:22px;">📦</div></div>
+        <div class="summary-arrow">‹</div>
+      </div>
+    </div>
+  </div>
 
-    <div class="section-title">لوت‌باکس</div>
+  <!-- ITEMS: skins grid detail -->
+  <div class="screen hidden" id="screen-skins-detail">
+    <div class="back-row"><button id="skins-back-btn">‹ بازگشت</button></div>
+    <h1 class="title">اسکین‌ها</h1>
+    <div class="skin-grid" id="skin-grid"></div>
+  </div>
+
+  <!-- ITEMS: single skin detail -->
+  <div class="screen hidden" id="screen-skin-detail">
+    <div class="back-row"><button id="skin-detail-back-btn">‹ بازگشت</button></div>
+    <div class="skin-detail-avatar" id="skin-detail-avatar"></div>
+    <div class="skin-detail-tag" id="skin-detail-tag"></div>
+    <div class="skin-detail-name" id="skin-detail-name"></div>
+    <div class="skin-detail-desc" id="skin-detail-desc"></div>
+    <button class="btn" id="skin-detail-equip-btn">استفاده</button>
+  </div>
+
+  <!-- ITEMS: lootbox detail -->
+  <div class="screen hidden" id="screen-lootbox-detail">
+    <div class="back-row"><button id="lootbox-back-btn">‹ بازگشت</button></div>
+    <h1 class="title">📦 Newer</h1>
     <div class="lootbox-card">
       <div class="lootbox-icon">📦</div>
       <div class="lootbox-info">
-        <div class="lootbox-name">Newer</div>
+        <div class="lootbox-name">موجودی: <span id="lootbox-owned-count">0</span></div>
         <div class="lootbox-supply" id="lootbox-supply">در حال بارگذاری...</div>
       </div>
-      <button class="lootbox-buy" id="lootbox-buy-btn">🪙 10000</button>
+      <button class="lootbox-open" id="lootbox-open-btn">باز کردن</button>
     </div>
+    <button class="btn secondary" id="lootbox-buy-btn">خرید یک عدد — 🪙 10000</button>
   </div>
 
   <!-- PERKS -->
@@ -199,11 +281,12 @@
   <!-- GAME -->
   <div class="screen hidden full" id="screen-game">
     <canvas id="board"></canvas>
-    <button id="back-btn">✕ خروج</button>
-    <div id="hud">
-      <span>حجم: <b id="hud-mass">0</b></span>
-      <span>قطعات: <b id="hud-pieces">1</b></span>
+    <div id="hud-top">
+      <div class="hud-pill">🏅 <span id="hud-rank">#1</span></div>
+      <div class="hud-pill">⚖️ <span id="hud-mass">0</span></div>
+      <div id="hud-leaderboard"></div>
     </div>
+    <button id="back-btn">✕ خروج</button>
     <button id="split-btn">تقسیم</button>
     <div id="joystick-base"></div>
     <div id="joystick-knob"></div>
@@ -217,6 +300,14 @@
     <div class="go-best">رکورد شما: <b id="go-best">0</b></div>
     <button class="btn" id="retry-btn">🔁 دوباره بازی کن</button>
     <button class="btn secondary" id="menu-btn">منوی اصلی</button>
+  </div>
+
+  <!-- LOOTBOX REVEAL -->
+  <div class="reveal-overlay hidden" id="reveal-overlay">
+    <div class="reveal-circle" id="reveal-circle"></div>
+    <div class="skin-detail-tag" id="reveal-tag"></div>
+    <div class="skin-detail-name" id="reveal-name"></div>
+    <button class="btn" id="reveal-close-btn" style="max-width:220px;">باشه!</button>
   </div>
 
 </div>
@@ -256,27 +347,33 @@
   }
 
   const SKIN_DB = {
-    dead_star:      { name:'Dead Star',        rarity:'starter', color:'#dfeaf2' },
-    no_mouse:       { name:'No Mouse',         rarity:'common',  color:'#7a4fd9' },
-    golden_bowl:    { name:'Golden Bowl',      rarity:'common',  color:'#caa23a' },
-    slime_resist:   { name:'Slime Resistance', rarity:'rare',    color:'#4a2f8a' },
-    when_lambo:     { name:'When Lambo',       rarity:'rare',    color:'#f0d020' },
-    higher:         { name:'Higher',           rarity:'rare',    color:'#5a4fc9' },
-    reputation:     { name:'Reputation',       rarity:'epic',    color:'#e8d060' },
-    collector_cap:  { name:'Collector',        rarity:'legend',  color:'#a86fff' },
-    triangle_nine:  { name:'Triangle 9',       rarity:'legend',  color:'#3dd6ff' },
+    dead_star:      { name:'Dead Star',        rarity:'starter', color:'#dfeaf2', desc:'اسکین شروع. بازی کن، جایزه بگیر و اسکین‌های جدید باز کن.' },
+    no_mouse:       { name:'No Mouse',         rarity:'common',  color:'#7a4fd9', desc:'یه اسکین معمولی از لوت‌باکس Newer.' },
+    golden_bowl:    { name:'Golden Bowl',      rarity:'common',  color:'#caa23a', desc:'یه اسکین معمولی از لوت‌باکس Newer.' },
+    slime_resist:   { name:'Slime Resistance', rarity:'rare',    img:SKIN_IMAGES.slime_resist, desc:'مقاومت در برابر اسلایم‌ها. کمیاب.' },
+    higher:         { name:'Higher',           rarity:'rare',    img:SKIN_IMAGES.higher, desc:'رو به بالا، همیشه بالاتر.' },
+    beach_ghosts:   { name:'Beach Ghosts',     rarity:'rare',    img:SKIN_IMAGES.beach_ghosts, desc:'دو روح ساحلی از لوت‌باکس Newer.' },
+    reputation:     { name:'Reputation',       rarity:'epic',    img:SKIN_IMAGES.reputation, desc:'شهرت بالا، ریسک بالا.' },
+    collector_cap:  { name:'Collector',        rarity:'legend',  img:SKIN_IMAGES.collector_cap, desc:'یکی از کمیاب‌ترین اسکین‌های بازی.' },
+    triangle_nine:  { name:'Triangle 9',       rarity:'legend',  img:SKIN_IMAGES.triangle_nine, desc:'افسانه‌ای. فقط برای شانسی‌ترین‌ها.' },
   };
   const LOOTBOX_POOL = {
     common: ['no_mouse','golden_bowl'],
-    rare: ['slime_resist','when_lambo','higher'],
+    rare: ['slime_resist','higher','beach_ghosts'],
     epic: ['reputation'],
     legend: ['collector_cap','triangle_nine']
   };
-  const RARITY_WEIGHTS = { common:60, rare:25, epic:10, legend:5 };
+  const RARITY_WEIGHTS = { common:55, rare:30, epic:10, legend:5 };
   const TAG_CLASS = { starter:'tag-starter', common:'tag-common', rare:'tag-rare', epic:'tag-epic', legend:'tag-legend' };
   const TAG_LABEL = { starter:'شروع', common:'Common', rare:'Rare', epic:'Epic', legend:'Legend' };
 
-  let profile = null; // live mirror of DB user data
+  function skinBg(id){
+    const s = SKIN_DB[id];
+    if (!s) return '#333';
+    return s.img ? `url('${s.img}')` : `radial-gradient(circle at 35% 30%, #fff6, ${s.color})`;
+  }
+
+  let profile = null;
 
   function defaultProfile(){
     return {
@@ -285,7 +382,7 @@
       bestMass: 0,
       equippedSkin: 'dead_star',
       perks: { splitCooldownLevel:0, speedLevel:0 },
-      inventory: { skins: { dead_star: { tag:'starter' } } }
+      inventory: { skins: { dead_star: { tag:'starter' } }, lootboxes:{ newer:0 } }
     };
   }
 
@@ -296,12 +393,13 @@
       userRef.set(profile);
     } else {
       profile = snap.val();
-      if (!profile.inventory) profile.inventory = { skins:{ dead_star:{tag:'starter'} } };
+      if (!profile.inventory) profile.inventory = { skins:{ dead_star:{tag:'starter'} }, lootboxes:{newer:0} };
       if (!profile.inventory.skins || !profile.inventory.skins.dead_star) {
         profile.inventory.skins = profile.inventory.skins || {};
         profile.inventory.skins.dead_star = { tag:'starter' };
         userRef.child('inventory/skins/dead_star').set({ tag:'starter' });
       }
+      if (!profile.inventory.lootboxes) { profile.inventory.lootboxes = { newer:0 }; }
       if (!profile.perks) profile.perks = { splitCooldownLevel:0, speedLevel:0 };
       if (!profile.equippedSkin) profile.equippedSkin = 'dead_star';
     }
@@ -326,7 +424,7 @@
       document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
       btn.classList.add('active');
       showScreen('screen-'+btn.dataset.tab);
-      if (btn.dataset.tab==='items') renderItems();
+      if (btn.dataset.tab==='items') renderItemsSummary();
       if (btn.dataset.tab==='perks') renderPerks();
     });
   });
@@ -334,7 +432,7 @@
   function renderAll(){
     document.getElementById('home-tokens').textContent = profile.tokens || 0;
     document.getElementById('home-rank').textContent = Math.max(1, Math.floor((profile.bestMass||0)/50)+1);
-    renderItems();
+    renderItemsSummary();
     renderPerks();
   }
 
@@ -357,31 +455,80 @@
   renderMode();
   document.getElementById('play-btn').addEventListener('click', ()=>{ if (MODES[modeIdx].enabled) startGame(); });
 
-  /* ---------- items rendering ---------- */
-  function renderItems(){
+  /* ---------- items: summary screen ---------- */
+  function renderItemsSummary(){
     if (!profile) return;
+    const owned = Object.keys(profile.inventory.skins||{});
+    document.getElementById('skins-count').textContent = owned.length + ' items';
+    const prevWrap = document.getElementById('skins-preview');
+    prevWrap.innerHTML = '';
+    owned.slice(-4).forEach(id=>{
+      const c = document.createElement('div');
+      c.className = 'preview-circle';
+      c.style.background = skinBg(id);
+      prevWrap.appendChild(c);
+    });
+    const lbCount = (profile.inventory.lootboxes && profile.inventory.lootboxes.newer) || 0;
+    document.getElementById('lootboxes-count').textContent = lbCount + ' items';
+  }
+  document.getElementById('card-skins').addEventListener('click', ()=>{ renderSkinGrid(); showScreen('screen-skins-detail'); });
+  document.getElementById('skins-back-btn').addEventListener('click', ()=>showScreen('screen-items'));
+  document.getElementById('card-lootboxes').addEventListener('click', ()=>{ renderLootboxDetail(); showScreen('screen-lootbox-detail'); });
+  document.getElementById('lootbox-back-btn').addEventListener('click', ()=>showScreen('screen-items'));
+  document.getElementById('skin-detail-back-btn').addEventListener('click', ()=>{ renderSkinGrid(); showScreen('screen-skins-detail'); });
+
+  function renderSkinGrid(){
     const grid = document.getElementById('skin-grid');
     grid.innerHTML = '';
     Object.keys(SKIN_DB).forEach(id=>{
       const skin = SKIN_DB[id];
-      const owned = profile.inventory && profile.inventory.skins && profile.inventory.skins[id];
+      const owned = profile.inventory.skins && profile.inventory.skins[id];
       const tag = owned ? owned.tag : skin.rarity;
       const card = document.createElement('div');
       card.className = 'skin-card' + (profile.equippedSkin===id ? ' equipped':'');
       card.innerHTML = `
-        <div class="skin-avatar" style="background:radial-gradient(circle at 35% 30%, #fff6, ${skin.color})"></div>
+        <div class="skin-avatar" style="background:${skinBg(id)}; background-size:cover; background-position:center;"></div>
         <div class="skin-name">${skin.name}</div>
         <div class="skin-tag ${TAG_CLASS[tag]||'tag-common'}">${TAG_LABEL[tag]||tag}</div>
         ${!owned ? '<div class="lock-overlay">🔒</div>' : ''}
       `;
-      if (owned) card.addEventListener('click', ()=>{
-        profile.equippedSkin = id;
-        saveField('equippedSkin', id);
-        renderItems();
-      });
+      card.addEventListener('click', ()=>{ openSkinDetail(id, !!owned); });
       grid.appendChild(card);
     });
+  }
 
+  let currentDetailSkin = null;
+  function openSkinDetail(id, owned){
+    currentDetailSkin = id;
+    const skin = SKIN_DB[id];
+    const ownedData = profile.inventory.skins && profile.inventory.skins[id];
+    const tag = ownedData ? ownedData.tag : skin.rarity;
+    document.getElementById('skin-detail-avatar').style.background = skinBg(id);
+    document.getElementById('skin-detail-avatar').style.backgroundSize = 'cover';
+    document.getElementById('skin-detail-tag').textContent = TAG_LABEL[tag]||tag;
+    document.getElementById('skin-detail-tag').className = 'skin-detail-tag ' + (TAG_CLASS[tag]||'tag-common');
+    document.getElementById('skin-detail-name').textContent = skin.name;
+    document.getElementById('skin-detail-desc').textContent = skin.desc || '';
+    const btn = document.getElementById('skin-detail-equip-btn');
+    if (!owned) { btn.textContent = 'قفل است'; btn.disabled = true; }
+    else if (profile.equippedSkin === id) { btn.textContent = 'در حال استفاده'; btn.disabled = true; }
+    else { btn.textContent = 'استفاده کن'; btn.disabled = false; }
+    showScreen('screen-skin-detail');
+  }
+  document.getElementById('skin-detail-equip-btn').addEventListener('click', ()=>{
+    if (!currentDetailSkin) return;
+    profile.equippedSkin = currentDetailSkin;
+    saveField('equippedSkin', currentDetailSkin);
+    openSkinDetail(currentDetailSkin, true);
+  });
+
+  /* ---------- lootbox detail + buy + open ---------- */
+  const LOOTBOX_PRICE = 10000;
+
+  function renderLootboxDetail(){
+    const owned = (profile.inventory.lootboxes && profile.inventory.lootboxes.newer) || 0;
+    document.getElementById('lootbox-owned-count').textContent = owned;
+    document.getElementById('lootbox-open-btn').disabled = owned <= 0;
     db.ref('lootboxSupply/newer').once('value').then(snap=>{
       const d = snap.val() || { claimed:0, max:1000 };
       document.getElementById('lootbox-supply').textContent = `${d.claimed}/${d.max} برداشته شده`;
@@ -389,7 +536,30 @@
     });
   }
 
-  const LOOTBOX_PRICE = 10000;
+  function notify(msg){ if (tg && tg.showAlert) tg.showAlert(msg); else alert(msg); }
+
+  document.getElementById('lootbox-buy-btn').addEventListener('click', ()=>{
+    if (!profile) return;
+    if ((profile.tokens||0) < LOOTBOX_PRICE) { notify('توکن کافی نداری! به '+LOOTBOX_PRICE+' توکن نیاز داری.'); return; }
+    const supplyRef = db.ref('lootboxSupply/newer');
+    supplyRef.transaction(current=>{
+      current = current || { claimed:0, max:1000 };
+      if (current.claimed < current.max) current.claimed += 1;
+      return current;
+    }, (err, committed, snap)=>{
+      if (err) { notify('خطا در بررسی موجودی، دوباره امتحان کن.'); return; }
+      const data = snap.val();
+      if (!data || data.claimed > data.max) { notify('لوت‌باکس Newer تموم شده! 😔'); return; }
+      profile.tokens -= LOOTBOX_PRICE;
+      profile.inventory.lootboxes.newer = (profile.inventory.lootboxes.newer||0) + 1;
+      saveField('tokens', profile.tokens);
+      saveField('inventory/lootboxes/newer', profile.inventory.lootboxes.newer);
+      document.getElementById('home-tokens').textContent = profile.tokens;
+      notify('یه لوت‌باکس Newer خریدی! برو بازش کن 📦');
+      renderLootboxDetail();
+      renderItemsSummary();
+    });
+  });
 
   function pickRandomSkin(){
     const roll = Math.random()*100;
@@ -403,42 +573,42 @@
     return { skinId, rarity: chosenRarity };
   }
 
-  function notify(msg){ if (tg && tg.showAlert) tg.showAlert(msg); else alert(msg); }
+  document.getElementById('lootbox-open-btn').addEventListener('click', ()=>{
+    const owned = (profile.inventory.lootboxes && profile.inventory.lootboxes.newer) || 0;
+    if (owned <= 0) return;
+    profile.inventory.lootboxes.newer -= 1;
+    saveField('inventory/lootboxes/newer', profile.inventory.lootboxes.newer);
 
-  document.getElementById('lootbox-buy-btn').addEventListener('click', ()=>{
-    if (!profile) return;
-    if ((profile.tokens||0) < LOOTBOX_PRICE) { notify('توکن کافی نداری! به '+LOOTBOX_PRICE+' توکن نیاز داری.'); return; }
+    const { skinId, rarity } = pickRandomSkin();
+    const alreadyOwned = profile.inventory.skins[skinId];
+    const revealOverlay = document.getElementById('reveal-overlay');
+    const revealCircle = document.getElementById('reveal-circle');
+    const revealTag = document.getElementById('reveal-tag');
+    const revealName = document.getElementById('reveal-name');
 
-    const supplyRef = db.ref('lootboxSupply/newer');
-    supplyRef.transaction(current=>{
-      current = current || { claimed:0, max:1000 };
-      if (current.claimed < current.max) current.claimed += 1;
-      return current;
-    }, (err, committed, snap)=>{
-      if (err) { notify('خطا در بررسی موجودی، دوباره امتحان کن.'); return; }
-      const data = snap.val();
-      if (!data || data.claimed > data.max) { notify('لوت‌باکس Newer تموم شده! 😔'); return; }
-
-      profile.tokens -= LOOTBOX_PRICE;
+    if (alreadyOwned) {
+      const refund = Math.round(LOOTBOX_PRICE*0.25);
+      profile.tokens += refund;
       saveField('tokens', profile.tokens);
       document.getElementById('home-tokens').textContent = profile.tokens;
-
-      const { skinId, rarity } = pickRandomSkin();
-      const owned = profile.inventory.skins && profile.inventory.skins[skinId];
-      if (owned) {
-        const refund = Math.round(LOOTBOX_PRICE*0.25);
-        profile.tokens += refund;
-        saveField('tokens', profile.tokens);
-        document.getElementById('home-tokens').textContent = profile.tokens;
-        notify('این اسکین رو از قبل داشتی! به‌جاش '+refund+' توکن جایزه گرفتی 🎁');
-      } else {
-        profile.inventory.skins = profile.inventory.skins || {};
-        profile.inventory.skins[skinId] = { tag: rarity };
-        saveField('inventory/skins/'+skinId, { tag: rarity });
-        notify('تبریک! اسکین جدید «'+SKIN_DB[skinId].name+'» ('+TAG_LABEL[rarity]+') گرفتی 🎉');
-      }
-      renderItems();
-    });
+      revealCircle.style.background = 'radial-gradient(circle at 35% 30%, #fff6, #caa23a)';
+      revealTag.textContent = 'تکراری';
+      revealTag.className = 'skin-detail-tag tag-common';
+      revealName.textContent = '+'+refund+' توکن جایزه گرفتی 🎁';
+    } else {
+      profile.inventory.skins[skinId] = { tag: rarity };
+      saveField('inventory/skins/'+skinId, { tag: rarity });
+      revealCircle.style.background = skinBg(skinId);
+      revealTag.textContent = TAG_LABEL[rarity];
+      revealTag.className = 'skin-detail-tag ' + (TAG_CLASS[rarity]||'tag-common');
+      revealName.textContent = SKIN_DB[skinId].name;
+    }
+    revealOverlay.classList.remove('hidden');
+    renderLootboxDetail();
+    renderItemsSummary();
+  });
+  document.getElementById('reveal-close-btn').addEventListener('click', ()=>{
+    document.getElementById('reveal-overlay').classList.add('hidden');
   });
 
   /* ---------- perks rendering ---------- */
@@ -490,6 +660,7 @@
   const BOT_COLORS = ['#ff5c5c','#ffd23d','#7ee787','#ff9d3d','#a86fff','#3dd6ff','#ff5cf0','#ff8080','#80ffcf','#c48bff'];
   const SPLIT_MIN_MASS = 35, MAX_PIECES = 16, SPLIT_MERGE_LOCK = 15;
   const BASE_SPLIT_COOLDOWN = 5;
+  const COHESION_STRENGTH = 2.4;
 
   let pieces, bots, pellets, camScale, running, lastT, splitCooldownLeft, maxMassReached;
 
@@ -508,7 +679,7 @@
 
   function startGame(){
     fitCanvas();
-    pieces = [ { x:WORLD/2, y:WORLD/2, mass:22, dispR:radiusFromMass(22), boostT:0, boostX:0, boostY:0, mergeAt:0 } ];
+    pieces = [ { x:WORLD/2, y:WORLD/2, mass:22, dispR:radiusFromMass(22), boostVX:0, boostVY:0, mergeAt:0 } ];
     bots = []; for (let i=1;i<=BOT_COUNT;i++) bots.push(makeBot(i, pieces[0]));
     pellets = []; for (let i=0;i<PELLET_COUNT;i++) pellets.push(makePellet());
     camScale = 1; running = true; lastT = null; splitCooldownLeft = 0; maxMassReached = 22;
@@ -517,6 +688,11 @@
   }
 
   function totalMass(){ return pieces.reduce((s,p)=>s+p.mass, 0); }
+  function centroid(){
+    let cx=0, cy=0, w=0;
+    pieces.forEach(p=>{ cx+=p.x*p.mass; cy+=p.y*p.mass; w+=p.mass; });
+    return { x: cx/w, y: cy/w };
+  }
 
   /* controls */
   let joy = { active:false, originX:0, originY:0, dx:0, dy:0 };
@@ -553,17 +729,17 @@
     if (splitCooldownLeft > 0) return;
     if (totalMass() < SPLIT_MIN_MASS) return;
     if (pieces.length >= MAX_PIECES) return;
-    const dir = currentDir();
-    const dx = dir.x||0, dy = dir.y|| -1;
+    let dir = currentDir();
+    if (!dir.x && !dir.y) dir = { x:0, y:-1 };
     const snapshot = pieces.slice();
     for (const piece of snapshot) {
       if (pieces.length >= MAX_PIECES) break;
       if (piece.mass < 18) continue;
       const half = piece.mass/2;
       piece.mass = half; piece.dispR = radiusFromMass(half);
-      const nx = piece.x + dx*piece.dispR, ny = piece.y + dy*piece.dispR;
+      const nx = piece.x + dir.x*piece.dispR*0.6, ny = piece.y + dir.y*piece.dispR*0.6;
       pieces.push({ x:nx, y:ny, mass:half, dispR:radiusFromMass(half),
-        boostT:0.28, boostX:dx*420, boostY:dy*420, mergeAt: performance.now()+SPLIT_MERGE_LOCK*1000 });
+        boostVX: dir.x*190, boostVY: dir.y*190, mergeAt: performance.now()+SPLIT_MERGE_LOCK*1000 });
       piece.mergeAt = performance.now()+SPLIT_MERGE_LOCK*1000;
     }
     splitCooldownLeft = splitCooldownMax();
@@ -574,10 +750,17 @@
   function updatePieces(dt){
     const dir = currentDir();
     const mult = speedMultiplier();
+    const c = pieces.length>1 ? centroid() : null;
     for (const p of pieces) {
       const spd = baseSpeedFromRadius(p.dispR) * mult;
       let vx = dir.x*spd, vy = dir.y*spd;
-      if (p.boostT > 0) { vx += p.boostX*(p.boostT/0.28); vy += p.boostY*(p.boostT/0.28); p.boostT = Math.max(0, p.boostT-dt); }
+      vx += p.boostVX; vy += p.boostVY;
+      const damp = Math.pow(0.002, dt);
+      p.boostVX *= damp; p.boostVY *= damp;
+      if (c) {
+        const dx = c.x-p.x, dy = c.y-p.y, d = Math.hypot(dx,dy);
+        if (d > p.dispR*0.7) { vx += (dx/d)*COHESION_STRENGTH*d*dt*8; vy += (dy/d)*COHESION_STRENGTH*d*dt*8; }
+      }
       p.x += vx*dt; p.y += vy*dt;
       clampWorld(p);
       for (let i=pellets.length-1;i>=0;i--){
@@ -585,7 +768,6 @@
         if (d < p.dispR) { p.mass += 1.1; pellets[i] = makePellet(); }
       }
     }
-    // merge own pieces if lock expired and overlapping
     const now = performance.now();
     for (let i=pieces.length-1;i>0;i--){
       for (let j=i-1;j>=0;j--){
@@ -595,6 +777,20 @@
         if (d < Math.max(a.dispR,b.dispR)*0.5) {
           b.mass += a.mass; b.dispR = radiusFromMass(b.mass);
           pieces.splice(i,1); break;
+        }
+      }
+    }
+    // gentle separation so overlapping pieces don't stack perfectly (keeps grape-cluster look)
+    for (let i=0;i<pieces.length;i++){
+      for (let j=i+1;j<pieces.length;j++){
+        const a=pieces[i], b=pieces[j];
+        const dx=b.x-a.x, dy=b.y-a.y; const d=Math.hypot(dx,dy)||0.01;
+        const minD = (a.dispR+b.dispR)*0.55;
+        if (d < minD && now >= a.mergeAt && now >= b.mergeAt) {
+          const push = (minD-d)*0.5;
+          const nx=dx/d, ny=dy/d;
+          a.x -= nx*push*0.5; a.y -= ny*push*0.5;
+          b.x += nx*push*0.5; b.y += ny*push*0.5;
         }
       }
     }
@@ -663,6 +859,19 @@
 
   function worldToScreen(x,y,camX,camY,scale){ return { x: innerWidth/2+(x-camX)*scale, y: innerHeight/2+(y-camY)*scale }; }
 
+  function drawRadarGrid(){
+    ctx.strokeStyle = 'rgba(255,255,255,0.06)';
+    ctx.lineWidth = 1;
+    const cx = innerWidth/2, cy = innerHeight/2;
+    const maxR = Math.hypot(innerWidth, innerHeight)/2;
+    for (let r=80; r<maxR; r+=80) { ctx.beginPath(); ctx.arc(cx,cy,r,0,Math.PI*2); ctx.stroke(); }
+    const spokes = 12;
+    for (let i=0;i<spokes;i++){
+      const ang = (i/spokes)*Math.PI*2;
+      ctx.beginPath(); ctx.moveTo(cx,cy); ctx.lineTo(cx+Math.cos(ang)*maxR, cy+Math.sin(ang)*maxR); ctx.stroke();
+    }
+  }
+
   function draw(){
     const totalM = totalMass();
     const avgR = radiusFromMass(totalM/pieces.length);
@@ -673,11 +882,7 @@
     camX/=wsum; camY/=wsum;
 
     ctx.fillStyle='#04070c'; ctx.fillRect(0,0,innerWidth,innerHeight);
-    ctx.strokeStyle='rgba(255,255,255,0.04)';
-    const gStep=100*camScale;
-    const offX=(innerWidth/2-camX*camScale)%gStep, offY=(innerHeight/2-camY*camScale)%gStep;
-    for (let x=offX;x<innerWidth;x+=gStep){ ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,innerHeight); ctx.stroke(); }
-    for (let y=offY;y<innerHeight;y+=gStep){ ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(innerWidth,y); ctx.stroke(); }
+    drawRadarGrid();
 
     pellets.forEach(p=>{
       const s=worldToScreen(p.x,p.y,camX,camY,camScale);
@@ -685,22 +890,51 @@
       ctx.fillStyle=p.color; ctx.beginPath(); ctx.arc(s.x,s.y,p.r*camScale,0,Math.PI*2); ctx.fill();
     });
 
-    function drawCircle(e, color, isPlayer, name){
+    function drawCircle(e, color, isPlayer, name, imgUrl){
       const s=worldToScreen(e.x,e.y,camX,camY,camScale); const rr=e.dispR*camScale;
-      const grad = ctx.createRadialGradient(s.x-rr*0.3,s.y-rr*0.3,rr*0.1,s.x,s.y,rr);
-      grad.addColorStop(0, isPlayer?'#8fd0ff':'#ffffff55'); grad.addColorStop(1, color);
-      ctx.fillStyle=grad; ctx.beginPath(); ctx.arc(s.x,s.y,rr,0,Math.PI*2); ctx.fill();
-      ctx.strokeStyle='rgba(255,255,255,0.25)'; ctx.lineWidth=2; ctx.stroke();
-      if (name) { ctx.fillStyle='#fff'; ctx.font=`${Math.max(11,12*camScale)}px sans-serif`; ctx.textAlign='center'; ctx.fillText(name, s.x, s.y+4); }
+      if (imgUrl) {
+        if (!e._imgEl) { e._imgEl = new Image(); e._imgEl.src = imgUrl; }
+        ctx.save();
+        ctx.beginPath(); ctx.arc(s.x,s.y,rr,0,Math.PI*2); ctx.clip();
+        if (e._imgEl.complete) ctx.drawImage(e._imgEl, s.x-rr, s.y-rr, rr*2, rr*2);
+        else { ctx.fillStyle = color; ctx.fill(); }
+        ctx.restore();
+        ctx.beginPath(); ctx.arc(s.x,s.y,rr,0,Math.PI*2);
+        ctx.strokeStyle='rgba(255,255,255,0.25)'; ctx.lineWidth=2; ctx.stroke();
+      } else {
+        const grad = ctx.createRadialGradient(s.x-rr*0.3,s.y-rr*0.3,rr*0.1,s.x,s.y,rr);
+        grad.addColorStop(0, isPlayer?'#8fd0ff':'#ffffff55'); grad.addColorStop(1, color);
+        ctx.fillStyle=grad; ctx.beginPath(); ctx.arc(s.x,s.y,rr,0,Math.PI*2); ctx.fill();
+        ctx.strokeStyle='rgba(255,255,255,0.25)'; ctx.lineWidth=2; ctx.stroke();
+      }
+      if (name) { ctx.fillStyle='#fff'; ctx.font=`${Math.max(11,12*camScale)}px sans-serif`; ctx.textAlign='center'; ctx.fillText(name, s.x, s.y+rr+14); }
     }
 
-    bots.forEach(b=>drawCircle(b, b.color, false, b.name));
-    const equippedColor = (SKIN_DB[profile.equippedSkin]||SKIN_DB.dead_star).color;
-    pieces.forEach(p=>drawCircle(p, equippedColor, true, null));
+    bots.forEach(b=>drawCircle(b, b.color, false, b.name, null));
+    const eq = SKIN_DB[profile.equippedSkin] || SKIN_DB.dead_star;
+    pieces.forEach(p=>drawCircle(p, eq.color||'#4fa8ff', true, null, eq.img));
 
-    // split cooldown UI
     splitBtn.disabled = totalM < SPLIT_MIN_MASS || pieces.length>=MAX_PIECES || splitCooldownLeft>0;
     splitBtn.textContent = splitCooldownLeft>0 ? Math.ceil(splitCooldownLeft)+'s' : 'تقسیم';
+
+    updateHud(totalM);
+  }
+
+  function updateHud(totalM){
+    document.getElementById('hud-mass').textContent = Math.round(totalM);
+    const entities = [{ name: profile.name||'شما', mass: totalM, color:'#4fa8ff', isPlayer:true }]
+      .concat(bots.map(b=>({ name:b.name, mass:b.mass, color:b.color })));
+    entities.sort((a,b)=>b.mass-a.mass);
+    const rank = entities.findIndex(e=>e.isPlayer) + 1;
+    document.getElementById('hud-rank').textContent = '#'+rank;
+    const lbWrap = document.getElementById('hud-leaderboard');
+    lbWrap.innerHTML = '';
+    entities.slice(0,4).forEach(e=>{
+      const row = document.createElement('div');
+      row.className = 'lb-avatar-row';
+      row.innerHTML = `<span class="lb-mass">${Math.round(e.mass)}</span><div class="lb-avatar" style="background:${e.color}"></div>`;
+      lbWrap.appendChild(row);
+    });
   }
 
   function loop(t){
@@ -710,8 +944,6 @@
     if (!running) return;
     if (splitCooldownLeft>0) splitCooldownLeft=Math.max(0,splitCooldownLeft-dt);
     const tm = totalMass(); if (tm>maxMassReached) maxMassReached=tm;
-    document.getElementById('hud-mass').textContent = Math.round(tm);
-    document.getElementById('hud-pieces').textContent = pieces.length;
     draw();
     requestAnimationFrame(loop);
   }
