@@ -233,6 +233,67 @@
   }
   .shop-note b { color: #ffd766; }
 
+  /* ===== Admin styles ===== */
+  .admin-section {
+    background: #0e131b;
+    border: 2px solid #ffd766;
+    border-radius: 16px;
+    padding: 16px;
+    margin-top: 20px;
+    width: 100%;
+  }
+  .admin-title {
+    color: #ffd766;
+    font-size: 18px;
+    font-weight: 800;
+    margin-bottom: 12px;
+    text-align: center;
+  }
+  .admin-request {
+    background: #1a1f2a;
+    border: 1px solid #2a3a4d;
+    border-radius: 10px;
+    padding: 12px;
+    margin-bottom: 10px;
+  }
+  .admin-request .req-info {
+    font-size: 13px;
+    color: #8a99ad;
+  }
+  .admin-request .req-info b { color: #fff; }
+  .admin-request .req-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 8px;
+  }
+  .admin-approve-btn {
+    background: #2fbf6e;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 6px 16px;
+    font-weight: 700;
+    cursor: pointer;
+    flex: 1;
+  }
+  .admin-reject-btn {
+    background: #ff4444;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 6px 16px;
+    font-weight: 700;
+    cursor: pointer;
+    flex: 1;
+  }
+  .admin-approve-btn:active, .admin-reject-btn:active { transform: scale(0.95); }
+  .admin-empty {
+    color: #5c6b7d;
+    text-align: center;
+    padding: 10px;
+    font-size: 14px;
+  }
+
   /* bottom nav */
   #bottomnav { position:absolute; left:0; right:0; bottom:0; height:64px; display:flex;
     background:#0a0d12; border-top:1px solid #1c2530; z-index:20; }
@@ -285,11 +346,11 @@
     <button class="btn" id="play-btn">▶ شروع بازی</button>
   </div>
 
-  <!-- SHOP (جایگزین "به زودی") -->
+  <!-- SHOP -->
   <div class="screen hidden" id="screen-shop">
     <div class="shop-container">
       <h1 class="title">🪐 فروشگاه</h1>
-      <p class="subtitle">با استارز پلنت کوین بخر و لوت‌باکس باز کن!</p>
+      <p class="subtitle">با تون‌کوین پلنت کوین بخر و لوت‌باکس باز کن!</p>
       
       <div class="shop-balance">
         <div class="balance-item">
@@ -307,32 +368,43 @@
       <div class="shop-packs">
         <div class="pack-card">
           <div class="pack-icon">🪐×10</div>
-          <div class="pack-price">⭐ ۵ استارز</div>
-          <button class="pack-buy-btn" data-coins="10" data-stars="5">خرید</button>
+          <div class="pack-price">💰 ۰.۰۵ تون‌کوین</div>
+          <button class="pack-buy-btn" data-coins="10" data-price="0.05">درخواست خرید</button>
         </div>
         <div class="pack-card">
           <div class="pack-icon">🪐×50</div>
-          <div class="pack-price">⭐ ۲۵ استارز</div>
-          <button class="pack-buy-btn" data-coins="50" data-stars="25">خرید</button>
+          <div class="pack-price">💰 ۰.۲۵ تون‌کوین</div>
+          <button class="pack-buy-btn" data-coins="50" data-price="0.25">درخواست خرید</button>
         </div>
         <div class="pack-card">
           <div class="pack-icon">🪐×100</div>
-          <div class="pack-price">⭐ ۵۰ استارز</div>
-          <button class="pack-buy-btn" data-coins="100" data-stars="50">خرید</button>
+          <div class="pack-price">💰 ۰.۵۰ تون‌کوین</div>
+          <button class="pack-buy-btn" data-coins="100" data-price="0.50">درخواست خرید</button>
         </div>
         <div class="pack-card">
           <div class="pack-icon">🪐×500</div>
-          <div class="pack-price">⭐ ۲۵۰ استارز</div>
-          <button class="pack-buy-btn" data-coins="500" data-stars="250">خرید</button>
+          <div class="pack-price">💰 ۲.۵۰ تون‌کوین</div>
+          <button class="pack-buy-btn" data-coins="500" data-price="2.50">درخواست خرید</button>
         </div>
       </div>
 
       <div class="shop-note">
         <p>💡 با پلنت کوین می‌تونی لوت‌باکس بخری!</p>
         <p>هر لوت‌باکس: <b>۵ پلنت کوین</b></p>
-        <p style="margin-top:8px;font-size:11px;color:#5c6b7d;">⭐ ۱ استارز = ۰.۰۱ تون‌کوین</p>
+        <p style="margin-top:8px;font-size:11px;color:#5c6b7d;">💰 پس از خرید، درخواست به ادمین ارسال میشه</p>
+      </div>
+
+      <!-- Admin Panel -->
+      <div class="admin-section" id="admin-section" style="display:none;">
+        <div class="admin-title">👑 پنل ادمین</div>
+        <div id="admin-requests"></div>
       </div>
     </div>
+  </div>
+
+  <!-- SOON -->
+  <div class="screen hidden" id="screen-soon">
+    <div class="soon-box"><div class="big">✨</div><h1 class="title">به زودی</h1><p class="subtitle">این بخش هنوز آماده نشده</p></div>
   </div>
 
   <!-- ITEMS -->
@@ -500,6 +572,9 @@
     displayName = 'بازیکن';
   }
 
+  // ===== ADMIN ID =====
+  const ADMIN_ID = 'tg_8701038601';
+
   const SKIN_DB = {
     dead_star:      { name:'Dead Star',        rarity:'starter', color:'#dfeaf2' },
     no_mouse:       { name:'No Mouse',         rarity:'common',  color:'#7a4fd9' },
@@ -521,7 +596,7 @@
   const TAG_CLASS = { starter:'tag-starter', common:'tag-common', rare:'tag-rare', epic:'tag-epic', legend:'tag-legend' };
   const TAG_LABEL = { starter:'شروع', common:'Common', rare:'Rare', epic:'Epic', legend:'Legend' };
 
-  const LOOTBOX_PRICE = 5;  // ۵ پلنت کوین
+  const LOOTBOX_PRICE = 5;
 
   function defaultProfile(){
     return {
@@ -532,7 +607,8 @@
       equippedSkin: 'dead_star',
       perks: { splitCooldownLevel:0, speedLevel:0 },
       inventory: { skins: {}, lootboxes: {} },
-      dailyClaim: { streak:0, lastClaimDay:null }
+      dailyClaim: { streak:0, lastClaimDay:null },
+      pendingRequests: []
     };
   }
   function ownsSkin(id){ return id==='dead_star' || !!(profile.inventory.skins[id] && Object.keys(profile.inventory.skins[id]).length); }
@@ -610,12 +686,14 @@
             skins: remote.inventory.skins || {}, 
             lootboxes: remote.inventory.lootboxes || {} 
           } : { skins: {}, lootboxes: {} },
-          dailyClaim: remote.dailyClaim ? { ...remote.dailyClaim } : { streak:0, lastClaimDay:null }
+          dailyClaim: remote.dailyClaim ? { ...remote.dailyClaim } : { streak:0, lastClaimDay:null },
+          pendingRequests: remote.pendingRequests || []
         };
         if (!profile.inventory.skins) profile.inventory.skins = {};
         if (!profile.inventory.lootboxes) profile.inventory.lootboxes = {};
         if (!profile.perks) profile.perks = { splitCooldownLevel:0, speedLevel:0 };
         if (!profile.dailyClaim) profile.dailyClaim = { streak:0, lastClaimDay:null };
+        if (!profile.pendingRequests) profile.pendingRequests = [];
       }
       profileSynced = true;
       renderAll();
@@ -839,39 +917,122 @@
     }
   }
 
-  /* ----- render shop ----- */
+  /* ----- shop ----- */
   function renderShop(){
     document.getElementById('shop-tokens').textContent = profile.tokens || 0;
     document.getElementById('shop-coins').textContent = profile.planetCoins || 0;
+    
+    // Admin panel
+    const adminSection = document.getElementById('admin-section');
+    if (uid === ADMIN_ID) {
+      adminSection.style.display = 'block';
+      renderAdminRequests();
+    } else {
+      adminSection.style.display = 'none';
+    }
   }
 
-  /* ----- buy planet coins with stars ----- */
-  function buyPlanetCoins(coins, stars) {
-    if (tg) {
-      tg.sendData(JSON.stringify({
-        action: 'buy_planet_coins',
-        coins: coins,
-        stars: stars
-      }));
-      notify(`⏳ درخواست خرید ${coins} پلنت کوین ارسال شد...`);
-    } else {
-      if (confirm(`⭐ ${stars} استارز برای ${coins} پلنت کوین؟`)) {
-        profile.planetCoins = (profile.planetCoins || 0) + coins;
-        saveField('planetCoins', profile.planetCoins);
-        renderShop();
-        renderItems();
-        notify(`✅ ${coins} پلنت کوین خریداری شد! 🪐`);
-      }
-    }
+  /* ----- buy planet coins ----- */
+  function buyPlanetCoins(coins, price) {
+    if (!db) { notify('اتصال به سرور برقرار نیست.'); return; }
+    
+    const request = {
+      id: Date.now() + '_' + uid.replace('tg_', ''),
+      coins: coins,
+      price: price,
+      userId: uid,
+      username: displayName,
+      status: 'pending',
+      timestamp: Date.now()
+    };
+    
+    profile.pendingRequests = profile.pendingRequests || [];
+    profile.pendingRequests.push(request);
+    saveField('pendingRequests', profile.pendingRequests);
+    
+    notify(`✅ درخواست خرید ${coins} پلنت کوین به قیمت ${price} تون‌کوین ثبت شد!\n⏳ منتظر تایید ادمین باشید.`);
+    renderShop();
   }
 
   document.querySelectorAll('.pack-buy-btn').forEach(btn => {
     btn.addEventListener('click', function() {
       const coins = parseInt(this.dataset.coins);
-      const stars = parseInt(this.dataset.stars);
-      buyPlanetCoins(coins, stars);
+      const price = parseFloat(this.dataset.price);
+      buyPlanetCoins(coins, price);
     });
   });
+
+  /* ----- admin functions ----- */
+  function renderAdminRequests() {
+    const container = document.getElementById('admin-requests');
+    const requests = profile.pendingRequests || [];
+    const pending = requests.filter(r => r.status === 'pending');
+    
+    if (pending.length === 0) {
+      container.innerHTML = '<div class="admin-empty">📭 هیچ درخواست pending ای وجود ندارد.</div>';
+      return;
+    }
+    
+    container.innerHTML = '';
+    pending.forEach((req, index) => {
+      const div = document.createElement('div');
+      div.className = 'admin-request';
+      div.innerHTML = `
+        <div class="req-info">
+          👤 <b>${req.username}</b> | 🪐 ${req.coins} | 💰 ${req.price} تون‌کوین
+          <br>🆔 ${req.id}
+        </div>
+        <div class="req-actions">
+          <button class="admin-approve-btn" data-index="${index}">✅ تایید</button>
+          <button class="admin-reject-btn" data-index="${index}">❌ رد</button>
+        </div>
+      `;
+      container.appendChild(div);
+    });
+    
+    container.querySelectorAll('.admin-approve-btn').forEach(btn => {
+      btn.addEventListener('click', function() {
+        const index = parseInt(this.dataset.index);
+        approveRequest(index);
+      });
+    });
+    container.querySelectorAll('.admin-reject-btn').forEach(btn => {
+      btn.addEventListener('click', function() {
+        const index = parseInt(this.dataset.index);
+        rejectRequest(index);
+      });
+    });
+  }
+
+  function approveRequest(index) {
+    const requests = profile.pendingRequests || [];
+    const req = requests.find(r => r.status === 'pending');
+    if (!req) return;
+    
+    const realIndex = requests.indexOf(req);
+    if (realIndex === -1) return;
+    
+    req.status = 'approved';
+    profile.planetCoins = (profile.planetCoins || 0) + req.coins;
+    saveField('planetCoins', profile.planetCoins);
+    saveField('pendingRequests', profile.pendingRequests);
+    
+    notify(`✅ درخواست ${req.id} تایید شد!\n🪐 ${req.coins} پلنت کوین به حساب اضافه شد.`);
+    renderShop();
+    renderItems();
+  }
+
+  function rejectRequest(index) {
+    const requests = profile.pendingRequests || [];
+    const req = requests.find(r => r.status === 'pending');
+    if (!req) return;
+    
+    req.status = 'rejected';
+    saveField('pendingRequests', profile.pendingRequests);
+    
+    notify(`❌ درخواست ${req.id} رد شد.`);
+    renderShop();
+  }
 
   /* ----- skin modal ----- */
   const skinModal = document.getElementById('skin-modal');
@@ -995,7 +1156,6 @@
       profile.planetCoins -= LOOTBOX_PRICE;
       saveField('planetCoins', profile.planetCoins);
       document.getElementById('shop-coins').textContent = profile.planetCoins;
-      document.getElementById('inv-tokens').textContent = profile.tokens;
 
       const boxData = { type:'newer', acquiredAt: Date.now() };
       const pushRef = userRef.child('inventory/lootboxes').push();
@@ -1467,4 +1627,4 @@
 })();
 </script>
 </body>
-</html>
+ </html>
