@@ -1315,13 +1315,13 @@
 
   function worldToScreen(x,y,camX,camY,scale){ return { x: innerWidth/2+(x-camX)*scale, y: innerHeight/2+(y-camY)*scale }; }
 
-  /* ===== DRAW FUNCTION - FIXED ===== */
+  /* ===== DRAW FUNCTION - FIXED (NO IMAGE LOADING) ===== */
   function drawCircle(e, color, isPlayer, name, skinId) {
     const s = worldToScreen(e.x, e.y, camX, camY, camScale);
     const rr = e.dispR * camScale;
     const skin = skinId ? SKIN_DB[skinId] : null;
 
-    // Draw base circle
+    // Draw base circle with gradient
     const grad = ctx.createRadialGradient(s.x-rr*0.3, s.y-rr*0.3, rr*0.1, s.x, s.y, rr);
     grad.addColorStop(0, isPlayer ? '#8fd0ff' : '#ffffff55');
     grad.addColorStop(1, color);
@@ -1333,55 +1333,27 @@
     ctx.lineWidth = 1.5;
     ctx.stroke();
 
-    // Show emoji or image on player
+    // Show EMOJI on player (no image loading to avoid errors)
     if (isPlayer && skin) {
-      let emojiSize = Math.max(14, rr * 0.7);
+      const emojiSize = Math.max(16, rr * 0.8);
+      ctx.font = `${emojiSize}px sans-serif`;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.shadowColor = 'rgba(0,0,0,0.9)';
+      ctx.shadowBlur = 10;
+      ctx.fillStyle = '#fff';
+      ctx.fillText(skin.emoji || '🪐', s.x, s.y + 2);
+      ctx.shadowBlur = 0;
       
-      // Try to show image if available and loaded
-      if (skin.image) {
-        try {
-          const img = new Image();
-          img.crossOrigin = 'anonymous';
-          img.src = skin.image;
-          if (img.complete && img.naturalWidth > 0) {
-            const size = rr * 1.0;
-            ctx.save();
-            ctx.beginPath();
-            ctx.arc(s.x, s.y, size/2, 0, Math.PI * 2);
-            ctx.clip();
-            ctx.drawImage(img, s.x - size/2, s.y - size/2, size, size);
-            ctx.restore();
-          } else {
-            // Image not loaded yet, show emoji
-            ctx.font = `${emojiSize}px sans-serif`;
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'middle';
-            ctx.shadowColor = 'rgba(0,0,0,0.9)';
-            ctx.shadowBlur = 10;
-            ctx.fillStyle = '#fff';
-            ctx.fillText(skin.emoji || '🪐', s.x, s.y + 2);
-            ctx.shadowBlur = 0;
-          }
-        } catch(e) {
-          // Error loading image, show emoji
-          ctx.font = `${emojiSize}px sans-serif`;
-          ctx.textAlign = 'center';
-          ctx.textBaseline = 'middle';
-          ctx.shadowColor = 'rgba(0,0,0,0.9)';
-          ctx.shadowBlur = 10;
-          ctx.fillStyle = '#fff';
-          ctx.fillText(skin.emoji || '🪐', s.x, s.y + 2);
-          ctx.shadowBlur = 0;
-        }
-      } else {
-        // No image, show emoji
-        ctx.font = `${emojiSize}px sans-serif`;
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        ctx.shadowColor = 'rgba(0,0,0,0.9)';
-        ctx.shadowBlur = 10;
-        ctx.fillStyle = '#fff';
-        ctx.fillText(skin.emoji || '🪐', s.x, s.y + 2);
+      // Legendary glow effect
+      if (skin.rarity === 'legend') {
+        ctx.shadowColor = 'rgba(255,215,0,0.3)';
+        ctx.shadowBlur = 25;
+        ctx.strokeStyle = 'rgba(255,215,0,0.15)';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.arc(s.x, s.y, rr + 4, 0, Math.PI * 2);
+        ctx.stroke();
         ctx.shadowBlur = 0;
       }
     }
@@ -1482,4 +1454,4 @@
 })();
 </script>
 </body>
- </html>
+</html>
