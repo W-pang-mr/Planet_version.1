@@ -54,6 +54,7 @@
   .skin-avatar { width:64px; height:64px; border-radius:50%; margin:0 auto 6px; }
   .skin-tag { font-size:9px; font-weight:800; padding:2px 6px; border-radius:999px; display:inline-block; margin-top:4px; }
   .skin-name { font-size:11px; font-weight:700; margin-top:2px; }
+  .skin-serial { font-size:9px; color:#5c6b7d; font-family:monospace; margin-top:3px; letter-spacing:.3px; }
   .tag-starter { background:#2a3a4d; color:#9fc7ff; }
   .tag-common { background:#1f5c33; color:#7ee787; }
   .tag-rare { background:#1a4a7a; color:#7fd0ff; }
@@ -63,14 +64,46 @@
     align-items:center; justify-content:center; font-size:22px; }
 
   .lootbox-card { background:linear-gradient(160deg,#141a24,#0d1218); border:1px solid #26364a; border-radius:18px;
-    padding:16px; width:100%; max-width:420px; display:flex; align-items:center; gap:14px; }
+    padding:16px; width:100%; max-width:420px; display:flex; align-items:center; gap:14px; margin-bottom:10px; }
   .lootbox-icon { width:64px; height:64px; border-radius:14px; background:linear-gradient(135deg,#3dd6ff,#4fa8ff);
-    display:flex; align-items:center; justify-content:center; font-size:30px; }
+    display:flex; align-items:center; justify-content:center; font-size:30px; flex-shrink:0; }
   .lootbox-info { flex:1; }
   .lootbox-name { font-weight:800; font-size:15px; }
   .lootbox-supply { font-size:11px; color:#8a99ad; margin-top:2px; }
   .lootbox-buy { background:linear-gradient(135deg,#ffd700,#ff9d00); color:#3a2400; font-weight:800;
     border:none; border-radius:10px; padding:8px 14px; font-size:13px; white-space:nowrap; }
+  .lootbox-buy:disabled, .lootbox-open-btn:disabled { opacity:.4; }
+
+  /* owned/unopened lootboxes list */
+  #lootbox-owned-list { width:100%; max-width:420px; display:flex; flex-direction:column; gap:8px; }
+  .lootbox-owned-row { display:flex; align-items:center; gap:12px; background:#0e131b; border:1px solid #22303f;
+    border-radius:14px; padding:10px 12px; }
+  .lootbox-owned-row .lootbox-icon { width:40px; height:40px; font-size:20px; border-radius:10px; }
+  .lootbox-owned-row .lootbox-owned-name { flex:1; font-size:13px; font-weight:700; }
+  .lootbox-open-btn { background:linear-gradient(135deg,#4fa8ff,#3d7fc9); border:none; border-radius:10px; color:#fff;
+    font-weight:700; padding:7px 14px; font-size:12px; }
+  .lootbox-transfer-btn { background:#161f2b; border:1px solid #2c3d52; border-radius:10px; color:#cfe0f2;
+    font-weight:700; padding:7px 10px; font-size:12px; }
+  .empty-hint { color:#5c6b7d; font-size:12px; padding:6px 2px; }
+
+  /* skin owned count badge */
+  .skin-owned-badge { position:absolute; top:6px; left:6px; background:rgba(79,168,255,.9); color:#fff;
+    font-size:10px; font-weight:800; padding:2px 7px; border-radius:999px; }
+
+  /* modals */
+  .modal-overlay { position:absolute; inset:0; z-index:30; background:rgba(0,0,0,.65); display:flex;
+    align-items:flex-end; justify-content:center; }
+  .modal-overlay.hidden { display:none; }
+  .modal-card { width:100%; max-width:460px; max-height:78vh; overflow-y:auto; background:#0c1017;
+    border:1px solid #24303f; border-radius:20px 20px 0 0; padding:18px; }
+  .modal-head { display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; font-weight:800; font-size:16px; }
+  .modal-head button { background:rgba(255,255,255,.08); border:none; color:#fff; border-radius:10px;
+    padding:6px 10px; font-size:13px; }
+  .skin-instance-row { display:flex; align-items:center; gap:10px; background:#131a24; border:1px solid #22303f;
+    border-radius:12px; padding:9px 12px; margin-bottom:8px; }
+  .skin-instance-row .instance-serial { flex:1; font-family:monospace; font-size:13px; font-weight:700; color:#ffd766; }
+  #transfer-target-input { width:100%; max-width:420px; background:#131a24; border:1px solid #2c3d52; border-radius:10px;
+    color:#fff; padding:12px 14px; font-size:14px; margin:10px 0; direction:ltr; text-align:left; }
 
   /* Perks screen */
   .perk-card { background:#0e131b; border:1px solid #22303f; border-radius:16px; padding:14px; width:100%; max-width:420px; margin-bottom:12px; }
@@ -151,13 +184,13 @@
     <div class="soon-box"><div class="big">✨</div><h1 class="title">به زودی</h1><p class="subtitle">این بخش هنوز آماده نشده</p></div>
   </div>
 
-  <!-- ITEMS -->
+  <!-- ITEMS / INVENTORY -->
   <div class="screen hidden" id="screen-items">
-    <h1 class="title">🎒 آیتم‌ها</h1>
+    <h1 class="title">🎒 اینونتوری</h1>
     <div class="section-title">اسکین‌ها</div>
     <div class="skin-grid" id="skin-grid"></div>
 
-    <div class="section-title">لوت‌باکس</div>
+    <div class="section-title">لوت‌باکس‌ها</div>
     <div class="lootbox-card">
       <div class="lootbox-icon">📦</div>
       <div class="lootbox-info">
@@ -165,6 +198,28 @@
         <div class="lootbox-supply" id="lootbox-supply">در حال بارگذاری...</div>
       </div>
       <button class="lootbox-buy" id="lootbox-buy-btn">🪙 10000</button>
+    </div>
+    <div id="lootbox-owned-list"></div>
+  </div>
+
+  <!-- SKIN DETAIL MODAL -->
+  <div class="modal-overlay hidden" id="skin-modal">
+    <div class="modal-card">
+      <div class="modal-head"><span id="skin-modal-title"></span><button id="skin-modal-close">✕</button></div>
+      <button class="btn" id="skin-modal-equip">استفاده از این اسکین</button>
+      <div class="section-title" style="margin-top:14px;">نسخه‌های من</div>
+      <div id="skin-modal-instances"></div>
+    </div>
+  </div>
+
+  <!-- TRANSFER MODAL -->
+  <div class="modal-overlay hidden" id="transfer-modal">
+    <div class="modal-card">
+      <div class="modal-head"><span>انتقال آیتم</span><button id="transfer-modal-close">✕</button></div>
+      <p class="subtitle" id="transfer-item-label" style="margin-bottom:0;"></p>
+      <input type="text" id="transfer-target-input" placeholder="آیدی عددی تلگرام گیرنده" inputmode="numeric">
+      <p class="subtitle" style="margin-bottom:10px;">⚠️ این عمل قابل برگشت نیست؛ آیدی رو درست وارد کن.</p>
+      <button class="btn" id="transfer-confirm-btn">ارسال آیتم</button>
     </div>
   </div>
 
@@ -266,6 +321,14 @@
   const TAG_CLASS = { starter:'tag-starter', common:'tag-common', rare:'tag-rare', epic:'tag-epic', legend:'tag-legend' };
   const TAG_LABEL = { starter:'شروع', common:'Common', rare:'Rare', epic:'Epic', legend:'Legend' };
 
+  // Inventory model:
+  //   inventory.skins[skinId] = { <pushKey>: serialNumber, ... }  — one
+  //     entry per numbered copy the player owns (a duplicate pull now
+  //     grants a NEW copy with a new serial, not a refund).
+  //   inventory.lootboxes[<pushKey>] = { type, acquiredAt }  — unopened
+  //     boxes sitting in the inventory until the player opens them.
+  // dead_star is the free starter skin everyone has; it's never stored as
+  // an instance/serial, ownership of it is implicit.
   function defaultProfile(){
     return {
       name: displayName,
@@ -273,9 +336,11 @@
       bestMass: 0,
       equippedSkin: 'dead_star',
       perks: { splitCooldownLevel:0, speedLevel:0 },
-      inventory: { skins: { dead_star: { tag:'starter' } } }
+      inventory: { skins: {}, lootboxes: {} }
     };
   }
+  function ownsSkin(id){ return id==='dead_star' || !!(profile.inventory.skins[id] && Object.keys(profile.inventory.skins[id]).length); }
+  function skinCopies(id){ return id==='dead_star' ? 1 : Object.keys(profile.inventory.skins[id]||{}).length; }
 
   /*
    * FIX: profile used to start as `null` and every screen (including the
@@ -342,12 +407,9 @@
       } else {
         const remote = snap.val() || {};
         profile = Object.assign(defaultProfile(), remote);
-        if (!profile.inventory) profile.inventory = { skins:{ dead_star:{tag:'starter'} } };
-        if (!profile.inventory.skins || !profile.inventory.skins.dead_star) {
-          profile.inventory.skins = profile.inventory.skins || {};
-          profile.inventory.skins.dead_star = { tag:'starter' };
-          userRef.child('inventory/skins/dead_star').set({ tag:'starter' });
-        }
+        if (!profile.inventory) profile.inventory = { skins:{}, lootboxes:{} };
+        if (!profile.inventory.skins) profile.inventory.skins = {};
+        if (!profile.inventory.lootboxes) profile.inventory.lootboxes = {};
         if (!profile.perks) profile.perks = { splitCooldownLevel:0, speedLevel:0 };
         if (!profile.equippedSkin) profile.equippedSkin = 'dead_star';
       }
@@ -419,29 +481,53 @@
   });
 
   /* ---------- items rendering ---------- */
-  function renderItems(){
+  function notify(msg){ if (tg && tg.showAlert) tg.showAlert(msg); else alert(msg); }
+
+  function renderSkinGrid(){
     const grid = document.getElementById('skin-grid');
     grid.innerHTML = '';
     Object.keys(SKIN_DB).forEach(id=>{
       const skin = SKIN_DB[id];
-      const owned = profile.inventory && profile.inventory.skins && profile.inventory.skins[id];
-      const tag = owned ? owned.tag : skin.rarity;
+      const owned = ownsSkin(id);
+      const copies = skinCopies(id);
+      const tag = id==='dead_star' ? 'starter' : skin.rarity;
       const card = document.createElement('div');
       card.className = 'skin-card' + (profile.equippedSkin===id ? ' equipped':'');
       card.innerHTML = `
         <div class="skin-avatar" style="background:radial-gradient(circle at 35% 30%, #fff6, ${skin.color})"></div>
+        ${copies>1 ? '<div class="skin-owned-badge">×'+copies+'</div>' : ''}
         <div class="skin-name">${skin.name}</div>
         <div class="skin-tag ${TAG_CLASS[tag]||'tag-common'}">${TAG_LABEL[tag]||tag}</div>
         ${!owned ? '<div class="lock-overlay">🔒</div>' : ''}
       `;
-      if (owned) card.addEventListener('click', ()=>{
-        profile.equippedSkin = id;
-        saveField('equippedSkin', id);
-        renderItems();
-      });
+      if (owned) card.addEventListener('click', ()=>openSkinModal(id));
       grid.appendChild(card);
     });
+  }
 
+  function renderOwnedLootboxes(){
+    const list = document.getElementById('lootbox-owned-list');
+    const boxes = Object.entries(profile.inventory.lootboxes||{});
+    if (!boxes.length) { list.innerHTML = '<div class="empty-hint">لوت‌باکس بازنشده‌ای نداری.</div>'; return; }
+    list.innerHTML = '';
+    boxes.forEach(([key, box])=>{
+      const row = document.createElement('div');
+      row.className = 'lootbox-owned-row';
+      row.innerHTML = `
+        <div class="lootbox-icon">📦</div>
+        <div class="lootbox-owned-name">Newer</div>
+        <button class="lootbox-transfer-btn" data-key="${key}">انتقال</button>
+        <button class="lootbox-open-btn" data-key="${key}">باز کردن</button>
+      `;
+      row.querySelector('.lootbox-open-btn').addEventListener('click', ()=>openLootbox(key));
+      row.querySelector('.lootbox-transfer-btn').addEventListener('click', ()=>openTransferModal({ kind:'lootbox', key, box, label:'لوت‌باکس Newer (بازنشده)' }));
+      list.appendChild(row);
+    });
+  }
+
+  function renderItems(){
+    renderSkinGrid();
+    renderOwnedLootboxes();
     if (db) {
       db.ref('lootboxSupply/newer').once('value').then(snap=>{
         const d = snap.val() || { claimed:0, max:1000 };
@@ -453,6 +539,95 @@
       document.getElementById('lootbox-buy-btn').disabled = true;
     }
   }
+
+  /* ---------- skin detail modal (list numbered copies, equip, transfer) ---------- */
+  const skinModal = document.getElementById('skin-modal');
+  function openSkinModal(id){
+    const skin = SKIN_DB[id];
+    document.getElementById('skin-modal-title').textContent = skin.name;
+    const equipBtn = document.getElementById('skin-modal-equip');
+    equipBtn.disabled = profile.equippedSkin===id;
+    equipBtn.textContent = profile.equippedSkin===id ? 'در حال استفاده' : 'استفاده از این اسکین';
+    equipBtn.onclick = ()=>{
+      profile.equippedSkin = id;
+      saveField('equippedSkin', id);
+      closeSkinModal();
+      renderItems();
+    };
+    const list = document.getElementById('skin-modal-instances');
+    if (id==='dead_star') {
+      list.innerHTML = '<div class="empty-hint">اسکین شروع — همه از اول دارنش، شماره‌ای نداره.</div>';
+    } else {
+      const instances = profile.inventory.skins[id] || {};
+      const keys = Object.keys(instances);
+      if (!keys.length) { list.innerHTML = '<div class="empty-hint">نسخه‌ای نداری.</div>'; }
+      else {
+        list.innerHTML = '';
+        keys.forEach(key=>{
+          const serial = instances[key];
+          const row = document.createElement('div');
+          row.className = 'skin-instance-row';
+          row.innerHTML = `<span class="instance-serial">تگ #${String(serial).padStart(4,'0')}</span>
+            <button class="lootbox-transfer-btn">انتقال</button>`;
+          row.querySelector('button').addEventListener('click', ()=>openTransferModal({
+            kind:'skin', skinId:id, key, serial, label: skin.name+' — تگ #'+String(serial).padStart(4,'0')
+          }));
+          list.appendChild(row);
+        });
+      }
+    }
+    skinModal.classList.remove('hidden');
+  }
+  function closeSkinModal(){ skinModal.classList.add('hidden'); }
+  document.getElementById('skin-modal-close').addEventListener('click', closeSkinModal);
+
+  /* ---------- transfer modal (skins or unopened lootboxes, to another Telegram user id) ---------- */
+  const transferModal = document.getElementById('transfer-modal');
+  let pendingTransfer = null;
+  function openTransferModal(item){
+    pendingTransfer = item;
+    document.getElementById('transfer-item-label').textContent = item.label;
+    document.getElementById('transfer-target-input').value = '';
+    transferModal.classList.remove('hidden');
+  }
+  function closeTransferModal(){ transferModal.classList.add('hidden'); pendingTransfer = null; }
+  document.getElementById('transfer-modal-close').addEventListener('click', closeTransferModal);
+
+  document.getElementById('transfer-confirm-btn').addEventListener('click', ()=>{
+    if (!pendingTransfer) return;
+    if (!db) { notify('اتصال به سرور برقرار نیست.'); return; }
+    const raw = document.getElementById('transfer-target-input').value.trim();
+    const digits = raw.replace(/[^0-9]/g,'');
+    if (!digits) { notify('آیدی عددی معتبر وارد کن.'); return; }
+    const targetUid = 'tg_' + digits;
+    if (targetUid === uid) { notify('نمی‌تونی برای خودت انتقال بدی.'); return; }
+
+    // NOTE: there's no server-side lookup of existing players in this app —
+    // the item is written straight to users/<targetUid>/... the same way
+    // every other write in this app is client-trusted. If the id is wrong,
+    // the item lands on a node nobody controls and is unrecoverable.
+    if (pendingTransfer.kind === 'skin') {
+      const { skinId, key, serial } = pendingTransfer;
+      db.ref('users/'+targetUid+'/inventory/skins/'+skinId).push(serial)
+        .then(()=> userRef.child('inventory/skins/'+skinId+'/'+key).remove())
+        .then(()=>{
+          delete profile.inventory.skins[skinId][key];
+          notify('اسکین با تگ #'+String(serial).padStart(4,'0')+' منتقل شد.');
+          closeTransferModal(); closeSkinModal(); renderItems();
+        })
+        .catch(e=>{ console.error('skin transfer failed', e); notify('انتقال ناموفق بود، دوباره امتحان کن.'); });
+    } else if (pendingTransfer.kind === 'lootbox') {
+      const { key, box } = pendingTransfer;
+      db.ref('users/'+targetUid+'/inventory/lootboxes').push(box)
+        .then(()=> userRef.child('inventory/lootboxes/'+key).remove())
+        .then(()=>{
+          delete profile.inventory.lootboxes[key];
+          notify('لوت‌باکس منتقل شد.');
+          closeTransferModal(); renderItems();
+        })
+        .catch(e=>{ console.error('lootbox transfer failed', e); notify('انتقال ناموفق بود، دوباره امتحان کن.'); });
+    }
+  });
 
   const LOOTBOX_PRICE = 10000;
 
@@ -468,20 +643,17 @@
     return { skinId, rarity: chosenRarity };
   }
 
-  function notify(msg){ if (tg && tg.showAlert) tg.showAlert(msg); else alert(msg); }
-
+  // Buying a lootbox no longer opens it immediately — it's added to the
+  // inventory as an unopened box (pushed under inventory/lootboxes), same
+  // as the reference inventory screen. Opening happens separately below.
   document.getElementById('lootbox-buy-btn').addEventListener('click', ()=>{
     if (!db) { notify('اتصال به سرور برقرار نیست.'); return; }
     if ((profile.tokens||0) < LOOTBOX_PRICE) { notify('توکن کافی نداری! به '+LOOTBOX_PRICE+' توکن نیاز داری.'); return; }
 
     const supplyRef = db.ref('lootboxSupply/newer');
-    // FIX: the transaction used to leave `claimed` unchanged (instead of
-    // aborting) once supply was full, and the callback checked
-    // `data.claimed > data.max` — which is never true once claimed===max.
-    // That meant every purchase after sellout still "succeeded": the
-    // player got charged tokens and received a skin even though no slot
-    // was actually reserved. Returning `undefined` here properly aborts
-    // the transaction (committed=false) so the sold-out case is detected.
+    // FIX (kept from before): abort the transaction once supply is full
+    // instead of silently letting `claimed` stop moving while the purchase
+    // still went through.
     supplyRef.transaction(current=>{
       current = current || { claimed:0, max:1000 };
       if (current.claimed >= current.max) return; // abort: no slots left
@@ -490,30 +662,50 @@
     }, (err, committed, snap)=>{
       if (err) { notify('خطا در بررسی موجودی، دوباره امتحان کن.'); return; }
       if (!committed) { notify('لوت‌باکس Newer تموم شده! 😔'); renderItems(); return; }
-      const data = snap.val();
-      if (!data) { notify('خطا در بررسی موجودی، دوباره امتحان کن.'); return; }
 
       profile.tokens -= LOOTBOX_PRICE;
       saveField('tokens', profile.tokens);
       document.getElementById('home-tokens').textContent = profile.tokens;
 
-      const { skinId, rarity } = pickRandomSkin();
-      const owned = profile.inventory.skins && profile.inventory.skins[skinId];
-      if (owned) {
-        const refund = Math.round(LOOTBOX_PRICE*0.25);
-        profile.tokens += refund;
-        saveField('tokens', profile.tokens);
-        document.getElementById('home-tokens').textContent = profile.tokens;
-        notify('این اسکین رو از قبل داشتی! به‌جاش '+refund+' توکن جایزه گرفتی 🎁');
-      } else {
-        profile.inventory.skins = profile.inventory.skins || {};
-        profile.inventory.skins[skinId] = { tag: rarity };
-        saveField('inventory/skins/'+skinId, { tag: rarity });
-        notify('تبریک! اسکین جدید «'+SKIN_DB[skinId].name+'» ('+TAG_LABEL[rarity]+') گرفتی 🎉');
-      }
-      renderItems();
+      const boxData = { type:'newer', acquiredAt: Date.now() };
+      const pushRef = userRef.child('inventory/lootboxes').push();
+      pushRef.set(boxData).then(()=>{
+        profile.inventory.lootboxes[pushRef.key] = boxData;
+        notify('لوت‌باکس Newer به اینونتوریت اضافه شد! برو بازش کن 📦');
+        renderItems();
+      }).catch(e=>{ console.error('lootbox push failed', e); notify('خطا در ذخیره‌سازی، دوباره امتحان کن.'); });
     });
   });
+
+  // Opening an unopened lootbox: rolls a skin and grants a brand-new
+  // numbered copy every time — including when the player already owns
+  // that skin. No more refund-on-duplicate; duplicates just stack as
+  // additional numbered copies (visible as the ×N badge on the card).
+  function openLootbox(key){
+    if (!db) { notify('اتصال به سرور برقرار نیست.'); return; }
+    const box = profile.inventory.lootboxes[key];
+    if (!box) return;
+
+    userRef.child('inventory/lootboxes/'+key).remove().then(()=>{
+      delete profile.inventory.lootboxes[key];
+
+      const { skinId, rarity } = pickRandomSkin();
+      // Claim number is always assigned fresh via an atomic counter — this
+      // is what makes it a true "who got this copy Nth" tag, even across
+      // duplicates from the same or different players.
+      db.ref('skinClaims/'+skinId).transaction(current => (current||0) + 1, (err, committed, snap) => {
+        const serial = (!err && committed) ? snap.val() : null;
+        const instRef = userRef.child('inventory/skins/'+skinId).push();
+        instRef.set(serial).then(()=>{
+          profile.inventory.skins[skinId] = profile.inventory.skins[skinId] || {};
+          profile.inventory.skins[skinId][instRef.key] = serial;
+          const serialTxt = serial ? (' — تگ #'+String(serial).padStart(4,'0')) : '';
+          notify('اسکین «'+SKIN_DB[skinId].name+'» ('+TAG_LABEL[rarity]+')'+serialTxt+' گرفتی 🎉');
+          renderItems();
+        }).catch(e=>{ console.error('skin instance save failed', e); notify('خطا در ذخیره‌سازی اسکین.'); renderItems(); });
+      });
+    }).catch(e=>{ console.error('lootbox remove failed', e); notify('خطا در باز کردن، دوباره امتحان کن.'); });
+  }
 
   /* ---------- perks rendering ---------- */
   const MAX_PERK_LEVEL = 50;
@@ -569,6 +761,17 @@
   const BASE_SPLIT_COOLDOWN = 5;
 
   let pieces, bots, pellets, camScale, running, lastT, splitCooldownLeft, maxMassReached;
+  // FIX (map/camera bug): the camera center (camX/camY) used to be
+  // recomputed from scratch every frame with no smoothing at all — only
+  // camScale had a lerp. As long as all your pieces moved together this
+  // was invisible, but the instant the AI ate one of your split-off
+  // pieces, the weighted average jumped straight to the remaining
+  // piece(s)' position in a single frame. If that eaten piece was far
+  // from the rest (very common right after a split), the view would snap
+  // hard to a new spot — which reads exactly like the map "resetting".
+  // smoothCamX/Y hold the on-screen camera position and are eased toward
+  // the real target each frame, same as camScale already was.
+  let smoothCamX = null, smoothCamY = null;
 
   function radiusFromMass(m){ return 8 + Math.sqrt(m)*3.1; }
   function baseSpeedFromRadius(r){ return Math.max(46, 320/(1+r/34)); }
@@ -593,6 +796,7 @@
     bots = []; for (let i=1;i<=BOT_COUNT;i++) bots.push(makeBot(i, pieces[0]));
     pellets = []; for (let i=0;i<PELLET_COUNT;i++) pellets.push(makePellet());
     camScale = 1; running = true; lastT = null; splitCooldownLeft = 0; maxMassReached = 22;
+    smoothCamX = null; smoothCamY = null; // fresh camera lock for the new game, no smoothing from the last run
     showScreen('screen-game'); bottomnav.style.display='none';
     requestAnimationFrame(loop);
   }
@@ -840,9 +1044,19 @@
     const avgR = radiusFromMass(totalM/pieces.length);
     const targetScale = Math.max(0.5, Math.min(1.15, 1.2 - avgR/230));
     camScale += (targetScale-camScale)*0.05;
-    let camX=0, camY=0, wsum=0;
-    pieces.forEach(p=>{ camX+=p.x*p.mass; camY+=p.y*p.mass; wsum+=p.mass; });
-    camX/=wsum; camY/=wsum;
+
+    // FIX (map "reset" bug): smooth the camera center the same way camScale
+    // is smoothed above. Previously camX/camY were the raw weighted average
+    // of piece positions used immediately, with no easing — so losing a
+    // piece to a bot (which instantly changes that average) snapped the
+    // view straight to the new center in one frame instead of easing there.
+    let targetCamX=0, targetCamY=0, wsum=0;
+    pieces.forEach(p=>{ targetCamX+=p.x*p.mass; targetCamY+=p.y*p.mass; wsum+=p.mass; });
+    targetCamX/=wsum; targetCamY/=wsum;
+    if (smoothCamX===null) { smoothCamX=targetCamX; smoothCamY=targetCamY; }
+    smoothCamX += (targetCamX-smoothCamX)*0.12;
+    smoothCamY += (targetCamY-smoothCamY)*0.12;
+    const camX = smoothCamX, camY = smoothCamY;
 
     ctx.fillStyle='#04070c'; ctx.fillRect(0,0,innerWidth,innerHeight);
 
