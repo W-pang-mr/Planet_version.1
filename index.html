@@ -57,8 +57,7 @@
   .inv-coin-pill { display:flex; align-items:center; gap:8px; background:#12161f; border:1px solid #24303f;
     border-radius:999px; padding:9px 16px; font-weight:800; font-size:15px; }
   .inv-avatar-ring { width:78px; height:78px; border-radius:50%; border:2.5px solid #fff; display:flex;
-    align-items:center; justify-content:center; font-size:34px; flex-shrink:0; background:#141a24; overflow:hidden; }
-  .inv-avatar-ring img { width:100%; height:100%; object-fit:cover; }
+    align-items:center; justify-content:center; font-size:34px; flex-shrink:0; background:#141a24; }
   .inv-avatar-wrap { display:flex; flex-direction:column; align-items:center; gap:6px; }
   .inv-avatar-label { font-size:13px; color:#8a99ad; font-weight:700; }
   .inv-icon-btn { width:46px; height:46px; border-radius:50%; background:#12161f; border:1px solid #24303f;
@@ -88,8 +87,7 @@
   .acc-head-title { font-size:18px; font-weight:800; }
   .acc-head-count { font-size:12px; color:#8a99ad; background:#161f2b; border-radius:999px; padding:4px 10px; width:fit-content; }
   .acc-head-preview { display:flex; align-items:center; }
-  .acc-preview-avatar { width:52px; height:52px; border-radius:50%; margin-right:-14px; border:2px solid #0e131b; overflow:hidden; display:flex; align-items:center; justify-content:center; font-size:20px; background:#141a24; }
-  .acc-preview-avatar img { width:100%; height:100%; object-fit:cover; }
+  .acc-preview-avatar { width:52px; height:52px; border-radius:50%; margin-right:-14px; border:2px solid #0e131b; display:flex; align-items:center; justify-content:center; font-size:22px; background:#141a24; }
   .acc-chevron { font-size:16px; color:#8a99ad; margin-right:10px; transition:transform .2s; flex-shrink:0; }
   .acc-chevron.open { transform:rotate(180deg); }
   .acc-body { max-height:0; overflow:hidden; transition:max-height .25s ease; padding:0 16px; }
@@ -105,8 +103,8 @@
   
   @keyframes equipped-pulse { 0%,100% { box-shadow:0 0 20px rgba(126,231,135,0.3); } 50% { box-shadow:0 0 40px rgba(126,231,135,0.6); } }
   
-  .skin-avatar { width:64px; height:64px; border-radius:50%; margin:0 auto 6px; object-fit:cover; background:#141a24; display:flex; align-items:center; justify-content:center; font-size:32px; }
-  .skin-avatar img { width:100%; height:100%; border-radius:50%; object-fit:cover; }
+  .skin-avatar { width:64px; height:64px; border-radius:50%; margin:0 auto 6px; display:flex; align-items:center; justify-content:center; font-size:32px; background:#141a24; overflow:hidden; }
+  .skin-avatar img { width:100%; height:100%; object-fit:cover; }
   .skin-tag { font-size:9px; font-weight:800; padding:2px 6px; border-radius:999px; display:inline-block; margin-top:4px; }
   .skin-name { font-size:11px; font-weight:700; margin-top:2px; }
   .tag-starter { background:#2a3a4d; color:#9fc7ff; }
@@ -407,16 +405,109 @@
     displayName = 'بازیکن';
   }
 
+  // ===== SKIN DATABASE WITH SVG =====
   const SKIN_DB = {
-    dead_star: { name:'Dead Star', rarity:'starter', emoji: '💀', color:'#dfeaf2', image: 'https://i.ibb.co/WNMrZSkT/Image-to-PDF-1.png' },
-    no_mouse: { name:'No Mouse', rarity:'common', emoji: '🐭', color:'#7a4fd9', image: 'https://i.ibb.co/KpCDbz4q/Image-to-PDF-2.jpg' },
-    golden_bowl: { name:'Golden Bowl', rarity:'common', emoji: '🥣', color:'#caa23a', image: 'https://i.ibb.co/DDP8G4rS/Image-to-PDF-3.jpg' },
-    slime_resist: { name:'Slime Resistance', rarity:'rare', emoji: '🧪', color:'#4a2f8a', image: 'https://i.ibb.co/4nKMLsVp/Image-to-PDF-4.jpg' },
-    when_lambo: { name:'When Lambo', rarity:'rare', emoji: '🏎️', color:'#f0d020', image: 'https://i.ibb.co/KcFc6kfq/Image-to-PDF-5.jpg' },
-    higher: { name:'Higher', rarity:'rare', emoji: '🚀', color:'#5a4fc9', image: '' },
-    reputation: { name:'Reputation', rarity:'epic', emoji: '👑', color:'#e8d060', image: '' },
-    collector_cap: { name:'Collector', rarity:'legend', emoji: '🎩', color:'#a86fff', image: 'https://i.ibb.co/QjDyg0d9/Collector-cap.jpg' },
-    triangle_nine: { name:'Triangle 9', rarity:'legend', emoji: '🔺', color:'#3dd6ff', image: '' },
+    dead_star: { 
+      name:'Dead Star', 
+      rarity:'starter', 
+      emoji: '💀', 
+      color:'#dfeaf2',
+      svg: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="50" cy="50" r="45" fill="#1a1a2e" stroke="#dfeaf2" stroke-width="2"/>
+        <text x="50" y="58" font-size="40" text-anchor="middle" fill="#dfeaf2">💀</text>
+        <circle cx="35" cy="35" r="3" fill="#ff4444" opacity="0.5"/>
+        <circle cx="65" cy="35" r="3" fill="#ff4444" opacity="0.5"/>
+      </svg>`
+    },
+    no_mouse: { 
+      name:'No Mouse', 
+      rarity:'common',  
+      emoji: '🐭', 
+      color:'#7a4fd9',
+      svg: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="50" cy="50" r="45" fill="#1a1a3a" stroke="#7a4fd9" stroke-width="2"/>
+        <text x="50" y="58" font-size="40" text-anchor="middle" fill="#7a4fd9">🐭</text>
+        <text x="50" y="30" font-size="18" text-anchor="middle" fill="#ff4444">🚫</text>
+      </svg>`
+    },
+    golden_bowl: { 
+      name:'Golden Bowl', 
+      rarity:'common',  
+      emoji: '🥣', 
+      color:'#caa23a',
+      svg: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="50" cy="50" r="45" fill="#1a1a0a" stroke="#caa23a" stroke-width="2"/>
+        <text x="50" y="58" font-size="40" text-anchor="middle" fill="#caa23a">🥣</text>
+        <circle cx="50" cy="45" r="8" fill="#ffd700" opacity="0.3"/>
+      </svg>`
+    },
+    slime_resist: { 
+      name:'Slime Resistance', 
+      rarity:'rare',    
+      emoji: '🧪', 
+      color:'#4a2f8a',
+      svg: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="50" cy="50" r="45" fill="#1a0a2e" stroke="#4a2f8a" stroke-width="2"/>
+        <text x="50" y="58" font-size="40" text-anchor="middle" fill="#4a2f8a">🧪</text>
+        <circle cx="60" cy="35" r="5" fill="#00ff88" opacity="0.3"/>
+      </svg>`
+    },
+    when_lambo: { 
+      name:'When Lambo', 
+      rarity:'rare',    
+      emoji: '🏎️', 
+      color:'#f0d020',
+      svg: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="50" cy="50" r="45" fill="#1a1a00" stroke="#f0d020" stroke-width="2"/>
+        <text x="50" y="58" font-size="40" text-anchor="middle" fill="#f0d020">🏎️</text>
+        <text x="50" y="30" font-size="14" text-anchor="middle" fill="#ff6600">💨</text>
+      </svg>`
+    },
+    higher: { 
+      name:'Higher', 
+      rarity:'rare',    
+      emoji: '🚀', 
+      color:'#5a4fc9',
+      svg: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="50" cy="50" r="45" fill="#0a0a2e" stroke="#5a4fc9" stroke-width="2"/>
+        <text x="50" y="58" font-size="40" text-anchor="middle" fill="#5a4fc9">🚀</text>
+        <circle cx="30" cy="70" r="2" fill="#ffffff" opacity="0.3"/>
+        <circle cx="70" cy="60" r="2" fill="#ffffff" opacity="0.3"/>
+      </svg>`
+    },
+    reputation: { 
+      name:'Reputation', 
+      rarity:'epic',    
+      emoji: '👑', 
+      color:'#e8d060',
+      svg: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="50" cy="50" r="45" fill="#1a1a00" stroke="#e8d060" stroke-width="2"/>
+        <text x="50" y="58" font-size="40" text-anchor="middle" fill="#e8d060">👑</text>
+        <circle cx="50" cy="45" r="12" fill="#ffd700" opacity="0.2"/>
+      </svg>`
+    },
+    collector_cap: { 
+      name:'Collector', 
+      rarity:'legend',  
+      emoji: '🎩', 
+      color:'#a86fff',
+      svg: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="50" cy="50" r="45" fill="#1a0a2e" stroke="#a86fff" stroke-width="2"/>
+        <text x="50" y="58" font-size="40" text-anchor="middle" fill="#a86fff">🎩</text>
+        <text x="50" y="30" font-size="14" text-anchor="middle" fill="#ffd700">💎</text>
+      </svg>`
+    },
+    triangle_nine: { 
+      name:'Triangle 9', 
+      rarity:'legend',  
+      emoji: '🔺', 
+      color:'#3dd6ff',
+      svg: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="50" cy="50" r="45" fill="#0a1a2e" stroke="#3dd6ff" stroke-width="2"/>
+        <text x="50" y="58" font-size="40" text-anchor="middle" fill="#3dd6ff">🔺</text>
+        <text x="50" y="30" font-size="14" text-anchor="middle" fill="#3dd6ff">9️⃣</text>
+      </svg>`
+    },
   };
 
   const LOOTBOX_POOL = {
@@ -648,10 +739,11 @@
       card.className = 'skin-card' + (profile.equippedSkin===id ? ' equipped':'');
       
       let avatarHTML = '';
-      if (skin.image) {
-        avatarHTML = `<img src="${skin.image}" onerror="this.style.display='none'" class="skin-avatar">`;
-      }
-      if (!skin.image || !skin.image.length) {
+      if (skin.svg) {
+        avatarHTML = `<div class="skin-avatar" style="background:radial-gradient(circle at 35% 30%, #fff6, ${skin.color});">
+          <img src="data:image/svg+xml;utf8,${encodeURIComponent(skin.svg)}" style="width:100%;height:100%;object-fit:contain;">
+        </div>`;
+      } else {
         avatarHTML = `<div class="skin-avatar" style="background:radial-gradient(circle at 35% 30%, #fff6, ${skin.color});">${skin.emoji}</div>`;
       }
       
@@ -674,11 +766,7 @@
       const dot = document.createElement('div');
       dot.className = 'acc-preview-avatar';
       const skin = SKIN_DB[id];
-      if (skin.image) {
-        dot.innerHTML = `<img src="${skin.image}" onerror="this.textContent='${skin.emoji}'">`;
-      } else {
-        dot.textContent = skin.emoji;
-      }
+      dot.textContent = skin.emoji;
       preview.appendChild(dot);
     });
   }
@@ -764,16 +852,8 @@
     document.getElementById('inv-bestmass').textContent = profile.bestMass||0;
     const equipped = SKIN_DB[profile.equippedSkin]||SKIN_DB.dead_star;
     const ring = document.getElementById('inv-avatar-ring');
-    if (equipped.image) {
-      ring.innerHTML = `<img src="${equipped.image}" onerror="this.style.display='none'">`;
-      if (!ring.querySelector('img') || !ring.querySelector('img').src) {
-        ring.textContent = equipped.emoji || '🪐';
-      }
-    } else {
-      ring.innerHTML = '';
-      ring.textContent = equipped.emoji || '🪐';
-      ring.style.background = `radial-gradient(circle at 35% 30%, #fff6, ${equipped.color})`;
-    }
+    ring.textContent = equipped.emoji || '🪐';
+    ring.style.background = `radial-gradient(circle at 35% 30%, #fff6, ${equipped.color})`;
   }
 
   function renderItems(){
@@ -1334,16 +1414,58 @@
     ctx.stroke();
 
     if (isPlayer && skin) {
-      const emojiSize = Math.max(16, rr * 0.8);
-      ctx.font = `${emojiSize}px sans-serif`;
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-      ctx.shadowColor = 'rgba(0,0,0,0.9)';
-      ctx.shadowBlur = 10;
-      ctx.fillStyle = '#fff';
-      ctx.fillText(skin.emoji || '🪐', s.x, s.y + 2);
-      ctx.shadowBlur = 0;
+      // نمایش SVG روی توپ
+      if (skin.svg) {
+        try {
+          const img = new Image();
+          const svgBlob = new Blob([skin.svg], {type: 'image/svg+xml;charset=utf-8'});
+          const url = URL.createObjectURL(svgBlob);
+          img.src = url;
+          img.onload = function() {
+            const size = rr * 1.2;
+            ctx.save();
+            ctx.beginPath();
+            ctx.arc(s.x, s.y, size/2, 0, Math.PI * 2);
+            ctx.clip();
+            ctx.drawImage(img, s.x - size/2, s.y - size/2, size, size);
+            ctx.restore();
+            URL.revokeObjectURL(url);
+          };
+          img.onerror = function() {
+            // فال‌بک: ایموجی
+            ctx.font = `${Math.max(16, rr * 0.8)}px sans-serif`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.shadowColor = 'rgba(0,0,0,0.9)';
+            ctx.shadowBlur = 10;
+            ctx.fillStyle = '#fff';
+            ctx.fillText(skin.emoji || '🪐', s.x, s.y + 2);
+            ctx.shadowBlur = 0;
+          };
+        } catch(e) {
+          // فال‌بک: ایموجی
+          ctx.font = `${Math.max(16, rr * 0.8)}px sans-serif`;
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.shadowColor = 'rgba(0,0,0,0.9)';
+          ctx.shadowBlur = 10;
+          ctx.fillStyle = '#fff';
+          ctx.fillText(skin.emoji || '🪐', s.x, s.y + 2);
+          ctx.shadowBlur = 0;
+        }
+      } else {
+        // اگه SVG نداره، ایموجی نشون بده
+        ctx.font = `${Math.max(16, rr * 0.8)}px sans-serif`;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.shadowColor = 'rgba(0,0,0,0.9)';
+        ctx.shadowBlur = 10;
+        ctx.fillStyle = '#fff';
+        ctx.fillText(skin.emoji || '🪐', s.x, s.y + 2);
+        ctx.shadowBlur = 0;
+      }
       
+      // افکت ویژه برای اسکین‌های لِجندری
       if (skin.rarity === 'legend') {
         ctx.shadowColor = 'rgba(255,215,0,0.3)';
         ctx.shadowBlur = 25;
@@ -1451,4 +1573,4 @@
 })();
 </script>
 </body>
- </html>
+</html>
