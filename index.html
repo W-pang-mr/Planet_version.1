@@ -110,6 +110,9 @@
   .go-mass { font-size:44px; font-weight:900; color:#7ee787; margin:8px 0; }
   .go-tokens { color:#ffd766; font-weight:700; margin-bottom:6px; }
   .go-best { color:#8a99ad; font-size:14px; margin-bottom:20px; }
+
+  /* loading overlay for play button while profile syncs */
+  #play-btn.loading { opacity:.6; }
 </style>
 </head>
 <body>
@@ -226,19 +229,6 @@
   const tg = window.Telegram && window.Telegram.WebApp;
   if (tg) { try { tg.ready(); tg.expand(); } catch(e){} }
 
-  /* ---------- Firebase ---------- */
-  const firebaseConfig = {
-    apiKey: "AIzaSyDfvJCZQX8u6fzPRpBIh1BY0zHS6fx27Ro",
-    authDomain: "planet-2fdf2.firebaseapp.com",
-    databaseURL: "https://planet-2fdf2-default-rtdb.firebaseio.com",
-    projectId: "planet-2fdf2",
-    storageBucket: "planet-2fdf2.firebasestorage.app",
-    messagingSenderId: "237872686307",
-    appId: "1:237872686307:web:9c670a134208bacbd651d6"
-  };
-  firebase.initializeApp(firebaseConfig);
-  const db = firebase.database();
-
   /* ---------- identify user ---------- */
   const LS = {
     get(k,d){ try{ const v=localStorage.getItem(k); return v===null?d:JSON.parse(v); }catch(e){return d;} },
@@ -276,8 +266,6 @@
   const TAG_CLASS = { starter:'tag-starter', common:'tag-common', rare:'tag-rare', epic:'tag-epic', legend:'tag-legend' };
   const TAG_LABEL = { starter:'شروع', common:'Common', rare:'Rare', epic:'Epic', legend:'Legend' };
 
-  let profile = null; // live mirror of DB user data
-
   function defaultProfile(){
     return {
       name: displayName,
@@ -289,31 +277,94 @@
     };
   }
 
-  const userRef = db.ref('users/' + uid);
-  userRef.once('value').then(snap => {
-    if (!snap.exists()) {
-      profile = defaultProfile();
-      userRef.set(profile);
-    } else {
-      profile = snap.val();
-      if (!profile.inventory) profile.inventory = { skins:{ dead_star:{tag:'starter'} } };
-      if (!profile.inventory.skins || !profile.inventory.skins.dead_star) {
-        profile.inventory.skins = profile.inventory.skins || {};
-        profile.inventory.skins.dead_star = { tag:'starter' };
-        userRef.child('inventory/skins/dead_star').set({ tag:'starter' });
-      }
-      if (!profile.perks) profile.perks = { splitCooldownLevel:0, speedLevel:0 };
-      if (!profile.equippedSkin) profile.equippedSkin = 'dead_star';
+  /*
+   * FIX: profile used to start as `null` and every screen (including the
+   * game loop) assumed it was already populated from Firebase. If the
+   * player tapped "شروع بازی" before the async Firebase read resolved
+   * (slow/blocked connection to gstatic.com / firebaseio.com — common on
+   * mobile networks), `profile.perks...` inside the game loop threw and
+   * silently killed the requestAnimationFrame loop -> black screen with
+   * nothing drawn, no error shown to the user.
+   *
+   * Fix: start with a local default profile immediately so nothing can
+   * ever read from `null`, then merge in the real Firebase data (or fall
+   * back to local-only play) once/if it arrives.
+   */
+  let profile = defaultProfile();
+  let profileSynced = false; // true once we've merged real Firebase data (or given up)
+  let db = null;
+
+  function initFirebase(){
+    const firebaseConfig = {
+      apiKey: "AIzaSyDfvJCZQX8u6fzPRpBIh1BY0zHS6fx27Ro",
+      authDomain: "planet-2fdf2.firebaseapp.com",
+      databaseURL: "https://planet-2fdf2-default-rtdb.firebaseio.com",
+      projectId: "planet-2fdf2",
+      storageBucket: "planet-2fdf2.firebasestorage.app",
+      messagingSenderId: "237872686307",
+      appId: "1:237872686307:web:9c670a134208bacbd651d6"
+    };
+    try {
+      if (typeof firebase === 'undefined') throw new Error('firebase SDK not loaded');
+      firebase.initializeApp(firebaseConfig);
+      db = firebase.database();
+      return true;
+    } catch (e) {
+      console.error('Firebase init failed, continuing in local-only mode', e);
+      db = null;
+      return false;
     }
-    renderAll();
-  }).catch(err => {
-    console.error('Firebase read error', err);
-    profile = defaultProfile();
-    renderAll();
-  });
+  }
+
+  let userRef = null;
+
+  function loadProfile(){
+    if (!initFirebase()) { profileSynced = true; renderAll(); return; }
+    userRef = db.ref('users/' + uid);
+
+    // Safety net: if Firebase never responds (blocked domain, bad network),
+    // don't leave the UI stuck — fall back to the local default profile
+    // after a timeout so the player can still play (progress just won't sync).
+    let settled = false;
+    const timeoutId = setTimeout(() => {
+      if (settled) return;
+      settled = true;
+      profileSynced = true;
+      renderAll();
+    }, 6000);
+
+    userRef.once('value').then(snap => {
+      if (settled) return; // timeout already fired, ignore late response for now
+      settled = true;
+      clearTimeout(timeoutId);
+      if (!snap.exists()) {
+        userRef.set(profile).catch(e=>console.error('initial profile save failed', e));
+      } else {
+        const remote = snap.val() || {};
+        profile = Object.assign(defaultProfile(), remote);
+        if (!profile.inventory) profile.inventory = { skins:{ dead_star:{tag:'starter'} } };
+        if (!profile.inventory.skins || !profile.inventory.skins.dead_star) {
+          profile.inventory.skins = profile.inventory.skins || {};
+          profile.inventory.skins.dead_star = { tag:'starter' };
+          userRef.child('inventory/skins/dead_star').set({ tag:'starter' });
+        }
+        if (!profile.perks) profile.perks = { splitCooldownLevel:0, speedLevel:0 };
+        if (!profile.equippedSkin) profile.equippedSkin = 'dead_star';
+      }
+      profileSynced = true;
+      renderAll();
+    }).catch(err => {
+      if (settled) return;
+      settled = true;
+      clearTimeout(timeoutId);
+      console.error('Firebase read error, continuing in local-only mode', err);
+      profileSynced = true;
+      renderAll();
+    });
+  }
 
   function saveField(path, value){
-    if (uid) userRef.child(path).set(value).catch(e=>console.error('save error', path, e));
+    if (uid && db && userRef) userRef.child(path).set(value).catch(e=>console.error('save error', path, e));
   }
 
   /* ---------- screens / nav ---------- */
@@ -355,11 +406,20 @@
   document.getElementById('mode-prev').addEventListener('click', ()=>{ modeIdx=(modeIdx-1+MODES.length)%MODES.length; renderMode(); });
   document.getElementById('mode-next').addEventListener('click', ()=>{ modeIdx=(modeIdx+1)%MODES.length; renderMode(); });
   renderMode();
-  document.getElementById('play-btn').addEventListener('click', ()=>{ if (MODES[modeIdx].enabled) startGame(); });
+
+  document.getElementById('play-btn').addEventListener('click', ()=>{
+    if (!MODES[modeIdx].enabled) return;
+    // profile always has a safe default now, so this can never crash the
+    // game loop — but if the real Firebase data hasn't arrived yet we
+    // still let the user know their progress may not have loaded.
+    if (!profileSynced) {
+      notify('در حال اتصال به سرور... بازی با تنظیمات پیش‌فرض شروع می‌شه.');
+    }
+    startGame();
+  });
 
   /* ---------- items rendering ---------- */
   function renderItems(){
-    if (!profile) return;
     const grid = document.getElementById('skin-grid');
     grid.innerHTML = '';
     Object.keys(SKIN_DB).forEach(id=>{
@@ -382,11 +442,16 @@
       grid.appendChild(card);
     });
 
-    db.ref('lootboxSupply/newer').once('value').then(snap=>{
-      const d = snap.val() || { claimed:0, max:1000 };
-      document.getElementById('lootbox-supply').textContent = `${d.claimed}/${d.max} برداشته شده`;
-      document.getElementById('lootbox-buy-btn').disabled = d.claimed >= d.max;
-    });
+    if (db) {
+      db.ref('lootboxSupply/newer').once('value').then(snap=>{
+        const d = snap.val() || { claimed:0, max:1000 };
+        document.getElementById('lootbox-supply').textContent = `${d.claimed}/${d.max} برداشته شده`;
+        document.getElementById('lootbox-buy-btn').disabled = d.claimed >= d.max;
+      }).catch(e=>console.error('lootbox supply read failed', e));
+    } else {
+      document.getElementById('lootbox-supply').textContent = 'اتصال به سرور برقرار نیست';
+      document.getElementById('lootbox-buy-btn').disabled = true;
+    }
   }
 
   const LOOTBOX_PRICE = 10000;
@@ -406,7 +471,7 @@
   function notify(msg){ if (tg && tg.showAlert) tg.showAlert(msg); else alert(msg); }
 
   document.getElementById('lootbox-buy-btn').addEventListener('click', ()=>{
-    if (!profile) return;
+    if (!db) { notify('اتصال به سرور برقرار نیست.'); return; }
     if ((profile.tokens||0) < LOOTBOX_PRICE) { notify('توکن کافی نداری! به '+LOOTBOX_PRICE+' توکن نیاز داری.'); return; }
 
     const supplyRef = db.ref('lootboxSupply/newer');
@@ -446,7 +511,6 @@
   function perkCost(nextLevel){ return Math.round(50 * Math.pow(1.3, nextLevel-1)); }
 
   function renderPerks(){
-    if (!profile) return;
     const sLvl = profile.perks.splitCooldownLevel || 0;
     const spLvl = profile.perks.speedLevel || 0;
     document.getElementById('perk-split-level').textContent = `لول ${sLvl}/${MAX_PERK_LEVEL}`;
@@ -705,18 +769,32 @@
 
   function loop(t){
     if (!running) return;
-    if (!lastT) lastT=t; const dt=Math.min(0.05,(t-lastT)/1000); lastT=t;
-    updatePieces(dt); bots.forEach(b=>updateBot(b,dt)); checkCollisions();
-    if (!running) return;
-    if (splitCooldownLeft>0) splitCooldownLeft=Math.max(0,splitCooldownLeft-dt);
-    const tm = totalMass(); if (tm>maxMassReached) maxMassReached=tm;
-    document.getElementById('hud-mass').textContent = Math.round(tm);
-    document.getElementById('hud-pieces').textContent = pieces.length;
-    draw();
+    try {
+      if (!lastT) lastT=t; const dt=Math.min(0.05,(t-lastT)/1000); lastT=t;
+      updatePieces(dt); bots.forEach(b=>updateBot(b,dt)); checkCollisions();
+      if (!running) return;
+      if (splitCooldownLeft>0) splitCooldownLeft=Math.max(0,splitCooldownLeft-dt);
+      const tm = totalMass(); if (tm>maxMassReached) maxMassReached=tm;
+      document.getElementById('hud-mass').textContent = Math.round(tm);
+      document.getElementById('hud-pieces').textContent = pieces.length;
+      draw();
+    } catch (e) {
+      // FIX: any unexpected error inside the loop used to kill
+      // requestAnimationFrame silently, leaving a black screen forever.
+      // Now we log it and safely return the player to the main menu
+      // instead of a dead canvas.
+      console.error('Game loop error, returning to menu', e);
+      running = false;
+      bottomnav.style.display='flex';
+      showScreen('screen-home');
+      notify('یه خطای غیرمنتظره پیش اومد، به منو برگشتی.');
+      return;
+    }
     requestAnimationFrame(loop);
   }
 
   showScreen('screen-home');
+  loadProfile();
 })();
 </script>
 </body>
