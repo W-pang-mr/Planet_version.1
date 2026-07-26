@@ -610,7 +610,7 @@
   window.addEventListener('mouseup', joyEnd);
 
   const keys = {};
-  window.addEventListener('keydown', e=>{ keys[e.key.toLowerCase()]=true; if (e.key===' ') doSplit(); });
+  window.addEventListener('keydown', e=>{ keys[e.key.toLowerCase()]=true; if (e.key===' ') { e.preventDefault(); doSplit(); } });
   window.addEventListener('keyup', e=>keys[e.key.toLowerCase()]=false);
   function keyboardDir(){ let x=0,y=0;
     if (keys['arrowup']||keys['w']) y-=1; if (keys['arrowdown']||keys['s']) y+=1;
@@ -619,7 +619,23 @@
   function currentDir(){ return joy.active ? {x:joy.dx,y:joy.dy} : keyboardDir(); }
 
   const splitBtn = document.getElementById('split-btn');
-  splitBtn.addEventListener('click', doSplit);
+  let splitTouchLock = false;
+  splitBtn.addEventListener('click', ()=>{
+    if (splitTouchLock) { splitTouchLock = false; return; } // already handled by touchstart
+    doSplit();
+  });
+  // FIX: relying only on 'click' meant the split button could feel
+  // unresponsive while the player already had a finger down on the
+  // joystick (moving) — some touch/WebView environments delay or drop
+  // the synthetic click for a second finger while another touch sequence
+  // is active. touchstart fires immediately and independently per finger,
+  // so splitting now works reliably while moving.
+  splitBtn.addEventListener('touchstart', e=>{
+    e.preventDefault(); e.stopPropagation();
+    splitTouchLock = true;
+    doSplit();
+  }, {passive:false});
+  splitBtn.addEventListener('touchend', e=>{ e.preventDefault(); e.stopPropagation(); }, {passive:false});
   function doSplit(){
     if (!running) return;
     if (splitCooldownLeft > 0) return;
@@ -687,19 +703,22 @@
         }
       }
     }
-    // soft push-apart for own pieces that ARE touching but not yet merge-ready,
-    // so freshly split blobs don't just sit stacked on top of each other
+    // soft push-apart for own pieces that ARE touching but not yet merge-ready —
+    // only resists heavy overlap, doesn't fight the player trying to steer
+    // split pieces close together (that's how agar.io feels: you CAN cluster
+    // your blobs tightly, they just can't fully merge until the timer's up)
     for (let i=0;i<pieces.length;i++){
       for (let j=i+1;j<pieces.length;j++){
         const a=pieces[i], b=pieces[j];
         if (now >= a.mergeAt && now >= b.mergeAt) continue; // eligible to merge instead, skip pushing
         const dx=b.x-a.x, dy=b.y-a.y; const d=Math.hypot(dx,dy) || 0.001;
-        const minDist = (a.dispR+b.dispR)*0.85;
+        const minDist = (a.dispR+b.dispR)*0.45;
         if (d < minDist) {
           const overlap = (minDist-d)/2;
           const nx=dx/d, ny=dy/d;
-          a.x -= nx*overlap; a.y -= ny*overlap;
-          b.x += nx*overlap; b.y += ny*overlap;
+          const push = overlap*0.4; // gentle correction, not a hard wall
+          a.x -= nx*push; a.y -= ny*push;
+          b.x += nx*push; b.y += ny*push;
           clampWorld(a); clampWorld(b);
         }
       }
