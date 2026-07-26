@@ -1056,6 +1056,18 @@
     if (keys['arrowleft']||keys['a']) x-=1; if (keys['arrowright']||keys['d']) x+=1;
     const d=Math.hypot(x,y); return d>0?{x:x/d,y:y/d}:{x:0,y:0}; }
   function currentDir(){ return joy.active ? {x:joy.dx,y:joy.dy} : keyboardDir(); }
+  // FIX: splits used to default to a hardcoded "up" whenever the player
+  // wasn't actively steering (idle joystick/keys). In agar.io the aim is
+  // the cursor position, which stays put even when you stop moving — so
+  // splits keep firing toward wherever you were last facing instead of
+  // always snapping back to "up". We approximate that by remembering the
+  // last non-zero steering direction and falling back to it.
+  let lastDir = {x:0, y:-1};
+  function facingDir(){
+    const d = currentDir();
+    if (d.x||d.y) lastDir = d;
+    return (d.x||d.y) ? d : lastDir;
+  }
 
   const splitBtn = document.getElementById('split-btn');
   let splitTouchLock = false;
@@ -1074,7 +1086,7 @@
     if (splitCooldownLeft > 0) return;
     if (!pieces.some(p => p.mass >= MIN_MASS_TO_SPLIT)) return;
     if (pieces.length >= MAX_PIECES) return;
-    const dir = currentDir();
+    const dir = facingDir();
     const dx = dir.x||0, dy = dir.y|| -1;
     const now = performance.now();
     const snapshot = pieces.slice();
@@ -1103,6 +1115,7 @@
 
   function updatePieces(dt){
     const dir = currentDir();
+    if (dir.x||dir.y) lastDir = dir;
     const mult = speedMultiplier();
     const FRICTION_BASE = 0.045;
     const frictionFactor = Math.pow(FRICTION_BASE, dt);
@@ -1119,7 +1132,54 @@
         if (d < p.dispR) { p.mass += 1.1; pellets[i] = makePellet(); }
       }
     }
+
+    // FIX: the merge-pull below only kicked in once two pieces were
+    // individually merge-ready, so a freshly split cluster (still mid-lock)
+    // had nothing holding it together at all — it just spread out forever
+    // under the same steering input. This adds a light cohesion pull
+    // toward the whole cluster's center for every piece, all the time, so
+    // the group generally tries to stay bunched around you instead of
+    // scattering, on top of the stronger merge-pull once pieces are
+    // actually eligible to recombine.
+    if (pieces.length > 1) {
+      let cx=0, cy=0, wsum=0;
+      pieces.forEach(p=>{ cx+=p.x*p.mass; cy+=p.y*p.mass; wsum+=p.mass; });
+      cx/=wsum; cy/=wsum;
+      const COHESION_SPEED = 260;
+      pieces.forEach(p=>{
+        const dx=cx-p.x, dy=cy-p.y; const d=Math.hypot(dx,dy);
+        if (d < 6) return;
+        const nx=dx/d, ny=dy/d;
+        const pull = Math.min(COHESION_SPEED*dt, d*0.7);
+        p.x += nx*pull; p.y += ny*pull;
+        clampWorld(p);
+      });
+    }
     const now = performance.now();
+    // FIX (the real bug here): once pieces' merge timer expired, nothing
+    // ever pulled them toward each other. Since every piece gets the same
+    // steering direction, in open space two split pieces just glide along
+    // in parallel forever, holding whatever separation they happened to
+    // have — they only ever got close enough to actually merge when the
+    // world border stopped one of them and let the other catch up, which
+    // is why it looked like you "had to drive into the wall" to recombine.
+    // Real agar.io pulls merge-eligible cells toward each other; we do the
+    // same here with a gentle homing pull, gated to only merge-eligible
+    // pairs so it never fights the player during an active split-attack.
+    const PULL_SPEED = 420;
+    for (let i=0;i<pieces.length;i++){
+      for (let j=i+1;j<pieces.length;j++){
+        const a=pieces[i], b=pieces[j];
+        if (now < a.mergeAt || now < b.mergeAt) continue;
+        const dx=b.x-a.x, dy=b.y-a.y; const d=Math.hypot(dx,dy) || 0.001;
+        if (d < 4) continue; // already basically together, let the merge check below handle it
+        const nx=dx/d, ny=dy/d;
+        const pull = Math.min(PULL_SPEED*dt, d*0.8);
+        a.x += nx*pull; a.y += ny*pull;
+        b.x -= nx*pull; b.y -= ny*pull;
+        clampWorld(a); clampWorld(b);
+      }
+    }
     for (let i=pieces.length-1;i>0;i--){
       for (let j=i-1;j>=0;j--){
         const a=pieces[i], b=pieces[j];
