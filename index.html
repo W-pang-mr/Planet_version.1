@@ -1403,21 +1403,23 @@
       const dir = (lastDir.x || lastDir.y) ? lastDir : {x:0,y:-1};
       const s = worldToScreen(e.x, e.y, camX, camY, camScale);
       const rr = e.dispR*camScale;
-      const gap = rr*1.1;
+      const gap = rr*1.15;
       const ax = s.x + dir.x*gap;
       const ay = s.y + dir.y*gap;
       const angle = Math.atan2(dir.y, dir.x);
-      const size = Math.max(6, rr*0.28);
+      const size = Math.max(10, rr*0.42);
       ctx.save();
       ctx.translate(ax, ay);
       ctx.rotate(angle);
+      ctx.strokeStyle = 'rgba(210,210,210,0.6)';
+      ctx.lineWidth = Math.max(3, size*0.22);
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
       ctx.beginPath();
-      ctx.moveTo(size, 0);
-      ctx.lineTo(-size*0.6, size*0.6);
-      ctx.lineTo(-size*0.6, -size*0.6);
-      ctx.closePath();
-      ctx.fillStyle = 'rgba(255,255,255,0.92)';
-      ctx.fill();
+      ctx.moveTo(-size*0.35, -size*0.55);
+      ctx.lineTo(size*0.45, 0);
+      ctx.lineTo(-size*0.35, size*0.55);
+      ctx.stroke();
       ctx.restore();
     }
 
