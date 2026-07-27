@@ -426,7 +426,6 @@
   const TAG_CLASS = { starter:'tag-starter', common:'tag-common', rare:'tag-rare', epic:'tag-epic', legend:'tag-legend' };
   const TAG_LABEL = { starter:'شروع', common:'Common', rare:'Rare', epic:'Epic', legend:'Legend' };
 
-  // تابع کمکی برای ادغام عمیق (deep merge)
   function deepMerge(target, source) {
     const result = { ...target };
     for (const key in source) {
@@ -453,7 +452,6 @@
   function ownsSkin(id){ return id==='dead_star' || !!(profile.inventory.skins[id] && Object.keys(profile.inventory.skins[id]).length); }
   function skinCopies(id){ return id==='dead_star' ? 1 : Object.keys(profile.inventory.skins[id]||{}).length; }
 
-  // ====== مهم: پروفایل با یک آبجکت خالی شروع می‌شه، نه با مقادیر پیش‌فرض ======
   let profile = { tokens: 0, bestMass: 0, perks: { splitCooldownLevel:0, speedLevel:0 }, inventory: { skins: {}, lootboxes: {} }, dailyClaim: { streak:0, lastClaimDay:null } };
   let profileSynced = false;
   let db = null;
@@ -1427,7 +1425,18 @@
     if (currentMode === 'classic') Object.values(otherPlayers).forEach(p=>drawCircle(p, p.color, false, p.name));
     const equippedColor = (SKIN_DB[profile.equippedSkin]||SKIN_DB.dead_star).color;
     pieces.forEach(p=>drawCircle(p, equippedColor, true, null));
-    pieces.forEach(p=>drawDirectionArrow(p));
+
+    /* پیکان فقط رو تیکه‌ای میاد که تو جهت فعلی حرکت جلوتر از بقیه‌ست */
+    const arrowDir = (lastDir.x || lastDir.y) ? lastDir : {x:0,y:-1};
+    let leadPiece = pieces[0];
+    if (pieces.length > 1) {
+      let bestProj = -Infinity;
+      pieces.forEach(p=>{
+        const proj = p.x*arrowDir.x + p.y*arrowDir.y;
+        if (proj > bestProj) { bestProj = proj; leadPiece = p; }
+      });
+    }
+    drawDirectionArrow(leadPiece);
 
     let lowestY = -Infinity, avgX = 0;
     pieces.forEach(p=>{ const s=worldToScreen(p.x,p.y,camX,camY,camScale); avgX+=s.x;
