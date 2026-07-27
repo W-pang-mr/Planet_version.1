@@ -151,6 +151,7 @@ button.btn {
   width: 100%;
   max-width: 380px;
   box-shadow: 0 6px 16px rgba(79, 168, 255, .3);
+  cursor: pointer;
 }
 button.btn:active {
   transform: scale(.97);
@@ -164,6 +165,7 @@ button.btn.secondary {
 }
 button.btn:disabled {
   opacity: .4;
+  cursor: not-allowed;
 }
 
 .soon-box {
@@ -199,6 +201,7 @@ button.btn:disabled {
   color: #fff;
   font-size: 15px;
   font-weight: 700;
+  cursor: pointer;
 }
 .inv-title {
   font-size: 17px;
@@ -242,6 +245,7 @@ button.btn:disabled {
   justify-content: center;
   font-size: 34px;
   flex-shrink: 0;
+  transition: all 0.3s ease;
 }
 .inv-avatar-wrap {
   display: flex;
@@ -265,6 +269,7 @@ button.btn:disabled {
   justify-content: center;
   font-size: 19px;
   color: #cfe0f2;
+  cursor: pointer;
 }
 .inv-icon-group {
   display: flex;
@@ -312,6 +317,7 @@ button.btn:disabled {
   padding: 6px 14px;
   border-radius: 999px;
   border: none;
+  cursor: pointer;
 }
 .daily-row {
   display: flex;
@@ -424,6 +430,7 @@ button.btn:disabled {
   overflow-y: auto;
 }
 
+/* ===== SKIN REDESIGN ===== */
 .section-title {
   align-self: flex-start;
   font-weight: 800;
@@ -435,39 +442,125 @@ button.btn:disabled {
 .skin-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 10px;
+  gap: 12px;
   width: 100%;
   max-width: 420px;
 }
 .skin-card {
-  background: #0e131b;
-  border: 2px solid #22303f;
-  border-radius: 14px;
-  padding: 10px;
+  background: linear-gradient(145deg, #111827, #0a0f1a);
+  border: 2px solid #1e2d45;
+  border-radius: 16px;
+  padding: 12px 8px;
   text-align: center;
   position: relative;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  overflow: hidden;
+}
+.skin-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 16px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: 0;
+}
+.skin-card:hover::before {
+  opacity: 1;
+}
+.skin-card.starter::before {
+  background: radial-gradient(circle at center, rgba(100, 150, 200, 0.15), transparent 70%);
+}
+.skin-card.common::before {
+  background: radial-gradient(circle at center, rgba(126, 231, 135, 0.15), transparent 70%);
+}
+.skin-card.rare::before {
+  background: radial-gradient(circle at center, rgba(79, 168, 255, 0.2), transparent 70%);
+}
+.skin-card.epic::before {
+  background: radial-gradient(circle at center, rgba(168, 85, 247, 0.2), transparent 70%);
+}
+.skin-card.legend::before {
+  background: radial-gradient(circle at center, rgba(255, 215, 0, 0.2), transparent 70%);
 }
 .skin-card.equipped {
-  border-color: #7ee787;
+  border-color: #34d399;
+  box-shadow: 0 0 20px rgba(52, 211, 153, 0.4), 0 0 40px rgba(52, 211, 153, 0.2);
 }
-.skin-avatar {
-  width: 64px;
-  height: 64px;
+.skin-card.equipped::after {
+  content: '✓';
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 22px;
+  height: 22px;
   border-radius: 50%;
-  margin: 0 auto 6px;
+  background: #34d399;
+  color: #000;
+  font-weight: 900;
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+  box-shadow: 0 0 10px rgba(52, 211, 153, 0.6);
 }
+
+.skin-avatar {
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  margin: 0 auto 8px;
+  position: relative;
+  z-index: 1;
+  transition: transform 0.3s ease;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+}
+.skin-card:hover .skin-avatar {
+  transform: scale(1.08);
+}
+.skin-avatar-inner {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32px;
+  position: relative;
+  overflow: hidden;
+}
+.skin-avatar-inner::after {
+  content: '';
+  position: absolute;
+  top: 15%;
+  left: 20%;
+  width: 25%;
+  height: 15%;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  transform: rotate(-30deg);
+}
+
 .skin-tag {
   font-size: 9px;
   font-weight: 800;
-  padding: 2px 6px;
+  padding: 3px 8px;
   border-radius: 999px;
   display: inline-block;
-  margin-top: 4px;
+  margin-top: 6px;
+  position: relative;
+  z-index: 1;
+  letter-spacing: 0.3px;
 }
 .skin-name {
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 700;
-  margin-top: 2px;
+  margin-top: 4px;
+  position: relative;
+  z-index: 1;
+  color: #e2e8f0;
 }
 .skin-serial {
   font-size: 9px;
@@ -475,36 +568,50 @@ button.btn:disabled {
   font-family: monospace;
   margin-top: 3px;
   letter-spacing: .3px;
+  position: relative;
+  z-index: 1;
 }
 .tag-starter {
-  background: #2a3a4d;
+  background: linear-gradient(135deg, #2a3a4d, #1a2a3d);
   color: #9fc7ff;
+  border: 1px solid rgba(159, 199, 255, 0.3);
 }
 .tag-common {
-  background: #1f5c33;
+  background: linear-gradient(135deg, #1f5c33, #155027);
   color: #7ee787;
+  border: 1px solid rgba(126, 231, 135, 0.3);
 }
 .tag-rare {
-  background: #1a4a7a;
+  background: linear-gradient(135deg, #1a4a7a, #153d66);
   color: #7fd0ff;
+  border: 1px solid rgba(127, 208, 255, 0.3);
 }
 .tag-epic {
-  background: #5a1f7a;
+  background: linear-gradient(135deg, #5a1f7a, #4a1866);
   color: #e0a8ff;
+  border: 1px solid rgba(224, 168, 255, 0.3);
 }
 .tag-legend {
-  background: #7a5a10;
+  background: linear-gradient(135deg, #7a5a10, #6a4a08);
   color: #ffd766;
+  border: 1px solid rgba(255, 215, 102, 0.3);
+  animation: legendGlow 2s ease-in-out infinite;
+}
+@keyframes legendGlow {
+  0%, 100% { box-shadow: 0 0 5px rgba(255, 215, 102, 0.3); }
+  50% { box-shadow: 0 0 15px rgba(255, 215, 102, 0.6); }
 }
 .lock-overlay {
   position: absolute;
   inset: 0;
-  background: rgba(0, 0, 0, .55);
-  border-radius: 14px;
+  background: rgba(0, 0, 0, .7);
+  border-radius: 16px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 22px;
+  font-size: 28px;
+  z-index: 3;
+  backdrop-filter: blur(2px);
 }
 
 .lootbox-card {
@@ -551,9 +658,11 @@ button.btn:disabled {
   padding: 8px 14px;
   font-size: 13px;
   white-space: nowrap;
+  cursor: pointer;
 }
 .lootbox-buy:disabled, .lootbox-open-btn:disabled {
   opacity: .4;
+  cursor: not-allowed;
 }
 
 #lootbox-owned-list {
@@ -590,6 +699,7 @@ button.btn:disabled {
   font-weight: 700;
   padding: 7px 14px;
   font-size: 12px;
+  cursor: pointer;
 }
 .lootbox-transfer-btn {
   background: #161f2b;
@@ -599,6 +709,7 @@ button.btn:disabled {
   font-weight: 700;
   padding: 7px 10px;
   font-size: 12px;
+  cursor: pointer;
 }
 .empty-hint {
   color: #5c6b7d;
@@ -608,14 +719,16 @@ button.btn:disabled {
 
 .skin-owned-badge {
   position: absolute;
-  top: 6px;
-  left: 6px;
+  top: 8px;
+  left: 8px;
   background: rgba(79, 168, 255, .9);
   color: #fff;
   font-size: 10px;
   font-weight: 800;
-  padding: 2px 7px;
+  padding: 3px 8px;
   border-radius: 999px;
+  z-index: 2;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
 .modal-overlay {
@@ -655,6 +768,7 @@ button.btn:disabled {
   border-radius: 10px;
   padding: 6px 10px;
   font-size: 13px;
+  cursor: pointer;
 }
 .skin-instance-row {
   display: flex;
@@ -695,6 +809,7 @@ button.btn:disabled {
   font-weight: 700;
   padding: 6px 12px;
   font-size: 11px;
+  cursor: pointer;
 }
 .sel-toggle-btn.active {
   background: #1c3a52;
@@ -747,6 +862,7 @@ button.btn:disabled {
   font-weight: 800;
   font-size: 13px;
   padding: 9px 16px;
+  cursor: pointer;
 }
 #cart-send-btn {
   background: linear-gradient(135deg, #4fa8ff, #3d7fc9);
@@ -774,6 +890,7 @@ button.btn:disabled {
   border-radius: 8px;
   padding: 5px 9px;
   font-size: 12px;
+  cursor: pointer;
 }
 
 .perk-card {
@@ -828,9 +945,11 @@ button.btn:disabled {
   font-weight: 700;
   padding: 8px 16px;
   font-size: 13px;
+  cursor: pointer;
 }
 .perk-btn:disabled {
   opacity: .35;
+  cursor: not-allowed;
 }
 
 #bottomnav {
@@ -853,6 +972,7 @@ button.btn:disabled {
   gap: 2px;
   color: #5c6b7d;
   font-size: 10px;
+  cursor: pointer;
 }
 .nav-btn.active {
   color: #4fa8ff;
@@ -872,6 +992,7 @@ button.btn:disabled {
   border-radius: 10px;
   padding: 6px 10px;
   font-size: 13px;
+  cursor: pointer;
 }
 #hud-mass-pill {
   position: absolute;
@@ -892,21 +1013,28 @@ button.btn:disabled {
 
 #split-btn {
   position: absolute;
-  bottom: 26px;
-  right: 20px;
-  width: 78px;
-  height: 78px;
+  bottom: 30px;
+  right: 24px;
+  width: 80px;
+  height: 80px;
   border-radius: 50%;
-  background: rgba(79, 168, 255, .25);
+  background: rgba(79, 168, 255, .2);
   border: 2px solid #4fa8ff;
   color: #fff;
   font-weight: 800;
   font-size: 13px;
   z-index: 8;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+#split-btn:active:not(:disabled) {
+  background: rgba(79, 168, 255, .4);
+  transform: scale(0.95);
 }
 #split-btn:disabled {
   opacity: .35;
   border-color: #48607a;
+  cursor: not-allowed;
 }
 #joystick-base {
   position: absolute;
@@ -920,8 +1048,8 @@ button.btn:disabled {
 }
 #joystick-knob {
   position: absolute;
-  width: 52px;
-  height: 52px;
+  width: 56px;
+  height: 56px;
   border-radius: 50%;
   background: rgba(79, 168, 255, 0.55);
   border: 2px solid rgba(255, 255, 255, 0.4);
@@ -1167,25 +1295,25 @@ button.btn:disabled {
   }
 
   const SKIN_DB = {
-    dead_star: { name: 'Dead Star', rarity: 'starter', color: '#dfeaf2' },
-    no_mouse: { name: 'No Mouse', rarity: 'common', color: '#7a4fd9' },
-    golden_bowl: { name: 'Golden Bowl', rarity: 'common', color: '#caa23a' },
-    slime_resist: { name: 'Slime Resistance', rarity: 'rare', color: '#4a2f8a' },
-    when_lambo: { name: 'When Lambo', rarity: 'rare', color: '#f0d020' },
-    higher: { name: 'Higher', rarity: 'rare', color: '#5a4fc9' },
-    reputation: { name: 'Reputation', rarity: 'epic', color: '#e8d060' },
-    collector_cap: { name: 'Collector', rarity: 'legend', color: '#a86fff' },
-    triangle_nine: { name: 'Triangle 9', rarity: 'legend', color: '#3dd6ff' },
+    dead_star:      { name:'Dead Star',        rarity:'starter', color:'#b0c4de', icon:'💫', glow:'rgba(176,196,222,0.4)' },
+    no_mouse:       { name:'No Mouse',         rarity:'common',  color:'#7c3aed', icon:'🐁', glow:'rgba(124,58,237,0.4)' },
+    golden_bowl:    { name:'Golden Bowl',      rarity:'common',  color:'#f59e0b', icon:'🏆', glow:'rgba(245,158,11,0.4)' },
+    slime_resist:   { name:'Slime Resistance', rarity:'rare',    color:'#8b5cf6', icon:'🧪', glow:'rgba(139,92,246,0.5)' },
+    when_lambo:     { name:'When Lambo',       rarity:'rare',    color:'#ef4444', icon:'🏎️', glow:'rgba(239,68,68,0.5)' },
+    higher:         { name:'Higher',           rarity:'rare',    color:'#3b82f6', icon:'🚀', glow:'rgba(59,130,246,0.5)' },
+    reputation:     { name:'Reputation',       rarity:'epic',    color:'#a855f7', icon:'👑', glow:'rgba(168,85,247,0.6)' },
+    collector_cap:  { name:'Collector',        rarity:'legend',  color:'#fbbf24', icon:'💎', glow:'rgba(251,191,36,0.7)' },
+    triangle_nine:  { name:'Triangle 9',       rarity:'legend',  color:'#06b6d4', icon:'🔱', glow:'rgba(6,182,212,0.7)' },
   };
   const LOOTBOX_POOL = {
-    common: ['no_mouse', 'golden_bowl'],
-    rare: ['slime_resist', 'when_lambo', 'higher'],
+    common: ['no_mouse','golden_bowl'],
+    rare: ['slime_resist','when_lambo','higher'],
     epic: ['reputation'],
-    legend: ['collector_cap', 'triangle_nine']
+    legend: ['collector_cap','triangle_nine']
   };
   const RARITY_WEIGHTS = { common: 60, rare: 25, epic: 10, legend: 5 };
-  const TAG_CLASS = { starter: 'tag-starter', common: 'tag-common', rare: 'tag-rare', epic: 'tag-epic', legend: 'tag-legend' };
-  const TAG_LABEL = { starter: 'شروع', common: 'Common', rare: 'Rare', epic: 'Epic', legend: 'Legend' };
+  const TAG_CLASS = { starter:'tag-starter', common:'tag-common', rare:'tag-rare', epic:'tag-epic', legend:'tag-legend' };
+  const TAG_LABEL = { starter:'شروع', common:'Common', rare:'Rare', epic:'Epic', legend:'Legend' };
 
   function deepMerge(target, source) {
     const result = { ...target };
@@ -1456,9 +1584,13 @@ button.btn:disabled {
       const copies = skinCopies(id);
       const tag = id === 'dead_star' ? 'starter' : skin.rarity;
       const card = document.createElement('div');
-      card.className = 'skin-card' + (profile.equippedSkin === id ? ' equipped' : '');
+      card.className = 'skin-card ' + tag + (profile.equippedSkin === id ? ' equipped' : '');
       card.innerHTML = `
-        <div class="skin-avatar" style="background:radial-gradient(circle at 35% 30%, #fff6, ${skin.color})"></div>
+        <div class="skin-avatar">
+          <div class="skin-avatar-inner" style="background:radial-gradient(circle at 35% 30%, ${skin.color}44, ${skin.color}cc);box-shadow:0 0 20px ${skin.glow};">
+            ${skin.icon}
+          </div>
+        </div>
         ${copies > 1 ? '<div class="skin-owned-badge">×' + copies + '</div>' : ''}
         <div class="skin-name">${skin.name}</div>
         <div class="skin-tag ${TAG_CLASS[tag] || 'tag-common'}">${TAG_LABEL[tag] || tag}</div>
@@ -1475,7 +1607,7 @@ button.btn:disabled {
     ownedIds.slice(-4).forEach(id => {
       const dot = document.createElement('div');
       dot.className = 'acc-preview-avatar';
-      dot.style.background = `radial-gradient(circle at 35% 30%, #fff6, ${SKIN_DB[id].color})`;
+      dot.style.background = `radial-gradient(circle at 35% 30%, ${SKIN_DB[id].color}44, ${SKIN_DB[id].color}cc)`;
       preview.appendChild(dot);
     });
   }
@@ -1614,7 +1746,9 @@ button.btn:disabled {
     document.getElementById('inv-tokens').textContent = profile.tokens || 0;
     document.getElementById('inv-bestmass').textContent = profile.bestMass || 0;
     const equipped = SKIN_DB[profile.equippedSkin] || SKIN_DB.dead_star;
-    document.getElementById('inv-avatar-ring').style.background = `radial-gradient(circle at 35% 30%, #fff6, ${equipped.color})`;
+    document.getElementById('inv-avatar-ring').style.background = `radial-gradient(circle at 35% 30%, ${equipped.color}44, ${equipped.color}cc)`;
+    document.getElementById('inv-avatar-ring').style.boxShadow = `0 0 25px ${equipped.glow}`;
+    document.getElementById('inv-avatar-ring').textContent = equipped.icon;
   }
 
   function renderItems() {
@@ -1900,11 +2034,12 @@ button.btn:disabled {
     PELLET_COUNT = 220,
     BOT_COUNT = 10;
   const BOT_COLORS = ['#ff5c5c', '#ffd23d', '#7ee787', '#ff9d3d', '#a86fff', '#3dd6ff', '#ff5cf0', '#ff8080', '#80ffcf', '#c48bff'];
-  const MIN_MASS_TO_SPLIT = 32;
-  const MAX_PIECES = 16;
+  const MIN_MASS_TO_SPLIT = 30;
+  const MAX_PIECES = 12;
   const EAT_MASS_RATIO = 1.25;
   const EAT_OVERLAP = 0.7;
-  const BASE_SPLIT_COOLDOWN = 5;
+  const BASE_SPLIT_COOLDOWN = 8;
+  const MERGE_TIME = 15;
 
   let pieces, bots, pellets, camScale, running, lastT, splitCooldownLeft, maxMassReached;
   let smoothCamX = null,
@@ -1922,11 +2057,7 @@ button.btn:disabled {
 
   function speedMultiplier() { return 1 + (profile.perks.speedLevel || 0) * 0.02; }
 
-  function splitCooldownMax() { return Math.max(0, BASE_SPLIT_COOLDOWN - (profile.perks.splitCooldownLevel || 0) * 0.1); }
-
-  function mergeTimeFor(mass) { return 12 + Math.min(40, mass * 0.25); }
-
-  function splitLaunchSpeed(dispR) { return 260 + dispR * 3.2; }
+  function splitCooldownMax() { return Math.max(1, BASE_SPLIT_COOLDOWN - (profile.perks.splitCooldownLevel || 0) * 0.14); }
 
   function randPos() { return { x: 40 + Math.random() * (WORLD - 80), y: 40 + Math.random() * (WORLD - 80) }; }
 
@@ -2065,10 +2196,11 @@ button.btn:disabled {
 
   function totalMass() { return pieces.reduce((s, p) => s + p.mass, 0); }
 
+  /* ===== IMPROVED SPLIT CONTROLS ===== */
   let joy = { active: false, originX: 0, originY: 0, dx: 0, dy: 0 };
   const joyBase = document.getElementById('joystick-base'),
     joyKnob = document.getElementById('joystick-knob');
-  const MAXJOY = 55;
+  const MAXJOY = 60;
 
   function joyStart(x, y) {
     joy.active = true;
@@ -2080,8 +2212,8 @@ button.btn:disabled {
     joyKnob.style.display = 'block';
     joyBase.style.left = (x - 60) + 'px';
     joyBase.style.top = (y - 60) + 'px';
-    joyKnob.style.left = (x - 26) + 'px';
-    joyKnob.style.top = (y - 26) + 'px';
+    joyKnob.style.left = (x - 28) + 'px';
+    joyKnob.style.top = (y - 28) + 'px';
   }
 
   function joyMove(x, y) {
@@ -2093,8 +2225,8 @@ button.btn:disabled {
       dy = dy / d * MAXJOY; }
     joy.dx = dx / MAXJOY;
     joy.dy = dy / MAXJOY;
-    joyKnob.style.left = (joy.originX + dx - 26) + 'px';
-    joyKnob.style.top = (joy.originY + dy - 26) + 'px';
+    joyKnob.style.left = (joy.originX + dx - 28) + 'px';
+    joyKnob.style.top = (joy.originY + dy - 28) + 'px';
   }
 
   function joyEnd() { joy.active = false;
@@ -2102,11 +2234,21 @@ button.btn:disabled {
     joy.dy = 0;
     joyBase.style.display = 'none';
     joyKnob.style.display = 'none'; }
-  canvas.addEventListener('touchstart', e => { const t = e.touches[0];
-    joyStart(t.clientX, t.clientY); }, { passive: true });
-  canvas.addEventListener('touchmove', e => { const t = e.touches[0];
-    joyMove(t.clientX, t.clientY); }, { passive: true });
-  canvas.addEventListener('touchend', joyEnd);
+
+  canvas.addEventListener('touchstart', e => {
+    e.preventDefault();
+    const t = e.touches[0];
+    joyStart(t.clientX, t.clientY);
+  }, { passive: false });
+  canvas.addEventListener('touchmove', e => {
+    e.preventDefault();
+    const t = e.touches[0];
+    joyMove(t.clientX, t.clientY);
+  }, { passive: false });
+  canvas.addEventListener('touchend', e => {
+    e.preventDefault();
+    joyEnd();
+  }, { passive: false });
   canvas.addEventListener('mousedown', e => joyStart(e.clientX, e.clientY));
   window.addEventListener('mousemove', e => { if (joy.active) joyMove(e.clientX, e.clientY); });
   window.addEventListener('mouseup', joyEnd);
@@ -2136,56 +2278,60 @@ button.btn:disabled {
     return (d.x || d.y) ? d : lastDir;
   }
 
+  /* ===== SPLIT BUTTON ===== */
   const splitBtn = document.getElementById('split-btn');
-  let splitTouchLock = false;
-  splitBtn.addEventListener('click', () => {
-    if (splitTouchLock) { splitTouchLock = false; return; }
-    doSplit();
-  });
+
   splitBtn.addEventListener('touchstart', e => {
     e.preventDefault();
     e.stopPropagation();
-    splitTouchLock = true;
     doSplit();
   }, { passive: false });
-  splitBtn.addEventListener('touchend', e => { e.preventDefault();
-    e.stopPropagation(); }, { passive: false });
+
+  splitBtn.addEventListener('mousedown', e => {
+    e.preventDefault();
+    e.stopPropagation();
+    doSplit();
+  });
 
   function doSplit() {
     if (!running) return;
     if (splitCooldownLeft > 0) return;
-    if (!pieces.some(p => p.mass >= MIN_MASS_TO_SPLIT)) return;
     if (pieces.length >= MAX_PIECES) return;
+
     const dir = facingDir();
-    const dx = dir.x || 0,
-      dy = dir.y || -1;
     const now = performance.now();
-    const snapshot = pieces.slice();
-    let splitAny = false;
-    for (const piece of snapshot) {
-      if (pieces.length >= MAX_PIECES) break;
+    const newPieces = [];
+
+    for (const piece of pieces) {
+      if (pieces.length + newPieces.length >= MAX_PIECES) break;
       if (piece.mass < MIN_MASS_TO_SPLIT) continue;
-      splitAny = true;
-      const half = piece.mass / 2;
-      piece.mass = half;
-      piece.dispR = radiusFromMass(half);
-      piece.mergeAt = now + mergeTimeFor(half) * 1000;
-      const launchSpd = splitLaunchSpeed(piece.dispR);
-      const nx = piece.x + dx * piece.dispR * 0.6,
-        ny = piece.y + dy * piece.dispR * 0.6;
-      pieces.push({
-        x: nx,
-        y: ny,
-        mass: half,
-        dispR: radiusFromMass(half),
-        vx: dx * launchSpd,
-        vy: dy * launchSpd,
-        mergeAt: now + mergeTimeFor(half) * 1000
+
+      const halfMass = Math.floor(piece.mass / 2);
+      piece.mass = halfMass;
+      piece.dispR = radiusFromMass(halfMass);
+      piece.mergeAt = now + MERGE_TIME * 1000;
+
+      const launchSpd = 200 + piece.dispR * 3;
+      const spawnDist = piece.dispR * 1.2;
+
+      newPieces.push({
+        x: piece.x + dir.x * spawnDist,
+        y: piece.y + dir.y * spawnDist,
+        mass: halfMass,
+        dispR: radiusFromMass(halfMass),
+        vx: dir.x * launchSpd,
+        vy: dir.y * launchSpd,
+        mergeAt: now + MERGE_TIME * 1000
       });
-      piece.vx = (piece.vx || 0) - dx * launchSpd * 0.15;
-      piece.vy = (piece.vy || 0) - dy * launchSpd * 0.15;
+
+      piece.vx = -dir.x * launchSpd * 0.3;
+      piece.vy = -dir.y * launchSpd * 0.3;
     }
-    if (splitAny) splitCooldownLeft = splitCooldownMax();
+
+    if (newPieces.length > 0) {
+      pieces.push(...newPieces);
+      splitCooldownLeft = splitCooldownMax();
+    }
   }
 
   function clampWorld(e) { e.x = Math.max(e.dispR || 8, Math.min(WORLD - (e.dispR || 8), e.x));
@@ -2195,17 +2341,17 @@ button.btn:disabled {
     const dir = currentDir();
     if (dir.x || dir.y) lastDir = dir;
     const mult = speedMultiplier();
-    const FRICTION_BASE = 0.045;
+    const FRICTION_BASE = 0.05;
     const frictionFactor = Math.pow(FRICTION_BASE, dt);
+
     for (const p of pieces) {
       const spd = baseSpeedFromRadius(p.dispR) * mult;
-      const steerVx = dir.x * spd,
-        steerVy = dir.y * spd;
       p.vx = (p.vx || 0) * frictionFactor;
       p.vy = (p.vy || 0) * frictionFactor;
-      p.x += (steerVx + p.vx) * dt;
-      p.y += (steerVy + p.vy) * dt;
+      p.x += (dir.x * spd + p.vx) * dt;
+      p.y += (dir.y * spd + p.vy) * dt;
       clampWorld(p);
+
       for (let i = pellets.length - 1; i >= 0; i--) {
         const pel = pellets[i];
         const d = Math.hypot(pel.x - p.x, pel.y - p.y);
@@ -2223,7 +2369,7 @@ button.btn:disabled {
         wsum += p.mass; });
       cx /= wsum;
       cy /= wsum;
-      const COHESION_SPEED = 260;
+      const COHESION_SPEED = 200;
       pieces.forEach(p => {
         const dx = cx - p.x,
           dy = cy - p.y;
@@ -2231,14 +2377,15 @@ button.btn:disabled {
         if (d < 6) return;
         const nx = dx / d,
           ny = dy / d;
-        const pull = Math.min(COHESION_SPEED * dt, d * 0.7);
+        const pull = Math.min(COHESION_SPEED * dt, d * 0.5);
         p.x += nx * pull;
         p.y += ny * pull;
         clampWorld(p);
       });
     }
+
     const now = performance.now();
-    const PULL_SPEED = 420;
+    const PULL_SPEED = 350;
     for (let i = 0; i < pieces.length; i++) {
       for (let j = i + 1; j < pieces.length; j++) {
         const a = pieces[i],
@@ -2247,10 +2394,10 @@ button.btn:disabled {
         const dx = b.x - a.x,
           dy = b.y - a.y;
         const d = Math.hypot(dx, dy) || 0.001;
-        if (d < 4) continue;
+        if (d < 3) continue;
         const nx = dx / d,
           ny = dy / d;
-        const pull = Math.min(PULL_SPEED * dt, d * 0.8);
+        const pull = Math.min(PULL_SPEED * dt, d * 0.6);
         a.x += nx * pull;
         a.y += ny * pull;
         b.x -= nx * pull;
@@ -2259,6 +2406,7 @@ button.btn:disabled {
         clampWorld(b);
       }
     }
+
     for (let i = pieces.length - 1; i > 0; i--) {
       for (let j = i - 1; j >= 0; j--) {
         const a = pieces[i],
@@ -2268,11 +2416,14 @@ button.btn:disabled {
         if (d < Math.max(a.dispR, b.dispR) * 0.5) {
           b.mass += a.mass;
           b.dispR = radiusFromMass(b.mass);
+          b.vx = (b.vx || 0) + (a.vx || 0) * 0.3;
+          b.vy = (b.vy || 0) + (a.vy || 0) * 0.3;
           pieces.splice(i, 1);
           break;
         }
       }
     }
+
     for (let i = 0; i < pieces.length; i++) {
       for (let j = i + 1; j < pieces.length; j++) {
         const a = pieces[i],
@@ -2295,11 +2446,12 @@ button.btn:disabled {
         }
       }
     }
-    pieces.forEach(p => { p.dispR += (radiusFromMass(p.mass) - p.dispR) * Math.min(1, dt * 6); });
+
+    pieces.forEach(p => { p.dispR += (radiusFromMass(p.mass) - p.dispR) * Math.min(1, dt * 5); });
   }
 
   function updateBot(bot, dt, allBots) {
-    bot.dispR += (radiusFromMass(bot.mass) - bot.dispR) * Math.min(1, dt * 6);
+    bot.dispR += (radiusFromMass(bot.mass) - bot.dispR) * Math.min(1, dt * 5);
     let nearestEnt = null,
       nd = Infinity;
     for (const p of pieces) { const d = Math.hypot(p.x - bot.x, p.y - bot.y); if (d < nd) { nd = d;
@@ -2392,6 +2544,7 @@ button.btn:disabled {
     bottomnav.style.display = 'flex';
     showScreen('screen-over');
   }
+
   document.getElementById('back-btn').addEventListener('click', () => {
     if (!running) return;
     running = false;
@@ -2587,4 +2740,4 @@ button.btn:disabled {
 })();
 </script>
 </body>
- </html>
+  </html>
