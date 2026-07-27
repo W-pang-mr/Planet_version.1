@@ -482,7 +482,6 @@
     }
   }
 
-  // ====== اصلاح اصلی: تابع loadProfile به درستی داده‌ها را از دیتابیس می‌خواند و با داده‌های محلی ادغام می‌کند ======
   function loadProfile(){
     if (!initFirebase()) { 
       profileSynced = true; 
@@ -507,13 +506,10 @@
       clearTimeout(timeoutId);
       
       if (!snap.exists()) {
-        // کاربر جدید: یک پروفایل با مقادیر پیش‌فرض ایجاد کن
         profile = defaultProfile();
         userRef.set(profile).catch(e=>console.error('initial profile save failed', e));
       } else {
         const remote = snap.val() || {};
-        // فقط داده‌هایی که در دیتابیس وجود دارند را با داده‌های محلی ادغام کن
-        // اما اگر داده‌ای در دیتابیس نبود، مقدار پیش‌فرض را نگه دار
         profile = {
           name: remote.name || displayName,
           tokens: typeof remote.tokens === 'number' ? remote.tokens : 0,
@@ -526,7 +522,6 @@
           } : { skins: {}, lootboxes: {} },
           dailyClaim: remote.dailyClaim ? { ...remote.dailyClaim } : { streak:0, lastClaimDay:null }
         };
-        // اطمینان از اینکه ساختارهای مورد نیاز وجود دارند
         if (!profile.inventory.skins) profile.inventory.skins = {};
         if (!profile.inventory.lootboxes) profile.inventory.lootboxes = {};
         if (!profile.perks) profile.perks = { splitCooldownLevel:0, speedLevel:0 };
@@ -546,10 +541,8 @@
     });
   }
 
-  // ====== تابع ذخیره‌سازی: فقط فیلد مشخص‌شده را آپدیت می‌کند، نه کل پروفایل را ======
   function saveField(path, value){
     if (!db || !userRef) {
-      // اگر دیتابیس وصل نیست، فقط در حافظه محلی ذخیره کن
       console.log('Local-only save:', path, value);
       return;
     }
@@ -558,7 +551,6 @@
     });
   }
 
-  // ====== تابع ذخیره‌سازی چندگانه (برای عملیات اتمی) ======
   function saveMultiple(updates){
     if (!db || !userRef) {
       console.log('Local-only multi-save:', updates);
@@ -632,7 +624,6 @@
   /* ---------- items rendering ---------- */
   function notify(msg){ if (tg && tg.showAlert) tg.showAlert(msg); else alert(msg); }
 
-  /* ----- accordion open/close (skins + lootboxes cards) ----- */
   function wireAccordion(headId, bodyId, chevronId){
     document.getElementById(headId).addEventListener('click', ()=>{
       const body = document.getElementById(bodyId);
@@ -1410,10 +1401,33 @@
       if (name) { ctx.fillStyle='#fff'; ctx.font=`${Math.max(11,12*camScale)}px sans-serif`; ctx.textAlign='center'; ctx.fillText(name, s.x, s.y+4); }
     }
 
+    function drawDirectionArrow(e){
+      const dir = (lastDir.x || lastDir.y) ? lastDir : {x:0,y:-1};
+      const s = worldToScreen(e.x, e.y, camX, camY, camScale);
+      const rr = e.dispR*camScale;
+      const gap = rr*1.1;
+      const ax = s.x + dir.x*gap;
+      const ay = s.y + dir.y*gap;
+      const angle = Math.atan2(dir.y, dir.x);
+      const size = Math.max(6, rr*0.28);
+      ctx.save();
+      ctx.translate(ax, ay);
+      ctx.rotate(angle);
+      ctx.beginPath();
+      ctx.moveTo(size, 0);
+      ctx.lineTo(-size*0.6, size*0.6);
+      ctx.lineTo(-size*0.6, -size*0.6);
+      ctx.closePath();
+      ctx.fillStyle = 'rgba(255,255,255,0.92)';
+      ctx.fill();
+      ctx.restore();
+    }
+
     bots.forEach(b=>drawCircle(b, b.color, false, b.name));
     if (currentMode === 'classic') Object.values(otherPlayers).forEach(p=>drawCircle(p, p.color, false, p.name));
     const equippedColor = (SKIN_DB[profile.equippedSkin]||SKIN_DB.dead_star).color;
     pieces.forEach(p=>drawCircle(p, equippedColor, true, null));
+    pieces.forEach(p=>drawDirectionArrow(p));
 
     let lowestY = -Infinity, avgX = 0;
     pieces.forEach(p=>{ const s=worldToScreen(p.x,p.y,camX,camY,camScale); avgX+=s.x;
